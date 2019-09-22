@@ -6,13 +6,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <title>Time Booking Example</title>
     <link rel="stylesheet" type="text/css" href="./assets/semantic.css"/>
+    <!--
+    
+      Integration von Seanox aspect-js
+      Seanox aspect-js is pure JavaScript and consists of a file.
+      The library can be downloaded and integrated standalone or a release channel can be used.
+          see also https://github.com/seanox/aspect-js/blob/master/manual/en/introduction.md#getting-started
+
+          404 Resource Not Found is shown in the console:      
+      http://127.0.0.1/.../data/locales.xml
+      aspect-js supports a NoSQL data source and a resource bundle for internationalization.
+      During the start, the framework searches for appropriate data.
+      If these are missing, this is okay.
+      The explanation will follow a later in step 04.
+      
+          404 Resource Not Found is shown in the console:      
+      http://127.0.0.1/.../modules/common.css
+      http://127.0.0.1/.../modules/common.js
+      aspect-js supports a module concept.
+      Because the framework can not know the structure of the modules, it is helpful in some cases,
+      if already when initializing the application general is done, there is the module "common",
+      which is searched automatically with the program start.
+      If these are missing, this is okay.
+      The explanation will follow a later in step 03.
+
+    -->
+    <script type="text/javascript" src="./assets/aspect-js.js"></script>
   </head>
   <body>
-    <div class="menu">
+  
+    <!--
+    
+      aspect-js supports a module concept where the modules are called composites.
+      Composites are declared with an ID and the attribute composite.
+      Composites can consist of markup (HTML), CSS and JavaScript.
+      All these components are optional and can be moved to the module directory.
+      The renderer automatically searches for corresponding components in the module directory.
+      Markup is only searched for if the composite has no inner HTML.
+          see also: https://github.com/seanox/aspect-js/blob/master/manual/en/composite.md#components     
+
+          attribute static:
+      The visibility of the composites is controlled by the SiteMap.
+      This will be explained later.
+      The static attribute specifies that a composite is always visible.
+      This will be changed later.
+         
+    -->
+
+    <!-- Menu -->
+    <div id="menu" class="ui fixed inverted menu"
+        composite static></div>
+    
+    <div class="ui main text container">
+    
+      <h1 class="ui header">Time Booking Example</h1>
+      <p>
+        A step-by-step tutorial for implementing an SAP (Single Page Application)
+        with <a href="https://github.com/seanox/aspect-js/" target="_extern">Seanox aspect-js</a>.
+      </p>
+      <h2 class="ui header">Step 03: Splitting of the prototype into components</h2>
+      <p>
+        Seanox aspect-js supports a module concept where the modules are called composites.
+        Composites are declared with an ID and the attribute composite.
+        Composites can consist of markup (HTML), CSS and JavaScript.
+        All these components are optional and can be moved to the module directory.
+        The renderer automatically searches for corresponding components in the module directory.
+      </p>
+      <p>
+        The presentation does not change.<br>
+        But in the background the application becomes more modular and clearer.
+      </p>
+      
+      <!-- Login Dialog -->  
+      <h1 class="ui header">Login</h1>  
+      <div id="login" class="ui placeholder segment"
+          composite static></div>
     </div>
-    <div class="main">
-    </div>
-    <div class="footer">
-    </div>
+    
+    <!--  Footer -->
+    <div id="footer" class="ui inverted vertical footer segment"
+        composite static></div>
   </body>
 </html>

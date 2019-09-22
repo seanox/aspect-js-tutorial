@@ -6,20 +6,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <title>Time Booking Example</title>
     <link rel="stylesheet" type="text/css" href="./assets/semantic.css"/>
+    <style type="text/css">
+      body {
+        background-color: #FFFFFF;
+      }
+      .ui.menu .item img.logo {
+        margin-right: 1.5em;
+      }
+      .main.container {
+        margin-top: 7em;
+      }
+      .wireframe {
+        margin-top: 2em;
+      }
+      .ui.footer.segment {
+        margin: 5em 0em 0em;
+        padding: 5em 0em;
+      }
+    </style>
     <!--
+    
       Integration von Seanox aspect-js
       Seanox aspect-js is pure JavaScript and consists of a file.
       The library can be downloaded and integrated standalone or a release channel can be used.
-      see also https://github.com/seanox/aspect-js/blob/master/manual/en/introduction.md#getting-started
+          see also https://github.com/seanox/aspect-js/blob/master/manual/en/introduction.md#getting-started
+
+          404 Resource Not Found is shown in the console:      
+      http://127.0.0.1/.../data/locales.xml
+      aspect-js supports a NoSQL data source and a resource bundle for internationalization.
+      During the start, the framework searches for appropriate data.
+      If these are missing, this is okay.
+      The explanation will follow a later in step 04.
+      
+          404 Resource Not Found is shown in the console:      
+      http://127.0.0.1/.../modules/common.css
+      http://127.0.0.1/.../modules/common.js
+      aspect-js supports a module concept.
+      Because the framework can not know the structure of the modules, it is helpful in some cases,
+      if already when initializing the application general is done, there is the module "common",
+      which is searched automatically with the program start.
+      If these are missing, this is okay.
+      The explanation will follow a later in step 03.
+
     -->
     <script type="text/javascript" src="./assets/aspect-js.js"></script>
   </head>
   <body>
-    <div class="menu">
+  
+    <!-- Menu -->
+    <div class="ui fixed inverted menu">
+      TODO: Menu
     </div>
-    <div class="main">
+    
+    <div class="ui main text container">
+    
+      <h1 class="ui header">Time Booking Example</h1>
+      <p>
+        A step-by-step tutorial for implementing an SAP (Single Page Application)
+        with <a href="https://github.com/seanox/aspect-js/" target="_extern">Seanox aspect-js</a>.
+      </p>
+      <h2 class="ui header">Step 02: Integration of Seanox aspect-js</h2>
+      <p>
+        Seanox aspect-js is pure JavaScript and consists of a file.<br>
+        The library can be downloaded and integrated standalone or a release channel
+        can be used.
+      </p>
+      <p>
+        In this example, Seanox aspect-js is integrated as a standalone file.
+      </p>
+
+      <!-- Login Dialog -->
+      <h1 class="ui header">Login</h1>
+      <div class="ui placeholder segment">
+        <div class="ui two column very relaxed stackable grid">
+          <div class="column">
+            <div class="ui form">
+              <div class="field">
+                <label>Username</label>
+                <div class="ui left icon input">
+                  <input type="text" placeholder="Username">
+                  <i class="user icon"></i>
+                </div>
+              </div>
+              <div class="field">
+                <label>Password</label>
+                <div class="ui left icon input">
+                  <input type="password" placeholder="Password">
+                  <i class="lock icon"></i>
+                </div>
+              </div>
+              <div class="ui blue submit button">Login</div>
+            </div>
+          </div>
+          <div class="middle aligned column">
+            <div class="ui big button">
+              <i class="signup icon"></i>
+              Sign Up
+            </div>
+          </div>
+        </div>
+        <div class="ui vertical divider">
+          Or
+        </div>
+      </div>
     </div>
-    <div class="footer">
+    
+    <!--  Footer -->
+    <div class="ui inverted vertical footer segment">
+      TODO: Footer
     </div>
   </body>
 </html>
