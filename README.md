@@ -48,23 +48,19 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 ## Step 04 Internationalization (i18n)
 
-## Step 05 Internationalization (i18n)
+## Step 05 SiteMap for controlling components and views
 
-## Step 06 SiteMap for controlling components and views
+## Step 06 Login, the first module
 
-## Step 07 SiteMap for controlling components and views
+## Step 07 Login, about Model View Controller and validation
 
-## Step 08 Login, the first module
+## Step 08 Authorization and user session
 
-## Step 09 Login, about Model View Controller and validation
+## Step 09 ...
 
-## Step 10 Authorization and user session
+## Step 10 ...
 
 ## Step 11 ...
-
-## Step 12 ...
-
-## Step 13 ...
 
 
 # Contact
