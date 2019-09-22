@@ -10,7 +10,8 @@ the serveral steps and therefore requires a program for comparison.
 After downloading and unpacking, all steps can be called as independent
 applications via a web server.  
 The changes in each step are documented and provided with references to the user
-manual. This information becomes visible when the steps are compared.  
+manual.  
+This information becomes visible when the steps are compared.  
 In addition, there are ToDo' s with small instructions and tips to try for
 yourself.
 
