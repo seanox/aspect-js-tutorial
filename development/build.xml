@@ -2,11 +2,11 @@
 <project name="aspect-js tutorial" default="update" basedir="..\..\aspect-js">
   <target name="update">
     <ant antfile=".\development\build.xml" target="archive"/>
-    <copy file=".\releases\aspect-js.js" todir="..\aspect-js-tutorial\Step_02 Integration von Seanox aspect-js\assets"/>
-    <copy file=".\releases\aspect-js.js" todir="..\aspect-js-tutorial\Step_03 Splitting of the prototype into components\assets"/>
-    <copy file=".\releases\aspect-js.js" todir="..\aspect-js-tutorial\Step_04 Internationalization (i18n)\assets"/>
-    <copy file=".\releases\aspect-js.js" todir="..\aspect-js-tutorial\Step_05 SiteMap for controlling components and views\assets"/>
-    <copy file=".\releases\aspect-js.js" todir="..\aspect-js-tutorial\Step_07 Login, about Model View Controller and validation\assets"/>
-    <copy file=".\releases\aspect-js.js" todir="..\aspect-js-tutorial\Step_08 Authorization and user session\assets"/>
+    <copy file=".\releases\aspect-js.js" todir="..\aspect-js tutorial\Step_02 Integration of Seanox aspect-js\assets"/>
+    <copy file=".\releases\aspect-js.js" todir="..\aspect-js tutorial\Step_03 Splitting of the prototype into components\assets"/>
+    <copy file=".\releases\aspect-js.js" todir="..\aspect-js tutorial\Step_04 Internationalization (i18n)\assets"/>
+    <copy file=".\releases\aspect-js.js" todir="..\aspect-js tutorial\Step_05 SiteMap for controlling components and views\assets"/>
+    <copy file=".\releases\aspect-js.js" todir="..\aspect-js tutorial\Step_07 Login, about Model View Controller and validation\assets"/>
+    <copy file=".\releases\aspect-js.js" todir="..\aspect-js tutorial\Step_08 Authorization and user session\assets"/>
   </target>
 </project>
