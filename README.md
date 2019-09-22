@@ -56,7 +56,7 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 ## Step 08 Login, the first module
 
-## Step 09 Login, we work object binding, validation and synchronization of model and markup
+## Step 09 Login, about Model View Controller and validation
 
 ## Step 10 Authorization and user session
 
