@@ -25,7 +25,7 @@ window['login'] = {
         //the values in the model are validated.
         if (element == document.querySelector("#login #logon"))
             return Composite.validate("#login #user, #login #password")
-                    && !!(this.email || "").match(new RegExp(this.EMAIL_PATTERN, "i"))
+                    && !!(this.user || "").match(new RegExp(this.EMAIL_PATTERN, "i"))
                     && !!(this.password || "").match(new RegExp(this.PASSWORD_PATTERN, "i"));
         
         //When entering data in the input fields, only the input value in the
