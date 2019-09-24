@@ -12,10 +12,15 @@
       This is helpful, for example, to prevent the expression syntax from being displayed.
       If the renderer has completed an element, it removes the attribute and the element becomes visible.
           see also https://github.com/seanox/aspect-js/blob/master/manual/en/markup.md#release
+
+      The style would fit well in common.css, but the file is not loaded by the renderer until the page is loaded by the browser.
+      In the meantime, for example, the expression syntax is visible.
+      Therefore the decision to store the style here. 
+          
     -->
     <style type="text/css">
       *[release] {
-        display:none;
+        display:none!important;
       }
     </style>
     <!--
@@ -67,28 +72,23 @@
 
     <!-- Menu -->
     <div id="menu" class="ui fixed inverted menu"
-        composite static></div>
+        composite static release></div>
     
     <div class="ui main text container">
-    
+
       <h1 class="ui header">Time Booking Example</h1>
       <p>
         A step-by-step tutorial for implementing an SAP (Single Page Application)
         with <a href="https://github.com/seanox/aspect-js/" target="_extern">Seanox aspect-js</a>.
       </p>
-      <h2 class="ui header">Step 04: Internationalization (i18n)</h2>
-      <p>
-        Seanox aspect-js supports a module concept where the modules are called composites.
-        Composites are declared with an ID and the attribute composite.
-        Composites can consist of markup (HTML), CSS and JavaScript.
-        All these components are optional and can be moved to the module directory.
-        The renderer automatically searches for corresponding components in the module directory.
-      </p>
-      <p>
-        With the Minimum Viable Product (MVP) approach, this usually happens later.
-        But the earlier you start, the less work you will have later and it's very easy in Seanox aspect-js.
-      </p>
-      
+      <!-- Dynamic output of the title. -->
+      <h2 class="ui header" release>
+        {{decodeURIComponent(document.location.pathcontext)
+            .replace(new RegExp('^.*/'), '')
+            .replace(new RegExp('^(Step)_(\\d+)', 'i'), '$1 $2:')}}</h2>
+      <div id="description"
+         composite static></div>
+
       <!--
       
         The internationalization (i18n) is based on a resource bundle that is based on the XML file ./data/locales.xml.
@@ -97,6 +97,8 @@
         or can be set explicitly using the DataSource on which the resource bundle is based.
         In addition, a default language can be set in the XML file locales.xml if an unsupported language is requested.
             see also https://github.com/seanox/aspect-js/blob/master/manual/en/messages.md#resource-bundle-messages
+            
+        In this example, the language setting is used by the browser.    
         
         The expression language of Seanox aspect-js is used for the output of the texts.
             see also https://github.com/seanox/aspect-js/blob/master/manual/en/expression.md#expression-language
@@ -105,13 +107,14 @@
       -->
       
       <!-- Login Dialog -->  
-      <h1 class="ui header" release>{{Messages['login.title']}}</h1>  
+      <h1 class="ui header"
+          release>{{Messages['login.title']}}</h1>  
       <div id="login" class="ui placeholder segment"
-          composite static></div>
+          composite static release></div>
     </div>
     
     <!--  Footer -->
     <div id="footer" class="ui inverted vertical footer segment"
-        composite static></div>
+        composite static release></div>
   </body>
 </html>

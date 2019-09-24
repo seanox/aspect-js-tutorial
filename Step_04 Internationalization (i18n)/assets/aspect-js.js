@@ -864,7 +864,7 @@ if (typeof Composite === "undefined") {
 
         /** Constant for attribute output */
         get ATTRIBUTE_OUTPUT() {return "output"},
-
+        
         /** Constant for attribute render */
         get ATTRIBUTE_RENDER() {return "render"},  
         
@@ -3206,7 +3206,8 @@ if (typeof Composite === "undefined") {
             //the element does not contain a markup (inner HTML) and the
             //attributes import and output are not set. Thus is the assumption
             //that for an empty element outsourced markup should exist.
-            if (object && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
+            if (object
+                    && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
                     && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_OUTPUT)
                     && !composite.innerHTML.trim()) {
                 request.open("HEAD", context + ".html", false);
@@ -4245,10 +4246,10 @@ if (typeof SiteMap === "undefined") {
      *  
      *      sitemap = {
      *          "#": ["news", "products", "about", "contact", "legal"],
-     *          "products#papers": ["paperA4", "paperA5", "paperA6"],
-     *          "products#envelope": ["envelopeA4", "envelopeA5", "envelopeA6"],
-     *          "products#pens": ["pencil", "ballpoint", "stylograph"],
-     *          "legal": ["terms", "privacy"],
+     *          "#products#papers": ["paperA4", "paperA5", "paperA6"],
+     *          "#products#envelope": ["envelopeA4", "envelopeA5", "envelopeA6"],
+     *          "#products#pens": ["pencil", "ballpoint", "stylograph"],
+     *          "#legal": ["terms", "privacy"],
      *          ...
      *      };
      *      

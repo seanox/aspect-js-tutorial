@@ -331,12 +331,12 @@ if (window.location.pathcontext === undefined) {
  *  The data is queried with XPath, the result can be concatenated and
  *  aggregated and the result can be transformed with XSLT. 
  *  
- *  DataSource 1.1.1 20190906
+ *  DataSource 1.1.1 20190922
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.1 20190906
+ *  @version 1.1.1 20190922
  */
 if (typeof DataSource === "undefined") {
     
@@ -391,6 +391,12 @@ if (typeof DataSource === "undefined") {
         
         var request;
         request = new XMLHttpRequest();
+        
+        request.open("HEAD", DataSource.DATA + "/locales.xml", false);
+        request.send();
+        if (request.status == 404)
+            return;
+        
         request.open("GET", DataSource.DATA + "/locales.xml", false);
         request.overrideMimeType("application/xslt+xml");
         request.send();
@@ -807,12 +813,12 @@ if (typeof Messages === "undefined") {
  *  Thus virtual paths, object structure in JavaScript (namespace) and the
  *  nesting of the DOM must match.
  *
- *  Composite 1.2.0 20190921
+ *  Composite 1.2.0 20190922
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20190921
+ *  @version 1.2.0 20190922
  */
 if (typeof Composite === "undefined") {
     
@@ -858,7 +864,7 @@ if (typeof Composite === "undefined") {
 
         /** Constant for attribute output */
         get ATTRIBUTE_OUTPUT() {return "output"},
-
+        
         /** Constant for attribute render */
         get ATTRIBUTE_RENDER() {return "render"},  
         
@@ -3183,20 +3189,33 @@ if (typeof Composite === "undefined") {
 
             //The sequence of loading is strictly defined.
             //    sequence: CSS, JS, HTML
-            request.open("GET", context + ".css", false);
+            request.open("HEAD", context + ".css", false);
             request.send();
-            request.open("GET", context + ".js", false);
+            if (request.status != 404) {
+                request.open("GET", context + ".css", false);
+                request.send();
+            }
+            request.open("HEAD", context + ".js", false);
             request.send();
-
+            if (request.status != 404) {
+                request.open("GET", context + ".js", false);
+                request.send();
+            }
+            
             //HTML/Markup is only loaded if it is a known composite object and
             //the element does not contain a markup (inner HTML) and the
             //attributes import and output are not set. Thus is the assumption
             //that for an empty element outsourced markup should exist.
-            if (object && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
+            if (object
+                    && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
                     && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_OUTPUT)
                     && !composite.innerHTML.trim()) {
-                request.open("GET", context + ".html", false);
+                request.open("HEAD", context + ".html", false);
                 request.send();
+                if (request.status != 404) {
+                    request.open("GET", context + ".html", false);
+                    request.send();
+                }
             }
         }        
     };
@@ -4227,10 +4246,10 @@ if (typeof SiteMap === "undefined") {
      *  
      *      sitemap = {
      *          "#": ["news", "products", "about", "contact", "legal"],
-     *          "products#papers": ["paperA4", "paperA5", "paperA6"],
-     *          "products#envelope": ["envelopeA4", "envelopeA5", "envelopeA6"],
-     *          "products#pens": ["pencil", "ballpoint", "stylograph"],
-     *          "legal": ["terms", "privacy"],
+     *          "#products#papers": ["paperA4", "paperA5", "paperA6"],
+     *          "#products#envelope": ["envelopeA4", "envelopeA5", "envelopeA6"],
+     *          "#products#pens": ["pencil", "ballpoint", "stylograph"],
+     *          "#legal": ["terms", "privacy"],
      *          ...
      *      };
      *      

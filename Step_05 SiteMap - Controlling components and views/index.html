@@ -8,6 +8,23 @@
     <link rel="stylesheet" type="text/css" href="./assets/semantic.css"/>
     <!--
     
+      CSS trick for suppressing non-rendered elements.
+      This is helpful, for example, to prevent the expression syntax from being displayed.
+      If the renderer has completed an element, it removes the attribute and the element becomes visible.
+          see also https://github.com/seanox/aspect-js/blob/master/manual/en/markup.md#release
+
+      The style would fit well in common.css, but the file is not loaded by the renderer until the page is loaded by the browser.
+      In the meantime, for example, the expression syntax is visible.
+      Therefore the decision to store the style here. 
+          
+    -->
+    <style type="text/css">
+      *[release] {
+        display:none!important;
+      }
+    </style>
+    <!--
+    
       Integration von Seanox aspect-js
       Seanox aspect-js is pure JavaScript and consists of a file.
       The library can be downloaded and integrated standalone or a release channel can be used.
@@ -55,37 +72,51 @@
 
     <!-- Menu -->
     <div id="menu" class="ui fixed inverted menu"
-        composite static></div>
+        composite static release></div>
     
     <div class="ui main text container">
-
-      <h1 class="ui header">Time Booking Example</h1>
-      <p>
-        A step-by-step tutorial for implementing an SAP (Single Page Application)
-        with <a href="https://github.com/seanox/aspect-js/" target="_extern">Seanox aspect-js</a>.
-      </p>
-      
+    
       <h1 class="ui header">Time Booking Example</h1>
       <p>
         A step-by-step tutorial for implementing an SAP (Single Page Application)
         with <a href="https://github.com/seanox/aspect-js/" target="_extern">Seanox aspect-js</a>.
       </p>
       <!-- Dynamic output of the title. -->
-      <h2 class="ui header">
+      <h2 class="ui header" release>
         {{decodeURIComponent(document.location.pathcontext)
             .replace(new RegExp('^.*/'), '')
             .replace(new RegExp('^(Step)_(\\d+)', 'i'), '$1 $2:')}}</h2>
       <div id="description"
          composite static></div>
+
+      <!--
+      
+        The internationalization (i18n) is based on a resource bundle that is based on the XML file ./data/locales.xml.
+        This file contains the corresponding key value entries for all supported languages.
+        The language is automatically determined by the language support of the browser
+        or can be set explicitly using the DataSource on which the resource bundle is based.
+        In addition, a default language can be set in the XML file locales.xml if an unsupported language is requested.
+            see also https://github.com/seanox/aspect-js/blob/master/manual/en/messages.md#resource-bundle-messages
+            
+        In this example, the language setting is used by the browser.    
+        
+        The expression language of Seanox aspect-js is used for the output of the texts.
+            see also https://github.com/seanox/aspect-js/blob/master/manual/en/expression.md#expression-language
+        This has full JavaScript support and provides the additional object Messages for the resource bundle.    
+      
+      -->
       
       <!-- Login Dialog -->  
-      <h1 class="ui header">Login</h1>  
       <div id="login" class="ui placeholder segment"
-          composite static></div>
+          composite release></div>
+      <!--
+          With the establishment and configuration of the SiteMap, it takes over the control of the composites.
+          The attribute 'static' is now only required if composites are to be shown permanently.
+      -->    
     </div>
     
     <!--  Footer -->
     <div id="footer" class="ui inverted vertical footer segment"
-        composite static></div>
+        composite static release></div>
   </body>
 </html>
