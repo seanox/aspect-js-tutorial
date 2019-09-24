@@ -51,31 +51,6 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA.
 Coming soon.
 
 
-# Overview
-
-## Step 01 Prototype as framework
-
-## Step 02 Integration von Seanox aspect-js
-
-## Step 03 Splitting of the prototype into components
-
-## Step 04 Internationalization (i18n)
-
-## Step 05 SiteMap for controlling components and views
-
-## Step 06 Login, the first module
-
-## Step 07 Login, about Model View Controller and validation
-
-## Step 08 Authorization and user session
-
-## Step 09 ...
-
-## Step 10 ...
-
-## Step 11 ...
-
-
 # Contact
 [Support](http://seanox.de/contact?support)  
 [Development](http://seanox.de/contact?development)  
