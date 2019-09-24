@@ -44,7 +44,7 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA.
 - ECMAScript 6 support or higher (normally the current browsers)  
   Engines (tested): Blink, Edge, Gecko, Goanna, WebKit, ...
 - Web server for hosting  
-- Program for comparing code.
+- Program for comparing code
 
 
 # Downloads
