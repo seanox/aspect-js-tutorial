@@ -51,7 +51,7 @@
             target="_extern">Semantic UI</a>, forms the basis.
       </p>
 
-      <!-- Login Dialog -->
+      <!-- Login Face -->
       <h1 class="ui header">Login</h1>
       <div class="ui placeholder segment">
         <div class="ui two column very relaxed stackable grid">
@@ -85,8 +85,49 @@
           Or
         </div>
       </div>
+
+      <!-- Welcome Face -->
+      <h1 class="ui header">Welcome</h1>
+      <div class="ui form">
+        <img class="wireframe" src="assets/images/wireframe/media-paragraph.png"/>      
+        <img class="wireframe" src="assets/images/wireframe/paragraph.png"/>
+        <img class="wireframe" src="assets/images/wireframe/paragraph.png"/>
+      </div>
+
+      <!-- Account Face -->
+      <h1 class="ui header">Account</h1>
+      <div class="ui form">
+        <h2 class="ui header">Language</h2>
+        <div class="field">
+          <div class="ui toggle checkbox">
+            <input type="checkbox" name="automatic"/>
+            <label>Automatic, use browser settings</label>
+          </div>
+        </div>
+        <div class="field">
+          <select>
+            <option value="">Automatic</option>
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <h2 class="ui header">Password Change</h2>
+        <div class="field">
+          <label>Current Password</label>
+          <input type="password" name="current" placeholder="Password"/>
+        </div>
+        <div class="field">
+          <label>New Password</label>
+          <input type="password" name="password" placeholder="Password"/>
+        </div>
+        <div class="field">
+          <label>New Password Confirmation</label>
+          <input type="password" name="confirmation" placeholder="Password"/>
+        </div>
+        <button class="ui button" type="submit">Change</button>
+      </div>
     </div>
-    
+
     <!--  Footer -->
     <div class="ui inverted vertical footer segment">
       TODO: Footer
