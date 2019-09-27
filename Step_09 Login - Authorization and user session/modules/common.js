@@ -23,7 +23,7 @@
 //Authorization is not yet implemented.
 //So we redirect everything to the login face / login path.
 SiteMap.customize({
-    "#": [""],
+    "#": ["welcome"],
     "#login": [""]},
     (path) => {
         if (!Session.authorized
@@ -116,6 +116,7 @@ window["Session"] = {
         //A functional path is called.
         //This means that SiteMap has to take control and we don't have to worry about a useful target.
         SiteMap.navigate("###");
+        Composite.render(document.body);
     },
     
     logoff: function() {

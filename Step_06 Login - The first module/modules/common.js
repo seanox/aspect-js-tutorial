@@ -23,7 +23,7 @@
 //Authorization is not yet implemented.
 //So we redirect everything to the login face / login path.
 SiteMap.customize({
-    "#": [""],
+    "#": ["welcome"],
     "#login": [""]},
     (path) => {
         if (path != "#login")

@@ -813,12 +813,12 @@ if (typeof Messages === "undefined") {
  *  Thus virtual paths, object structure in JavaScript (namespace) and the
  *  nesting of the DOM must match.
  *
- *  Composite 1.2.0 20190922
+ *  Composite 1.2.0 20190927
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20190922
+ *  @version 1.2.0 20190927
  */
 if (typeof Composite === "undefined") {
     
@@ -2495,10 +2495,6 @@ if (typeof Composite === "undefined") {
                         }
                     });
                     
-                    //Load modules/components/composite resources.
-                    if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE))
-                        Composite.render.include(selector);
-                    
                     //The condition attribute is interpreted.
                     //If an HTML element uses the condition attribute, a text
                     //node is created for the HTML element as a placeholder
@@ -2527,7 +2523,7 @@ if (typeof Composite === "undefined") {
                         //already known.
                         var placeholder = document.createTextNode("");
                         object = {serial:placeholder.ordinal(), element:placeholder, attributes:object.attributes,
-                                condition:condition, template:selector.cloneNode(true), output:null
+                                condition:condition, template:selector.cloneNode(true), output:null, complete:false
                         };
 
                         //The Meta object is registered.
@@ -2542,6 +2538,12 @@ if (typeof Composite === "undefined") {
                         selector = placeholder;
                         serial = selector.ordinal();
                         object = Composite.render.meta[serial];
+                        
+                    } else {
+                        
+                        //Load modules/components/composite resources.
+                        if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE))
+                            Composite.render.include(selector);                    
                     }
                 }
             }
@@ -2744,6 +2746,25 @@ if (typeof Composite === "undefined") {
                     && object.hasOwnProperty(Composite.ATTRIBUTE_CONDITION)) {
                 var placeholder = object;
                 if (Expression.eval(serial + ":" + Composite.ATTRIBUTE_CONDITION, placeholder.condition) === true) {
+                    
+                    //Load modules/components/composite resources.
+                    //Composites with condition are only loaded with the first use.                    
+                    if (!placeholder.complete) {
+                        if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE)) {
+                            //The include method is designed for the renderer
+                            //and expects meta objects in the meta cache. These
+                            //meta-objects do not exist for templates, so it
+                            //must be created temporarily and then removed again.
+                            var serial = placeholder.template.ordinal();
+                            var object = {serial:serial, element:placeholder.template, attributes:object.attributes, lock:true};
+                            Composite.render.meta[serial] = object; 
+                            
+                            Composite.render.include(placeholder.template);                    
+                            
+                            delete Composite.render.meta[serial];
+                        }
+                        placeholder.complete = true;
+                    }
                     
                     if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE))
                         dock(object);
@@ -3206,8 +3227,7 @@ if (typeof Composite === "undefined") {
             //the element does not contain a markup (inner HTML) and the
             //attributes import and output are not set. Thus is the assumption
             //that for an empty element outsourced markup should exist.
-            if (object
-                    && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
+            if (object && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
                     && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_OUTPUT)
                     && !composite.innerHTML.trim()) {
                 request.open("HEAD", context + ".html", false);
