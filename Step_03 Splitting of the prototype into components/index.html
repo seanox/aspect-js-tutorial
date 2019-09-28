@@ -52,49 +52,31 @@
       This will be changed later.
          
     -->
-
+    
+    <!-- Description Overlay Facet -->
+    <div id="description" class="ui overlay description"
+        composite static></div>
+    
     <!-- Menu -->
     <div id="menu" class="ui fixed inverted menu"
         composite static></div>
     
     <div class="ui main text container">
-
-      <h1 class="ui header">Time Booking Example</h1>
-      <p>
-        A step-by-step tutorial for implementing an SPA (Single Page Application)<br/>
-        with <a href="https://github.com/seanox/aspect-js/" target="_extern">Seanox aspect-js</a>
-        and <a href="https://semantic-ui.com/" target="_extern">Semantic UI</a>.
-      </p>
-      <h1 class="ui header">Time Booking Example</h1>
-      <p>
-        A step-by-step tutorial for implementing an SPA (Single Page Application)<br/>
-        with <a href="https://github.com/seanox/aspect-js/" target="_extern">Seanox aspect-js</a>.
-      </p>
-      <!-- Dynamic output of the title. -->
-      <h2 class="ui header">
-        {{decodeURIComponent(document.location.pathcontext)
-            .replace(new RegExp('^.*/'), '')
-            .replace(new RegExp('^(Step)_(\\d+)', 'i'), '$1 $2:')}}</h2>
-      <div id="description"
-         composite static></div>
-      
-      <!-- Login Face -->  
-      <h1 class="ui header">Login</h1>  
-      <div id="login" class="ui placeholder segment"
+    
+      <!-- Login Face -->
+      <div id="login" class="ui container"
           composite static></div>
-          
+
       <!-- Welcome Face -->
-      <h1 class="ui header">Welcome</h1>
       <div id="welcome" class="ui form"
           composite static></div>
-          
+
       <!-- Settings Face -->
-      <h1 class="ui header">Settings</h1>
       <div id="settings" class="ui form"
           composite static></div>
     </div>
 
-    <!--  Footer -->
+    <!-- Footer -->
     <div id="footer" class="ui inverted vertical footer segment"
         composite static></div>
   </body>

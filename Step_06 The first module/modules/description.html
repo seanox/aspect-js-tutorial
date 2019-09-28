@@ -1,0 +1,26 @@
+<h1 class="ui header">
+  <!-- Dynamic output of the title. -->
+  {{path:decodeURIComponent(document.location.pathcontext).replace(new RegExp('^.*/'), '')}}
+  {{step:path.replace(new RegExp('^(Step)_0*(\\d+)\\s(.*)$', 'i'), '$1 $2')}}
+  {{text:path.replace(new RegExp('^(Step)_0*(\\d+)\\s(.*)$', 'i'), '$3')}}   
+  <a href="../Step_05 SiteMap, controlling components and views">
+    <i class="left chevron icon"></i>
+  </a>
+  {{step}}
+  <a href="../Step_07 Model View Controller">
+    <i class="right chevron icon"></i>
+  </a>
+  <br/>
+  {{text}}
+</h1>
+<p>
+  In the markup, complex structures can be marked as composite and thus form a module
+  that can consist of markup (HTML), JavaScript and CSS. A corresponding JavaScript
+  object (model) can be implemented for the markup.
+  Model and markup are linked by the renderer and the object binding.   
+</p>
+<p>
+  With the link between model and markup, the object binding can forward data and
+  events between the two. Synchronization, validation and events can be defined
+  by declaration and can then be used in the model.
+</p>

@@ -1,0 +1,86 @@
+<!-- Title Facet -->
+<div id="title" class="ui form"
+    composite release></div>
+
+<div class="ui placeholder segment">
+  <div class="ui two column very relaxed stackable grid">
+    <div class="column">
+      <div class="ui form">
+        <div class="field">
+          <!--
+            For test only, the input is displayed in the label.
+            The output and the ID will be removed later.
+          --> 
+          <label>{{Messages['login.user.title']}}
+            <i>{{login.user}}</i></label>
+          <div class="ui left icon input">
+            <!-- 
+              The ID's in the DOM define the corresponding model. 
+              Only elements with the attributes ID and composite build a composite.
+              All other elements with the attributes ID are part of the object structure of the model.
+            
+              The element thus refers to login.user.
+              Optionally, the target can contain additional static and dynamic qualifiers,
+              e.g. if the target is an object or an array.
+            
+              The events attribute declares at which events (there can be several) DOM/Markup and Model are synchronized.
+            
+              The render attribute is only temporary and specifies what is to be updated in the DOM when events occur from the events attribute.
+              This allows us to see the input or the value in the model in the label.
+            -->
+            <input id="user" type="text" placeholder="{{Messages['login.user.title']}}"
+                events="input change" render="#login div.field">
+            <i class="user icon"></i>
+          </div>
+        </div>
+        <div class="field">
+          <!--
+            For test only, the input is displayed in the label.
+            The output and the ID will be removed later.
+          --> 
+          <label>{{Messages['login.password.title']}}
+            <i>{{login.password}}</i></label>
+          <div class="ui left icon input">
+            <!-- 
+              The ID's in the DOM define the corresponding model. 
+              Only elements with the attributes ID and composite build a composite.
+              All other elements with the attributes ID are part of the object structure of the model.
+              
+              The element thus refers to login.user.
+              Optionally, the target can contain additional static and dynamic qualifiers,
+              e.g. if the target is an object or an array.
+              
+              The events attribute declares at which events (there can be several) DOM/Markup and Model are synchronized.
+              
+              The render attribute is only temporary and specifies what is to be updated in the DOM when events occur from the events attribute.
+              This allows us to see the input or the value in the model in the label.
+            -->
+            <input id="password" type="password" placeholder="{{Messages['login.password.title']}}"
+                events="input change" render="#login div.field">
+            <i class="lock icon"></i>
+          </div>
+        </div>
+        <!--
+          ID + events ensure that the method login.logon.onClick(event) is called.
+          For each event, separate on methods can be implemented.
+        -->
+        <div id="logon" class="ui blue submit button"
+            events="click">{{Messages['login.logon.title']}}</div>
+      </div>
+    </div>
+    <div class="middle aligned column">
+      <!--
+        ID + events ensure that the method login.signup.onClick(event) is called. 
+        For each event, separate on methods can be implemented.
+      -->
+      <div id="signup" class="ui big button"
+          events="click">
+        <i class="signup icon"></i>
+        {{Messages['login.signup.title']}}
+      </div>
+    </div>
+  </div>
+  <div class="ui vertical divider">
+    {{Messages['common.text.or']}}
+  </div>
+</div>

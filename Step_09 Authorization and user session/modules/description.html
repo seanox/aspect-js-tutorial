@@ -1,0 +1,20 @@
+<h1 class="ui header">
+  <!-- Dynamic output of the title. -->
+  {{path:decodeURIComponent(document.location.pathcontext).replace(new RegExp('^.*/'), '')}}
+  {{step:path.replace(new RegExp('^(Step)_0*(\\d+)\\s(.*)$', 'i'), '$1 $2')}}
+  {{text:path.replace(new RegExp('^(Step)_0*(\\d+)\\s(.*)$', 'i'), '$3')}}   
+  <a href="../Step_08 Synchronization and validation">
+    <i class="left chevron icon"></i>
+  </a>
+  {{step}}
+  <a href="../Step_10 Cleaning of the intermediate stand">
+    <i class="right chevron icon"></i>
+  </a>
+  <br/>
+  {{text}}
+</h1>
+<p>
+  Authorization is not a specific function of Seanox aspect-js.
+  It is usually implemented individually.
+  This is more than proof of concept and an inspiration.
+</p>

@@ -1,0 +1,20 @@
+<h1 class="ui header">
+  <!-- Dynamic output of the title. -->
+  {{path:decodeURIComponent(document.location.pathcontext).replace(new RegExp('^.*/'), '')}}
+  {{step:path.replace(new RegExp('^(Step)_0*(\\d+)\\s(.*)$', 'i'), '$1 $2')}}
+  {{text:path.replace(new RegExp('^(Step)_0*(\\d+)\\s(.*)$', 'i'), '$3')}}   
+  <a href="../Step_06 The first module">
+    <i class="left chevron icon"></i>
+  </a>
+  {{step}}
+  <a href="../Step_08 Synchronization and validation">
+    <i class="right chevron icon"></i>
+  </a>
+  <br/>
+  {{text}}
+</h1>
+<p>
+  Model View Controller (MVC) and object binding work together.
+  The MVC mainly receives the data and events from the user interface and can then
+  forward them to the linked JavasScript models via the object binding.
+</p>
