@@ -25,7 +25,7 @@
             -->
             <input id="user" type="text" placeholder="{{Messages['login.user.title']}}"
                 pattern="{{login.EMAIL_PATTERN}}" message="{{Messages['login.user.message']}}" required
-                validate notification events="input change" render="#login div.field">
+                validate notification events="input change">
             <i class="user icon"></i>
           </div>
         </div>
@@ -48,7 +48,7 @@
             -->
             <input id="password" type="password" placeholder="{{Messages['login.password.title']}}"
                 pattern="{{login.PASSWORD_PATTERN}}" message="{{Messages['login.password.message']}}" required
-                validate notification events="input change" render="#login div.field">
+                validate notification events="input change">
             <i class="lock icon"></i>
           </div>
         </div>
