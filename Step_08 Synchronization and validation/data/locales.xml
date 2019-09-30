@@ -68,6 +68,6 @@
     <label key="settings.password.new.title" value="New Password"/>
     <label key="settings.password.confirmation.title" value="Password Confirmation"/>
 
-    <label key="welcome.title" value="Willkommen"/>
+    <label key="welcome.title" value="Welcome"/>
   </en>
 </locales>

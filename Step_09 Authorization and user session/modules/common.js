@@ -1,3 +1,16 @@
+//Optional detection of changes of the browser language setting, which changes
+//the user interface language setting if necessary.
+window.setInterval(() => {
+    var locale = (navigator.language || "").trim().toLowerCase();
+    locale = locale.match(/^([a-z]+)/);
+    if (!locale
+            || locale[0] == DataSource.locale
+            || !DataSource.locales.includes(locale[0]))
+        return;
+    DataSource.localize(locale[0]);
+    Composite.render(document.body);
+}, 250);
+
 //The SiteMap is configured.
 //This is about paths, faces and facets.
 //    see also https://github.com/seanox/aspect-js/blob/master/manual/en/mvc.md#sitemap
@@ -37,114 +50,5 @@ SiteMap.customize({
     }
 );
 
-window["Cookies"] = {
-
-    index: [],    
-    
-    encode: function(text, lower) {
-        text = (text || "").trim();
-        if (lower)
-            text = text.toLowerCase();
-        return text.encodeHex();
-    },
-        
-    put: function(name, value, duration) {
-        if (typeof duration !== "undefined"
-                && typeof duration !== "number")
-            throw new TypeError("Invalid duration: " + typeof duration);
-        if (typeof duration === "undefined"
-                || duration < 0)
-            duration = 7 *24 *60 *60 *1000;
-        var expires = new Date();
-        expires.setTime(expires.getTime() +duration);
-        document.cookie = this.encode(name, true)
-                + "=" + this.encode(value)
-                + "; expires=" + expires.toUTCString()
-                + "; path=" + window.location.pathname
-                + "; domain=" + window.location.hostname;
-        name = (name || "").trim().toLowerCase();
-        if (!this.index.includes(name))
-            this.index.push(name);
-    },
-    
-    get: function(name) {
-        name = this.encode(name, true);
-        var entries = document.cookie.split(';');
-        for (var loop = 0; loop < entries.length; loop++)
-            if (entries[loop].trim().startsWith(name + "="))
-                return entries[loop].substring(name.length +1).decodeHex();
-        return null;
-    },
-    
-    remove: function(name) {
-        document.cookie = this.encode(name, true)
-                + "=xxxx"
-                + "; expires=" + new Date().toUTCString()
-                + "; path=" + window.location.pathname
-                + "; domain=" + window.location.hostname;
-    },
-    
-    clear: function() {
-        this.index.forEach((name) => {
-            Cookies.remove(name);
-        });
-    }
-};
-
-window["Session"] = {
-    
-    get TIMEOUT() {
-        return 15 *60 *1000;
-    },
-    
-    get TIMEOUT_INTERVAL() {
-        return 60 *1000;
-    },    
-    
-    get COOKIE_EMAIL() {
-        return "SESSION_COOKIE_EMAIL";
-    },
-    
-    lastInteraction: -1,    
-    
-    registerInteraction: function(event) {
-        if (Session.authorized)
-            this.lastInteraction = new Date().getTime();
-    },
-    
-    logon: function(email, password) {
-        //TODO: Authentication via the backend insert here
-        //      In case of an error (invalid credentials), a return value can be used to cause the calling method to show an error message.
-        Cookies.put(Session.COOKIE_EMAIL, login.email); 
-        //A functional path is called.
-        //This means that SiteMap has to take control and we don't have to worry about a useful target.
-        SiteMap.navigate("###");
-        Composite.render(document.body);
-    },
-    
-    logoff: function() {
-        Cookies.clear();    
-        //A functional path is called.
-        //This means that SiteMap has to take control and we don't have to worry about a useful target.
-        SiteMap.navigate("###");
-        Composite.render(document.body);
-    },
-    
-    get authorized() {
-        return typeof Cookies.get(Session.COOKIE_EMAIL) === "string";
-    }   
-};
-
-if (Session.authorized)
-    Session.logon(Cookies.get(Session.COOKIE_EMAIL));
-
-document.body.addEventListener("input", Session.registerInteraction);
-document.body.addEventListener("click", Session.registerInteraction);
-
-window.setInterval(() => {
-    if (!Session.authorized
-            || Session.lastInteraction +Session.TIMEOUT > new Date().getTime())
-        return;
-    Session.logout();
-    Composite.render(document.body);
-}, Session.TIMEOUT_INTERVAL);
+Composite.render.include("cookies");
+Composite.render.include("session");
