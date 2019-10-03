@@ -331,12 +331,12 @@ if (window.location.pathcontext === undefined) {
  *  The data is queried with XPath, the result can be concatenated and
  *  aggregated and the result can be transformed with XSLT. 
  *  
- *  DataSource 1.1.1 20190922
+ *  DataSource 1.2.0 20191003
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.1 20190922
+ *  @version 1.2.0 20191003
  */
 if (typeof DataSource === "undefined") {
     
@@ -359,9 +359,9 @@ if (typeof DataSource === "undefined") {
     /** Internal cache of locales.xml */
     DataSource.data;
 
-    /** List of available locales */
+    /** List of available locales (as standard marked are at the beginning) */
     DataSource.locales;
-
+    
     /** Internal cache of XML/XSLT data. */
     DataSource.cache;
     
@@ -383,7 +383,7 @@ if (typeof DataSource === "undefined") {
     
     (function() {
         
-        var locale = (navigator.browserLanguage || navigator.language || "").trim().toLowerCase();
+        var locale = (navigator.language || "").trim().toLowerCase();
         locale = locale.match(/^([a-z]+)/);
         if (!locale)
             throw new Error("Locale not available");
@@ -412,15 +412,22 @@ if (typeof DataSource === "undefined") {
             return;
         
         var xml = DataSource.data;
+        var nodes = xml.evaluate("/locales/*[@default]", xml, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
+        for (var node = nodes.iterateNext(); node; node = nodes.iterateNext()) {
+            var name = node.nodeName.toLowerCase();
+            if (!DataSource.locales.includes(name))
+                DataSource.locales.push(name);
+        }
         var nodes = xml.evaluate("/locales/*", xml, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
         for (var node = nodes.iterateNext(); node; node = nodes.iterateNext()) {
             var name = node.nodeName.toLowerCase();
-            DataSource.locales.push(node.nodeName);
+            if (!DataSource.locales.includes(name))
+                DataSource.locales.push(name);
         }
         
         locale = DataSource.locale;
         if (!xml.evaluate("count(/locales/" + locale + ")", xml, null, XPathResult.ANY_TYPE, null).numberValue)
-            locale = xml.evaluate("/locales/*[@default]", xml, null, XPathResult.ANY_TYPE, null).iterateNext().nodeName.toLowerCase();
+            locale = DataSource.locales && DataSource.locales.length > 0 ? DataSource.locales[0] : null;
         if (!locale)
             throw new Error("Locale not available");
         DataSource.locale = locale;
@@ -439,6 +446,9 @@ if (typeof DataSource === "undefined") {
                 || !DataSource.locales) 
             throw new Error("Locale not available");
 
+        if (typeof locale !== "string")
+            throw new TypeError("Invalid locale: " + typeof locale);        
+        
         locale = (locale || "").trim().toLowerCase();
         if (!locale
                 || !DataSource.locales.includes(locale))
@@ -813,12 +823,12 @@ if (typeof Messages === "undefined") {
  *  Thus virtual paths, object structure in JavaScript (namespace) and the
  *  nesting of the DOM must match.
  *
- *  Composite 1.2.0 20190927
+ *  Composite 1.2.0 20191003
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20190927
+ *  @version 1.2.0 20191003
  */
 if (typeof Composite === "undefined") {
     
@@ -1712,9 +1722,16 @@ if (typeof Composite === "undefined") {
                     if (meta instanceof Object) {
                         
                         var value;
-                        if (Composite.ATTRIBUTE_VALUE in target
-                                && target instanceof Element)
-                            value = target[Composite.ATTRIBUTE_VALUE];
+                        if (target instanceof Element) {
+                            if (target.tagName.match(/^input$/i)
+                                    && target.type.match(/^radio|checkbox/i))
+                                value = target.checked;
+                            else if (target.tagName.match(/^select/i)
+                                    && "selectedIndex" in target)
+                                value = target.options[target.selectedIndex].value;
+                            else if (Composite.ATTRIBUTE_VALUE in target)
+                                value = target[Composite.ATTRIBUTE_VALUE];
+                        }
                         
                         //Step 1: Validation
                         
@@ -3672,8 +3689,8 @@ if (typeof Expression === "undefined") {
         
         cascade.other.forEach((entry) => {
             var text = entry.data;
-            text = text.replace(/(^|[^\w\.])(#{0,1}[a-zA-Z](?:[\w\.]*[\w])*(?=(?:[^\w\(\.]|$)))/g, "$1\n\r\r$2\n");
-            text = text.replace(/(^|[^\w\.])(#{0,1}[a-zA-Z](?:[\w\.]*[\w])*)(?=\()/g, "$1\n\r$2\n");
+            text = text.replace(/(^|[^\w\.])(#{0,1}[a-zA-Z](?:[\w\.]{0,}[\w]){0,1}(?=(?:[^\w\(\.]|$)))/g, "$1\n\r\r$2\n");
+            text = text.replace(/(^|[^\w\.])(#{0,1}[a-zA-Z](?:[\w\.]{0,}\w){0,1})(?=\()/g, "$1\n\r$2\n");
             var words = [];
             text.split(/\n/).forEach((entry) => {
                 var object = {type:Expression.TYPE_LOGIC, data:entry};
@@ -3852,12 +3869,12 @@ if (typeof Expression === "undefined") {
  *  is taken over by the Composite API in this implementation. SiteMap is an
  *  extension and is based on the Composite API.
  *  
- *  MVC 1.0.1 20190906
+ *  MVC 1.0.1 20191003
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.0.1 20190906
+ *  @version 1.0.1 20191003
  */
 if (typeof Path === "undefined") {
     
@@ -4536,14 +4553,30 @@ if (typeof SiteMap === "undefined") {
         if (!source
                 && window.location.href.match(/[^#]#$/))
             source = "#";
-        
-        var event = document.createEvent("HTMLEvents");
-        event.initEvent("hashchange", false, true);
-        event.newURL = target;
 
-        if (source != target)
+        //Some browsers have problems with forwarding from / to /# and do not
+        //trigger the hashchange event. Therefore, this must be checked with a
+        //time delay and, if necessary, triggered manually.
+        
+        var forward = function(target) {
+            var event = document.createEvent("HTMLEvents");
+            event.initEvent("hashchange", false, true);
+            event.newURL = target;
+            window.dispatchEvent(event);
+        };
+
+        if (source != target) {
             SiteMap.navigate(target);
-        else window.dispatchEvent(event);
+            Composite.asynchron((forward) => {
+                var source = window.location.hash;
+                var target = SiteMap.locate(source);
+                if (!source
+                        && window.location.href.match(/[^#]#$/))
+                    source = "#";
+                if (source != target)
+                    forward(target);
+            }, forward);
+        } else forward(target);
     });
     
     /**
@@ -4553,7 +4586,7 @@ if (typeof SiteMap === "undefined") {
      *  organizes partial rendering.
      */
     window.addEventListener("hashchange", (event) => {
-
+        
         //Without a SiteMap no automatic rendering can be initiated.
         if (Object.keys(SiteMap.paths || {}).length <= 0)
             return;
