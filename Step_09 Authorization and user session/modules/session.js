@@ -42,6 +42,8 @@ window["Session"] = {
         Cookies.put(Session.COOKIE_EMAIL, login.email); 
         //A functional path is called.
         //This means that SiteMap has to take control and we don't have to worry about a useful target.
+        if (arguments.length < 2)
+            return;
         SiteMap.navigate("###");
         Composite.render(document.body);
     },

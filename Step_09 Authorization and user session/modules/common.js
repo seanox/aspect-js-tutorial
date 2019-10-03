@@ -40,10 +40,10 @@ SiteMap.customize({
     "#login": ["title"],
     "#settings": []},
     (path) => {
-        if (!Session.authorized
+        if (!Session.isAuthorized()
                 && path != "#login")
             return "#login";
-        if (Session.authorized
+        if (Session.isAuthorized()
                 && path == "#login")
             return "#";
         return true;

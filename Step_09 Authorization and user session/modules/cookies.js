@@ -1,36 +1,46 @@
 window["Cookies"] = {
 
-    index: [],    
-    
-    encode: function(text, lower) {
-        text = (text || "").trim();
-        if (lower)
-            text = text.toLowerCase();
-        return text.encodeHex();
+    validate: function(name, value, expiration) {
+        if (typeof name !== "string")
+            throw new TypeError("Invalid name: " + typeof name);        
+        name = (name || "").trim();
+        if (!name.match(/\w+/))
+            throw Error("Invalid name" + name ? ": " + name : "");
+        
+        if (typeof expiration !== "number"
+                && typeof expiration !== "undefined")
+            throw new TypeError("Invalid expiration: " + typeof expiration);
+        if (typeof expiration === "number"
+                && expiration < 0)
+            throw new Error("Invalid expiration: " + typeof expiration);
+    },
+
+    list: function() {
+        var entries = (document.cookie || "").trim();
+        entries = entries ? entries.split(/\s*;\s*/) : [];
+        entries = entries.map(entry => entry.replace(/=.*$/g, ""));
+        return entries;
+    },
+
+    put: function(name, value, expiration) {
+        this.validate(name, value, expiration);
+        name = (name || "").trim().toLowerCase();
+        var cookie = name + "=" + String(value).encodeHex();
+        if (typeof expiration === "number") {
+            var expires = new Date();
+            expires.setTime(expires.getTime() +expiration);
+            cookie += "; expires=" + expires.toUTCString();
+        }
+        cookie += "; path=" + window.location.pathname;
+        cookie += "; domain=" + window.location.hostname;
+        document.cookie = cookie; 
     },
         
-    put: function(name, value, duration) {
-        if (typeof duration !== "undefined"
-                && typeof duration !== "number")
-            throw new TypeError("Invalid duration: " + typeof duration);
-        if (typeof duration === "undefined"
-                || duration < 0)
-            duration = 7 *24 *60 *60 *1000;
-        var expires = new Date();
-        expires.setTime(expires.getTime() +duration);
-        document.cookie = this.encode(name, true)
-                + "=" + this.encode(value)
-                + "; expires=" + expires.toUTCString()
-                + "; path=" + window.location.pathname
-                + "; domain=" + window.location.hostname;
-        name = (name || "").trim().toLowerCase();
-        if (!this.index.includes(name))
-            this.index.push(name);
-    },
-    
     get: function(name) {
-        name = this.encode(name, true);
-        var entries = document.cookie.split(';');
+        this.validate(name);
+        name = (name || "").trim().toLowerCase();
+        var entries = (document.cookie || "").trim();
+        entries = entries ? entries.split(/\s*;\s*/) : [];
         for (var loop = 0; loop < entries.length; loop++)
             if (entries[loop].trim().startsWith(name + "="))
                 return entries[loop].substring(name.length +1).decodeHex();
@@ -38,15 +48,20 @@ window["Cookies"] = {
     },
     
     remove: function(name) {
-        document.cookie = this.encode(name, true)
-                + "=xxxx"
-                + "; expires=" + new Date().toUTCString()
+        this.validate(name);
+        name = (name || "");
+        document.cookie = name + "="
+                + "; expires=Thu, 01 Jan 1970 00:00:00 UTC"
+                + "; path=" + window.location.pathname
+                + "; domain=" + window.location.hostname;
+        document.cookie = name.trim().toLowerCase() + "="
+                + "; expires=Thu, 01 Jan 1970 00:00:00 UTC"
                 + "; path=" + window.location.pathname
                 + "; domain=" + window.location.hostname;
     },
     
     clear: function() {
-        this.index.forEach((name) => {
+        this.list().forEach((name) => {
             Cookies.remove(name);
         });
     }
