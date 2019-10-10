@@ -8,23 +8,6 @@
     <link rel="stylesheet" type="text/css" href="./assets/semantic.css"/>
     <!--
     
-      CSS trick for suppressing non-rendered elements.
-      This is helpful, for example, to prevent the expression syntax from being displayed.
-      If the renderer has completed an element, it removes the attribute and the element becomes visible.
-          see also https://github.com/seanox/aspect-js/blob/master/manual/en/markup.md#release
-
-      The style would fit well in common.css, but the file is not loaded by the renderer until the page is loaded by the browser.
-      In the meantime, for example, the expression syntax is visible.
-      Therefore the decision to store the style here. 
-          
-    -->
-    <style type="text/css">
-      *[release] {
-        display:none!important;
-      }
-    </style>
-    <!--
-    
       Integration von Seanox aspect-js
       Seanox aspect-js is pure JavaScript and consists of a file.
       The library can be downloaded and integrated standalone or a release channel can be used.
@@ -67,6 +50,13 @@
       This will be explained later.
       The static attribute specifies that a composite is always visible.
       This will be changed later.
+
+          attribute release:
+      CSS trick for suppressing non-rendered elements.
+      This is helpful, for example, to prevent the expression syntax from being displayed.
+      If the renderer has completed an element, it removes the attribute and the element becomes visible.
+          see also https://github.com/seanox/aspect-js/blob/master/manual/en/markup.md#release
+      A corresponding CSS rule is automatically added to the HEAD when the page is loaded.
          
     -->
     
