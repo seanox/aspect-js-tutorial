@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <title>Time Booking Example</title>
+    <link rel="stylesheet" type="text/css" href="./assets/semantic.css"/>
+    <!--
+    
+      Integration von Seanox aspect-js
+      Seanox aspect-js is pure JavaScript and consists of a file.
+      The library can be downloaded and integrated standalone or a release channel can be used.
+          see also https://github.com/seanox/aspect-js/blob/master/manual/en/introduction.md#getting-started
+
+          404 Resource Not Found is shown in the console:      
+      http://127.0.0.1/.../data/locales.xml
+      aspect-js supports a NoSQL data source and a resource bundle for internationalization.
+      During the start, the framework searches for appropriate data.
+      If these are missing, this is okay.
+      The explanation will follow a later in step 04.
+      
+          404 Resource Not Found is shown in the console:      
+      http://127.0.0.1/.../modules/common.css
+      http://127.0.0.1/.../modules/common.js
+      aspect-js supports a module concept.
+      Because the framework can not know the structure of the modules, it is helpful in some cases,
+      if already when initializing the application general is done, there is the module "common",
+      which is searched automatically with the program start.
+      If these are missing, this is okay.
+      The explanation will follow a later in step 03.
+
+    -->
+    <script type="text/javascript" src="./assets/aspect-js.js"></script>
+  </head>
+  <body>
+  
+    <!--
+    
+      aspect-js supports a module concept where the modules are called composites.
+      Composites are declared with an ID and the attribute composite.
+      Composites can consist of markup (HTML), CSS and JavaScript.
+      All these components are optional and can be moved to the module directory.
+      The renderer automatically searches for corresponding components in the module directory.
+      Markup is only searched for if the composite has no inner HTML.
+          see also: https://github.com/seanox/aspect-js/blob/master/manual/en/composite.md#components     
+
+          attribute static:
+      The visibility of the composites is controlled by the SiteMap.
+      This will be explained later.
+      The static attribute specifies that a composite is always visible.
+      This will be changed later.
+
+          attribute release:
+      CSS trick for suppressing non-rendered elements.
+      This is helpful, for example, to prevent the expression syntax from being displayed.
+      If the renderer has completed an element, it removes the attribute and the element becomes visible.
+          see also https://github.com/seanox/aspect-js/blob/master/manual/en/markup.md#release
+      A corresponding CSS rule is automatically added to the HEAD when the page is loaded.
+         
+    -->
+    
+    <!-- Description Overlay Facet -->
+    <div id="description" class="ui overlay description"
+        composite static release></div>
+    
+    <!-- Menu -->
+    <div id="menu" class="ui fixed inverted menu"
+        composite static release></div>
+    
+    <div class="ui main text container">
+    
+      <!--
+      
+        The internationalization (i18n) is based on a resource bundle that is based on the XML file ./data/locales.xml.
+        This file contains the corresponding key value entries for all supported languages.
+        The language is automatically determined by the language support of the browser
+        or can be set explicitly using the DataSource on which the resource bundle is based.
+        In addition, a default language can be set in the XML file locales.xml if an unsupported language is requested.
+            see also https://github.com/seanox/aspect-js/blob/master/manual/en/messages.md#resource-bundle-messages
+            
+        In this example, the language setting is used by the browser.    
+        
+        The expression language of Seanox aspect-js is used for the output of the texts.
+            see also https://github.com/seanox/aspect-js/blob/master/manual/en/expression.md#expression-language
+        This has full JavaScript support and provides the additional object Messages for the resource bundle.    
+      
+      -->
+      
+      <!-- Login Face -->
+      <div id="login" class="ui container"
+          composite release></div>
+          
+      <!--
+          With the establishment and configuration of the SiteMap, it takes over the control of the composites.
+          The attribute 'static' is now only required if composites are to be shown permanently.
+      -->
+
+      <!-- Welcome Face -->
+      <div id="welcome" class="ui form"
+          composite release></div>
+
+      <!-- Settings Face -->
+      <div id="settings" class="ui form"
+          composite release></div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer" class="ui inverted vertical footer segment"
+        composite static release></div>
+  </body>
+</html>
