@@ -24,12 +24,12 @@
  *      ----
  *  General extension of the JavaScript API.
  *  
- *  Extension 1.0 20190906
+ *  Extension 1.1.0 20190906
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.0 20190906
+ *  @version 1.1.0 20190906
  */
 if (typeof Namespace === "undefined") {
 
@@ -683,12 +683,12 @@ if (typeof DataSource === "undefined") {
  *      
  *  <h1 output="{{Messages['contact.title']}}"/>
  *  
- *  Messages 1.1.0 20190520
+ *  Messages 1.1.1 20191024
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0 20190520
+ *  @version 1.1.1 20191024
  */
 if (typeof Messages === "undefined") {
     
@@ -707,7 +707,7 @@ if (typeof Messages === "undefined") {
         var localize = DataSource.localize;
         DataSource.localize = function(locale) {
             for (var property in Messages)
-                if (typeof Messages[property] == "string")
+                if (typeof Messages[property] === "string")
                     delete Messages[property];
             DataSource.localize.internal(locale);
 
@@ -823,12 +823,12 @@ if (typeof Messages === "undefined") {
  *  Thus virtual paths, object structure in JavaScript (namespace) and the
  *  nesting of the DOM must match.
  *
- *  Composite 1.2.0 20191010
+ *  Composite 1.2.0 20191106
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20191010
+ *  @version 1.2.0 20191106
  */
 if (typeof Composite === "undefined") {
     
@@ -988,24 +988,24 @@ if (typeof Composite === "undefined") {
          *  see also https://www.w3schools.com/jsref/dom_obj_event.asp
          */
         get events() {return "abort after|print animation|end animation|iteration animation|start"
-            + " before|print before|unload blur"
-            + " can|play can|play|through change click context|menu copy cut"
-            + " dbl|click drag drag|end drag|enter drag|leave drag|over drag|start drop duration|change"
-            + " ended error"
-            + " focus focus|in focus|out"
-            + " hash|change"
-            + " input invalid"
-            + " key|down key|press key|up"
-            + " load loaded|data loaded|meta|data load|start"
-            + " message mouse|down mouse|enter mouse|leave mouse|move mouse|over mouse|out mouse|up mouse|wheel"
-            + " offline online open"
-            + " page|hide page|show paste pause play playing popstate progress"
-            + " rate|change resize reset"
-            + " scroll search seeked seeking select show stalled storage submit suspend"
-            + " time|update toggle touch|cancel touch|end touch|move touch|start transition|end"
-            + " unload"
-            + " volume|change"
-            + " waiting wheel"},
+                + " before|print before|unload blur"
+                + " can|play can|play|through change click context|menu copy cut"
+                + " dbl|click drag drag|end drag|enter drag|leave drag|over drag|start drop duration|change"
+                + " ended error"
+                + " focus focus|in focus|out"
+                + " hash|change"
+                + " input invalid"
+                + " key|down key|press key|up"
+                + " load loaded|data loaded|meta|data load|start"
+                + " message mouse|down mouse|enter mouse|leave mouse|move mouse|over mouse|out mouse|up mouse|wheel"
+                + " offline online open"
+                + " page|hide page|show paste pause play playing popstate progress"
+                + " rate|change resize reset"
+                + " scroll search seeked seeking select show stalled storage submit suspend"
+                + " time|update toggle touch|cancel touch|end touch|move touch|start transition|end"
+                + " unload"
+                + " volume|change"
+                + " waiting wheel"},
         
         /** Patterns with the supported events */
         get PATTERN_EVENT_FUNCTIONS() {return (function() {
@@ -1119,7 +1119,7 @@ if (typeof Composite === "undefined") {
                             //considered and mounted separately. 
                             
                             var nodes = [];
-                            if (typeof this.selector == "string") {
+                            if (typeof this.selector === "string") {
                                 var scope = document.querySelectorAll(this.selector);
                                 Array.from(scope).forEach((node) => {
                                     if (nodes.includes(node))
@@ -1211,7 +1211,7 @@ if (typeof Composite === "undefined") {
                 throw new TypeError("Invalid namespace: " + typeof namespace);        
             namespace = (namespace || "").trim();
             if (!namespace.match(/^(?:[a-z]\w*)(?:(?:\:\w+)|(?:\.[a-z]\w*))*$/i))
-                return null;
+                throw new Error("Invalid namespace: " + namespace);
             namespace = namespace.split(/[\.\:]/);
             if (!namespace
                     || namespace.length <= 0)
@@ -1357,8 +1357,8 @@ if (typeof Composite === "undefined") {
      *  validate is expected in the model. The current element and the current
      *  value (if available) are passed as arguments.
      *  
-     *  The validation can have three states:
-     *      true, not true, undefined/void
+     *  The validation can have four states:
+     *      true, not true, text, undefined/void
      *      
      *          true
      *          ----
@@ -1372,6 +1372,12 @@ if (typeof Composite === "undefined") {
      *  A return value indicates that the default action of the browser should
      *  not be executed and so it is blocked. In this case, a possible value is
      *  not synchronized with the model.
+     *  
+     *          text
+     *          ----
+     *  Text corresponds to: Invalid + error message.
+     *  If the error message is empty, the message from the message attribute is
+     *  used alternatively.
      *  
      *          undefined/void
      *          ----
@@ -1445,6 +1451,18 @@ if (typeof Composite === "undefined") {
         //are primarily a property and the validation is located in the
         //surrounding model and not in the property object itself.
         
+        var value;
+        if (selector instanceof Element) {
+            if (selector.tagName.match(/^input$/i)
+                    && selector.type.match(/^radio|checkbox/i))
+                value = selector.checked;
+            else if (selector.tagName.match(/^select/i)
+                    && "selectedIndex" in selector)
+                value = selector.options[selector.selectedIndex].value;
+            else if (Composite.ATTRIBUTE_VALUE in selector)
+                value = selector[Composite.ATTRIBUTE_VALUE];
+        }        
+        
         //Implicit validation via the model.
         //If a corresponding validate method has been implemented in the model.
         //The declaration with the attribute validate is not required here.
@@ -1470,16 +1488,21 @@ if (typeof Composite === "undefined") {
         //If the attribute NOTIFICATION is also used, a value is not expected,
         //the message is also displayed as an overlay/notification/report.
         if (valid !== true) {
-            if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_MESSAGE)) {
-                var message = object.attributes[Composite.ATTRIBUTE_MESSAGE] || "";
+            var message;
+            if (typeof valid === "string"
+                    && valid.trim())
+                message = valid.trim();
+            if (typeof message !== "string") {
+                if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_MESSAGE))
+                    message = object.attributes[Composite.ATTRIBUTE_MESSAGE] || "";
                 if ((message || "").match(Composite.PATTERN_EXPRESSION_CONTAINS))
                     message = String(Expression.eval(serial + ":" + Composite.ATTRIBUTE_MESSAGE, message));
-                if (message && typeof selector.setCustomValidity === "function") {
-                    selector.setCustomValidity(message);
-                    if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_NOTIFICATION)
-                            && typeof selector.reportValidity === "function")
-                        selector.reportValidity();
-                }
+            }
+            if (message && typeof selector.setCustomValidity === "function") {
+                selector.setCustomValidity(message);
+                if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_NOTIFICATION)
+                        && typeof selector.reportValidity === "function")
+                    selector.reportValidity();
             }
         }     
         
@@ -1871,15 +1894,14 @@ if (typeof Composite === "undefined") {
         
         if (!(element instanceof Element))
             return null;
-
+        
         var serial = (element.getAttribute(Composite.ATTRIBUTE_ID) || "").trim();
 
-        //Composites have a meta object where only composite and model are filled.
-        if (element.hasAttribute(Composite.ATTRIBUTE_COMPOSITE)) {
+        //Composites have only a meta object with composite and model.
+        if (element.hasAttribute(Composite.ATTRIBUTE_COMPOSITE))
             if (!serial.match(Composite.PATTERN_COMPOSITE_ID))
                 throw new Error("Invalid composite id" + (serial ? ": " + serial : ""));
-            return {composite:serial, model:serial};
-        }
+            else return {composite:serial, model:serial};
 
         var meta = {composite:null, model:null, property:null, name:null};
 
@@ -2752,25 +2774,54 @@ if (typeof Composite === "undefined") {
                 return;
             }
             
-            //Only composites (as elements) are docked as models.
-            //This excludes the placeholders (are text nodes) of conditions.
-            //For conditions, the placeholder output is handled as normal markup.
-
-            var dock = function(object) {
-                Composite.models = Composite.models || [];
-                if (selector instanceof Element
-                        && object.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE)
-                        && !Composite.models.includes(object.attributes[Composite.ATTRIBUTE_ID])) {
-                    Composite.models.push(object.attributes[Composite.ATTRIBUTE_ID]);
-                    var meta = Composite.mount.lookup(object.template || object.element);
-                    if (meta && meta.model && typeof meta.model.dock === "function")
-                        meta.model.dock.call(meta.model);
+            //Internal method for emulating the composite hierarchy for a
+            //temporary container element. The help method is required for the
+            //lookup and locate methods to work with templates, because both
+            //require the complete composite hierarchy to determine the
+            //namespace of the models.
+            //TODO: return value
+            var imitate = function(element) {
+                if (!(element instanceof Element))
+                    return null;
+                var container = document.createElement("div");
+                var construct = container; 
+                for (; element; element = element.parentNode) {
+                    if (!(element instanceof Element)
+                            || !element.hasAttribute(Composite.ATTRIBUTE_ID))
+                        continue;
+                    var temp = document.createElement("div");
+                    temp.setAttribute(Composite.ATTRIBUTE_ID, element.getAttribute(Composite.ATTRIBUTE_ID));
+                    if (element.hasAttribute(Composite.ATTRIBUTE_COMPOSITE))
+                        temp.setAttribute(Composite.ATTRIBUTE_COMPOSITE, "");
+                    temp.appendChild(construct);
+                    construct = temp;
                 }
-            };
+                return container;
+            };            
             
+            //Internal method for docking models.
+            //Only composites are mounted based on their model.
+            //This excludes the placeholders (are text nodes) of conditions.
+            var dock = function(model) {
+                Composite.models = Composite.models || [];
+                if (typeof model !== "string"
+                        || Composite.models.includes(model))
+                    return;
+                Composite.models.push(model);
+                model = Object.lookup(model);
+                if (model && typeof model.dock === "function")
+                    model.dock.call(model);
+            };
+
+            //Only composites are mounted based on their model.
+            //This excludes the placeholders (are text nodes) of conditions.
             if (selector instanceof Element
-                    && object.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE))
-                dock(object);   
+                    && object.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE)) {
+                var model = (object.attributes[Composite.ATTRIBUTE_ID] || "").trim();
+                if (!model.match(Composite.PATTERN_COMPOSITE_ID))
+                    throw new Error("Invalid composite id" + (model ? ": " + model : ""));
+                dock(model);
+            }
             
             //The condition attribute is interpreted.
             //The condition is a very special implementation.
@@ -2805,13 +2856,13 @@ if (typeof Composite === "undefined") {
                     //Load modules/components/composite resources.
                     //Composites with condition are only loaded with the first use.                    
                     if (!placeholder.complete) {
-                        if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE)) {
+                        if (placeholder.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE)) {
                             //The include method is designed for the renderer
                             //and expects meta objects in the meta cache. These
                             //meta-objects do not exist for templates, so it
                             //must be created temporarily and then removed again.
                             var serial = placeholder.template.ordinal();
-                            var object = {serial:serial, element:placeholder.template, attributes:object.attributes, share:null};
+                            var object = {serial:serial, element:placeholder.template, attributes:placeholder.attributes, share:null};
                             Composite.render.meta[serial] = object; 
                             Composite.render.include(placeholder.template);
                             delete Composite.render.meta[serial];
@@ -2819,16 +2870,30 @@ if (typeof Composite === "undefined") {
                         placeholder.complete = true;
                     }
                     
-                    if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE))
-                        dock(object);
+                    //Only composites are mounted based on their model.
+                    //This excludes the placeholders (are text nodes) of conditions.
+                    if (placeholder.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE)) {
+                        var model = (placeholder.attributes[Composite.ATTRIBUTE_ID] || "").trim();
+                        if (!model.match(Composite.PATTERN_COMPOSITE_ID))
+                            throw new Error("Invalid composite id" + (model ? ": " + model : ""));
+                        dock(model);
+                    }
                     
-                    if (!placeholder.output
-                            || !document.body.contains(placeholder.output)) {
-                    
+                    if (!placeholder.output) {
+                        
                         //The placeholder output is rendered recursively and
                         //finally and inserted before the placeholder.
                         //Therefore, rendering can be stopped afterwards.
                         var template = placeholder.template.cloneNode(true);
+
+                        //TODO: Doku
+                        var container = imitate(selector.parentNode);
+                        container.appendChild(template);
+                                                
+                        //The placeholder output is rendered recursively and
+                        //finally and inserted before the placeholder.
+                        //Therefore, rendering can be stopped afterwards.
+                        //var template = placeholder.template.cloneNode(true);                 
                         placeholder.output = template;
                         
                         //The meta object is prepared and registered so that
@@ -2898,7 +2963,6 @@ if (typeof Composite === "undefined") {
             //true. If the content can be loaded successfully, the import
             //attribute is removed.
             if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)) {
-
                 selector.innerHTML = "";
                 var value = object.attributes[Composite.ATTRIBUTE_IMPORT];
                 if ((value || "").match(Composite.PATTERN_EXPRESSION_CONTAINS))
@@ -2940,7 +3004,7 @@ if (typeof Composite === "undefined") {
                             if (request.status != "200")
                                 throw Error("HTTP status " + request.status + " for " + url);
                             var content = request.responseText.trim();
-                            Composite.render.cache[url] = content;
+                            Composite.render.cache[request.responseURL] = content;
                             selector.innerHTML = content;
                             var serial = selector.ordinal();
                             var object = Composite.render.meta[serial];
@@ -3055,7 +3119,7 @@ if (typeof Composite === "undefined") {
                 if (!object.iterate) {
                     var iterate = object.attributes[Composite.ATTRIBUTE_ITERATE];
                     var content = iterate.match(Composite.PATTERN_EXPRESSION_EXCLUSIVE);
-                    content = content && !content[2] ? content[1].match(Composite.PATTERN_EXPRESSION_VARIABLE)  : null;
+                    content = content && !content[2] ? content[1].match(Composite.PATTERN_EXPRESSION_VARIABLE) : null;
                     if (content) {
                         object.iterate = {name:content[1].trim(),
                                 expression:"{{" + content[2].trim() + "}}"
@@ -3076,7 +3140,10 @@ if (typeof Composite === "undefined") {
                             iterate = Array.from(iterate);
                             iterate.forEach((item, index, array) => {
                                 window[object.iterate.name] = {item:item, index:index, data:array};
-                                var template = object.template.cloneNode(true);
+                                var template = document.createElement("div");
+                                var container = imitate(selector.parentNode);
+                                container.appendChild(template);
+                                template.appendChild(object.template.cloneNode(true).childNodes);
                                 Composite.render(template, lock.share());
                                 selector.appendChild(template.childNodes);
                                 delete Composite.render.meta[template.ordinal()];                                 
@@ -3088,10 +3155,9 @@ if (typeof Composite === "undefined") {
                         if (variable !== undefined)
                             window[object.iterate.name] = variable;
                     }
-                    //The output of iterate is rendered recursively and finally
-                    //and inserted in the iterate container. Therefore,
-                    //rendering can be stopped afterwards.
-                    return;
+                    //The content is final gerender, the enclosing container
+                    //element itself, or more precisely the attributes, still
+                    //needs to be updated.
                 }
             }
             
@@ -3102,14 +3168,14 @@ if (typeof Composite === "undefined") {
             //is the text element. The result is output here as textContent.
             //Elements of type: script + style are ignored.
             if (!selector.nodeName.match(Composite.PATTERN_ELEMENT_IGNORE)) {
-                var attributes = Array.from(selector.attributes || []);
-                attributes = attributes.map(entry => entry.name);
-                attributes = attributes.concat(Array.from(object.attributes));
-                if (Composite.ATTRIBUTE_VALUE in selector)
+                var attributes = [];
+                for (var key in object.attributes)
+                    if (object.attributes.hasOwnProperty(key))
+                        attributes.push(key);
+                if (Composite.ATTRIBUTE_VALUE in selector
+                        && object.attributes.hasOwnProperty(Composite.ATTRIBUTE_VALUE)
+                        && !attributes.includes(Composite.ATTRIBUTE_VALUE))
                     attributes.push(Composite.ATTRIBUTE_VALUE);
-                attributes = attributes.filter((value, index, array) => {
-                    return array.indexOf(value) === index;
-                });
                 attributes.forEach((attribute) => {
                     //Ignore all internal attributes
                     if (attribute.match(Composite.PATTERN_ATTRIBUTE_ACCEPT)
@@ -3120,16 +3186,23 @@ if (typeof Composite === "undefined") {
                         return;
                     var context = serial + ":" + attribute;
                     value = Expression.eval(context, value);
-                    value = String(value).encodeHtml();
-                    value = value.replace(/"/g, "&quot;");
-                    //Special case attribute value, here primarily the value of
-                    //the property must be set, the value of the attribute is
-                    //optional. Changing the value does not trigger an event, so
-                    //no unwanted recursions occur.
-                    if (attribute.toLowerCase() == Composite.ATTRIBUTE_VALUE
-                            && Composite.ATTRIBUTE_VALUE in selector)
-                        selector.value = value;
-                    selector.setAttribute(attribute, value);
+                    //If the type value is 'undefined', the attribute is
+                    //removed. Since the attribute contains an expression, the
+                    //removal is only temporary and is checked again at the next
+                    //render cycle and possibly inserted again if the expression
+                    //returns a return value.
+                    if (typeof value !== "undefined") {
+                        value = String(value).encodeHtml();
+                        value = value.replace(/"/g, "&quot;");
+                        //Special case attribute value, here primarily the value
+                        //of the property must be set, the value of the
+                        //attribute is optional. Changing the value does not
+                        //trigger an event, so no unwanted recursions occur.
+                        if (attribute.toLowerCase() == Composite.ATTRIBUTE_VALUE
+                                && Composite.ATTRIBUTE_VALUE in selector)
+                            selector.value = value;
+                        selector.setAttribute(attribute, value);
+                    } else selector.removeAttribute(attribute);
                 });
             }
 
@@ -3160,11 +3233,12 @@ if (typeof Composite === "undefined") {
             //The following are ignored:
             //  - Elements of type: script + style and custom tags
             //  - Elements with functions that modify the inner markup
-            //  - Elements that are a placeholder
+            //  - Elements that are a iterates
             //These elements manipulate the inner markup.
             //This is intercepted by the MutationObserver.
             if (selector.childNodes
-                    && !selector.nodeName.match(Composite.PATTERN_ELEMENT_IGNORE)) {
+                    && !selector.nodeName.match(Composite.PATTERN_ELEMENT_IGNORE)
+                    && !(object.attributes.hasOwnProperty(Composite.ATTRIBUTE_ITERATE))) {
                 Array.from(selector.childNodes).forEach((node) => {
                     //The rendering is recursive, if necessary the node is then
                     //no longer available. For example, if a condition is
@@ -3193,7 +3267,7 @@ if (typeof Composite === "undefined") {
      */
     Composite.render.include = function(composite) {
         
-        if (!(typeof composite == "string"
+        if (!(typeof composite === "string"
                 || composite instanceof Element))
             throw new TypeError("Invalid composite: " + typeof composite);
         
@@ -3206,88 +3280,104 @@ if (typeof Composite === "undefined") {
                 throw new Error("Unknown composite");
         }
         
+        //For module/composites only resources of the current domain are used,
+        //therefore only the URI and not the URL is used as key in the cache.
         Composite.render.cache = Composite.render.cache || {};
         var context = Composite.MODULES + "/" + (composite instanceof Element ? composite.id : composite);        
         
-        if (typeof Composite.render.cache[context + ".composite"] === "undefined") {
-            Composite.render.cache[context + ".composite"] = null;
-            var request = new XMLHttpRequest();
-            request.overrideMimeType("text/plain");
-            request.onreadystatechange = function() {
-                if (request.readyState != 4
-                        || request.status == "404")
-                    return;
-                if (request.status != "200")
-                    throw new Error("HTTP status " + request.status + " for " + request.responseURL);
-                
-                //CSS is inserted into the HEad element as a style element.
-                //Without a head element, the inserting causes an error.
-
-                //JavaScript is not inserted as an element, it is executed
-                //directly. For this purpose eval is used. Since the method may
-                //form its own namespace for variables, it is important to
-                //initialize the global variable better with window[...].
-                
-                //HTML/Markup is preloaded into the render cache if available.
-                //If markup exists for the composite, the import attribute with
-                //the URL is added to the item. Inserting then takes over the
-                //import implementation, which then also accesses the render
-                //cache.
-                
-                var content = request.responseText.trim();
-                if (content) {
-                    Composite.render.cache[request.responseURL] = content;
-                    if (request.responseURL.match(/\.css$/)) {
-                        var head = document.querySelector("html head");
-                        if (!head)
-                            throw new Error("No head element found");
-                        var style = document.createElement("style");
-                        style.setAttribute("type", "text/css");
-                        style.textContent = content;
-                        head.appendChild(style);
-                    } else if (request.responseURL.match(/\.js$/)) {
-                        try {eval(content);
-                        } catch (exception) {
-                            console.error(request.responseURL, exception.name + ": " + exception.message);
-                            throw exception;
-                        }
-                    } else if (request.responseURL.match(/\.html$/)) {
-                        if (composite instanceof Element)
-                            composite.innerHTML = content;
-                    }
+        //If the module has already been loaded, it is only necessary to check
+        //whether the markup must be inserted. CSS should already exist in the
+        //head and the JavaScript will only be executed once.
+        if (typeof Composite.render.cache[context + ".composite"] !== "undefined") {
+            if (typeof Composite.render.cache[context + ".html"] !== "undefined") {
+                if (object && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
+                        && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_OUTPUT)
+                        && !composite.innerHTML.trim()) {
+                    if (composite instanceof Element)
+                        composite.innerHTML = Composite.render.cache[context + ".html"];
                 }
-            };
-
-            //The sequence of loading is strictly defined.
-            //    sequence: CSS, JS, HTML
-            request.open("HEAD", context + ".css", false);
-            request.send();
-            if (request.status != 404) {
-                request.open("GET", context + ".css", false);
-                request.send();
             }
-            request.open("HEAD", context + ".js", false);
-            request.send();
-            if (request.status != 404) {
-                request.open("GET", context + ".js", false);
-                request.send();
-            }
+            return;
+        }
+        
+        Composite.render.cache[context + ".composite"] = null;
+        var request = new XMLHttpRequest();
+        request.overrideMimeType("text/plain");
+        request.onreadystatechange = function() {
+            if (request.readyState != 4
+                    || request.status == "404")
+                return;
+            if (request.status != "200")
+                throw new Error("HTTP status " + request.status + " for " + request.responseURL);
             
-            //HTML/Markup is only loaded if it is a known composite object and
-            //the element does not contain a markup (inner HTML) and the
-            //attributes import and output are not set. Thus is the assumption
-            //that for an empty element outsourced markup should exist.
-            if (object && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
-                    && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_OUTPUT)
-                    && !composite.innerHTML.trim()) {
-                request.open("HEAD", context + ".html", false);
-                request.send();
-                if (request.status != 404) {
-                    request.open("GET", context + ".html", false);
-                    request.send();
+            //CSS is inserted into the HEad element as a style element.
+            //Without a head element, the inserting causes an error.
+
+            //JavaScript is not inserted as an element, it is executed directly.
+            //For this purpose eval is used. Since the method may form its own
+            //namespace for variables, it is important to initialize the global
+            //variable better with window[...].
+            
+            //HTML/Markup is preloaded into the render cache if available.
+            //If markup exists for the composite, the import attribute with the
+            //URL is added to the item. Inserting then takes over the import
+            //implementation, which then also accesses the render cache.
+            
+            var content = request.responseText.trim();
+            if (content) {
+                var url = document.createElement("a");
+                url.href = request.responseURL;
+                Composite.render.cache[url.pathname] = content;
+                if (request.responseURL.match(/\.css$/)) {
+                    var head = document.querySelector("html head");
+                    if (!head)
+                        throw new Error("No head element found");
+                    var style = document.createElement("style");
+                    style.setAttribute("type", "text/css");
+                    style.textContent = content;
+                    head.appendChild(style);
+                } else if (request.responseURL.match(/\.js$/)) {
+                    try {eval(content);
+                    } catch (exception) {
+                        console.error(request.responseURL, exception.name + ": " + exception.message);
+                        throw exception;
+                    }
+                } else if (request.responseURL.match(/\.html$/)) {
+                    if (composite instanceof Element)
+                        composite.innerHTML = content;
                 }
             }
-        }        
+        };
+
+        //The sequence of loading is strictly defined.
+        //    sequence: CSS, JS, HTML
+        request.open("HEAD", context + ".css", false);
+        request.send();
+        if (request.status != 404) {
+            request.open("GET", context + ".css", false);
+            request.send();
+        }
+        request.open("HEAD", context + ".js", false);
+        request.send();
+        if (request.status != 404) {
+            request.open("GET", context + ".js", false);
+            request.send();
+        }
+        
+        //HTML/Markup is only loaded if it is a known composite object and the
+        //element does not contain a markup (inner HTML) and the attributes
+        //import and output are not set. Thus is the assumption that for an
+        //empty element outsourced markup should exist.
+        if (object && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
+                && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_OUTPUT)
+                && !composite.innerHTML.trim()) {
+            request.open("HEAD", context + ".html", false);
+            request.send();
+            if (request.status != 404) {
+                request.open("GET", context + ".html", false);
+                request.send();
+            }
+        }
     };
 
     //Listener when an error occurs and triggers a matching composite-event.
@@ -3916,12 +4006,12 @@ if (typeof Expression === "undefined") {
  *  is taken over by the Composite API in this implementation. SiteMap is an
  *  extension and is based on the Composite API.
  *  
- *  MVC 1.0.1 20191003
+ *  MVC 1.0.1 20191024
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.0.1 20191003
+ *  @version 1.0.1 20191024
  */
 if (typeof Path === "undefined") {
     
@@ -4667,7 +4757,7 @@ if (typeof SiteMap === "undefined") {
         //is then jumped to.
         var forward = SiteMap.permit(target);
         if (forward !== true) {
-            if (typeof forward == "string")
+            if (typeof forward === "string")
                 SiteMap.navigate(forward);
             else SiteMap.navigate(target != "#" ? target + "##" : "#");
             return;

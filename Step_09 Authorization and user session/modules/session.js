@@ -39,7 +39,7 @@ window["Session"] = {
     logon: function(email, password) {
         //TODO: Authentication via the backend insert here
         //      In case of an error (invalid credentials), a return value can be used to cause the calling method to show an error message.
-        Cookies.put(Session.COOKIE_EMAIL, login.email); 
+        Cookies.put(Session.COOKIE_EMAIL, email); 
         //A functional path is called.
         //This means that SiteMap has to take control and we don't have to worry about a useful target.
         if (arguments.length < 2)
