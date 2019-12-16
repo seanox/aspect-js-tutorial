@@ -24,12 +24,12 @@
  *      ----
  *  General extension of the JavaScript API.
  *  
- *  Extension 1.1.0 20190906
+ *  Extension 1.1.0 20191213
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0 20190906
+ *  @version 1.1.0 20191213
  */
 if (typeof Namespace === "undefined") {
 
@@ -42,57 +42,146 @@ if (typeof Namespace === "undefined") {
      *  This means that it is not a real element of the programming language,
      *  but is represented by chained static objects.
      *  Each level in this object chain represents a namespace.
-     *  As is typical for objects, the namespaces are separated by a dot. 
+     *  As is typical for objects, namespaces use letters, numbers and
+     *  underscores that are separated by dots.
+     *  As a special feature, arrays are also supported. If an object level in
+     *  the namespace is a pure number, an array is assumed.
      */
     Namespace = {
             
         /** Pattern for the namespace separator */
-        get PATTERN_NAMESPACE_SEPARATOR() {return /[\\\/\.]/},
+        get PATTERN_NAMESPACE_SEPARATOR() {return /\./},
         
         /** Pattern for a valid namespace. */
-        get PATTERN_NAMESPACE() {return /^(?:[\\\/]*[a-z][\w]*)(?:[\\\/\.][a-z][\w]*)*$/i},
-        
-        /** Pattern to detect if there are conflicts in the namespace. */
-        get PATTERN_NAMESPACE_SEPARATOR_CONFLICT() {return /(\..*[\\\/])|(\\.*[\.\/])|(\/.*[\\\.])/}                
+        get PATTERN_NAMESPACE() {return /^\w+(\.\w+)*$/i}
     };
+    
+    /** 
+     *  Validates a requested namespace and creates a corresponding meta object.
+     *  The method has the following various signatures:
+     *      Namespace.locate();
+     *      Namespace.locate(namespace);
+     *      Namespace.locate(object, namespace);
+     *  @return the created meta object
+     *  @throws An error occurs in case of invalid data types or syntax 
+     */
+    Namespace.locate = function(variants) {
+        
+        var scope;
+        var namespace;
+        
+        if (arguments.length == 0)
+            return {scope:window};
+        
+        if (arguments.length > 1) {
+            scope = arguments[0];
+            namespace = arguments[1];
+        } else if (arguments.length > 0) {
+            scope = window;
+            namespace = arguments[0];
+        } else throw new TypeError("Invalid namespace");
+        
+        if (typeof scope !== "object")
+            throw new TypeError("Invalid scope: " + typeof scope);        
+        if (typeof namespace !== "string")
+            throw new TypeError("Invalid namespace: " + typeof namespace);
+
+        if (!namespace.match(Namespace.PATTERN_NAMESPACE)
+                || (scope == window && namespace.match(/^\d/)))
+            throw new Error("Invalid namespace" + (namespace.trim() ? ": " + namespace : ""));
+        
+        return {scope, namespace};
+    };    
     
     /**
      *  Creates a namespace to pass string.
-     *  Slash and dot are supported as separators.
+     *  Without arguments, the method returns the global namespace window.
+     *  The method has the following various signatures:
+     *      Namespace.using();
+     *      Namespace.using(namespace);
+     *      Namespace.using(object, namespace);
+     *  @param  object
      *  @param  namespace
-     *  @return the created namespace
-     *  @throws An error occurs in the following cases:
-     *      - event is not valid or is not supported
-     *      - callback function is not implemented correctly or does not exist
+     *  @return the created or already existing object(-level)
+     *  @throws An error occurs in case of invalid data types or syntax 
      */
-    Namespace.using = function(namespace) {
+    Namespace.using = function(...variants) {
         
-        if (namespace == null)
-            return null;
-
-        if (typeof namespace !== "string")
-            throw new TypeError("Invalid namespace: " + typeof namespace);
-        if (!namespace.match(Namespace.PATTERN_NAMESPACE)
-                || namespace.match(Namespace.PATTERN_NAMESPACE_SEPARATOR_CONFLICT))
-            throw new Error("Invalid namespace" + (namespace.trim() ? ": " + namespace : ""));
+        if (arguments.length == 0)
+            return window;
         
-        var scope = window;
-        namespace = namespace.replace(/^[\\\/]/, "");
-        namespace.split(Namespace.PATTERN_NAMESPACE_SEPARATOR).forEach((entry, index, array) => {
-            if (typeof scope[entry] === "undefined") {
-                scope[entry] = {};
-            } else if (scope[entry] instanceof Object) {
+        var meta = Namespace.locate(...variants);
+        if (typeof meta.namespace === "undefined")
+            return meta.scope;         
+        meta.namespace.split(Namespace.PATTERN_NAMESPACE_SEPARATOR).forEach((entry, index, array) => {
+            if (typeof meta.scope[entry] === "undefined") {
+                if (index < array.length -1
+                        && array[index +1].match(/^\d+$/))
+                    meta.scope[entry] = [];
+                else meta.scope[entry] = {};
+            } else if (meta.scope[entry] instanceof Object
+                    || meta.scope[entry] === null) {
             } else throw new Error("Invalid namespace: " + array.slice(0, index +1).join("."));
-            scope = scope[entry];
+            meta.scope = meta.scope[entry];
         });
+        return meta.scope; 
+    };
+
+    /** 
+     *  Resolves a namespace and returns the determined object(-level).
+     *  If the namespace does not exist, null is returned.
+     *  Without arguments, the method returns the global namespace window.
+     *  The method has the following various signatures:
+     *      Namespace.lookup();
+     *      Namespace.lookup(namespace);
+     *      Namespace.lookup(object, namespace);
+     *  @param  object
+     *  @param  namespace
+     *  @return the determined object(-level)
+     *  @throws An error occurs in case of invalid data types or syntax
+     */
+    Namespace.lookup = function(...variants) {
         
-        return scope; 
+        if (arguments.length == 0)
+            return window;        
+        
+        var meta = Namespace.locate(...arguments);
+        if (typeof meta.namespace === "undefined")
+            return meta.scope;         
+        meta.namespace = meta.namespace.split(Namespace.PATTERN_NAMESPACE_SEPARATOR);
+        if (!meta.namespace
+                || meta.namespace.length <= 0)
+            return null;
+        for (var index = 0; meta.scope && index < meta.namespace.length; index++) {
+            if (meta.namespace[index] in meta.scope
+                    && (meta.scope[meta.namespace[index]] instanceof Object
+                            || meta.scope[meta.namespace[index]] === null))
+                meta.scope = meta.scope[meta.namespace[index]];
+            else return null;
+        }
+        return meta.scope;
+    };
+    
+    /**
+     *  Checks whether a namespace exists.
+     *  The method has the following various signatures:
+     *      Namespace.exists();
+     *      Namespace.exists(namespace);
+     *      Namespace.exists(object, namespace);     *  
+     *  @param  object
+     *  @param  namespace
+     *  @return true if the namespace exists
+     *  @throws An error occurs in case of invalid data types or syntax
+     */
+    Namespace.exists = function(...variants) {
+        return Namespace.lookup(...variants) != null;     
     };
 };
 
 /**
  *  Enhancement of the JavaScript API
- *  Adds a static function for creating a alhpanumeric (U)UID with fixed size.
+ *  Adds a static function to create a alhpanumeric serial (U)UID with fixed size.
+ *  The quality of the ID is dependent of the length.
  *  @param size optional, default is 16
  */
 if (Math.uniqueId === undefined) {
@@ -108,6 +197,28 @@ if (Math.uniqueId === undefined) {
             else unique += String.fromCharCode(65 +random); 
         }
         return unique;
+    };
+};
+
+/**
+ *  Enhancement of the JavaScript API
+ *  Adds a static function to create a alhpanumeric serial (U)UID with fixed size.
+ *  Compared to Math.uniqueId(), the (U)UID contains a serial reference to time.
+ *  The quality of the ID is dependent of the length.
+ *  @param size optional, default is 16
+ */
+if (Math.uniqueSerialId === undefined) {
+    Math.uniqueSerialId = function(size) {
+        size = size || 16;
+        if (size < 0)
+            size = 16;
+        var serial = "";
+        serial = (new Date().getTime() -946684800000).toString(36);
+        serial = (serial.length.toString(36) + serial).toUpperCase();
+        serial = Math.uniqueId() + serial;
+        if (serial.length > size)
+            serial = serial.substr(serial.length -size);
+        return serial;
     };
 };
 
@@ -261,20 +372,20 @@ if (String.prototype.unescape === undefined) {
  *  @param node      node(s)
  *  @param exclusive existing children will be removed first
  */
-Element.prototype.internalAppendChild = Element.prototype.appendChild;
+Element.prototype.appendChild$origin = Element.prototype.appendChild;
 Element.prototype.appendChild = function(node, exclusive) {
     if (exclusive)
         this.innerHTML = "";
     if (node instanceof Node) {
-        this.internalAppendChild(node);
+        this.appendChild$origin(node);
     } else if (Array.isArray(node)
             || node instanceof NodeList
             || (Symbol && Symbol.iterator
                     && node && typeof node[Symbol.iterator])) {
         node = Array.from(node);
         for (var loop = 0; loop < node.length; loop++)
-            this.internalAppendChild(node[loop]);
-    } else this.internalAppendChild(node);
+            this.appendChild$origin(node[loop]);
+    } else this.appendChild$origin(node);
 };
 
 /**
@@ -286,8 +397,8 @@ Element.prototype.appendChild = function(node, exclusive) {
  */
 if (RegExp.quote === undefined) {
     RegExp.quote = function(text) {
-        if (text == null
-                || text == undefined)
+        if (text == undefined
+                || text == null)
             return null;
         return String(text).replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
     };
@@ -298,8 +409,9 @@ if (RegExp.quote === undefined) {
  *  Adds a property to get the UID for the window instance.
  */  
 if (window.serial === undefined) {
-    var timestamp = (new Date().getTime() -946684800000).toString(36);
-    window.serial = Math.uniqueId(10) + (timestamp.length.toString(36) + timestamp).toUpperCase();
+    Object.defineProperty(window, "serial", {
+        value: Math.uniqueSerialId()
+    });
 };
 
 /**
@@ -309,7 +421,9 @@ if (window.serial === undefined) {
  *  current working directory.
  */  
 if (window.location.pathcontext === undefined) {
-    window.location.pathcontext = window.location.pathname.replace(/\/([^\/]*\.[^\/]*){0,}$/g, "") || "/";
+    Object.defineProperty(window.location, "pathcontext", {
+        value: window.location.pathname.replace(/\/([^\/]*\.[^\/]*){0,}$/g, "") || "/"
+    });
 };
 
 /**
@@ -331,12 +445,12 @@ if (window.location.pathcontext === undefined) {
  *  The data is queried with XPath, the result can be concatenated and
  *  aggregated and the result can be transformed with XSLT. 
  *  
- *  DataSource 1.2.0 20191003
+ *  DataSource 1.2.0 20191206
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20191003
+ *  @version 1.2.0 20191206
  */
 if (typeof DataSource === "undefined") {
     
@@ -353,17 +467,11 @@ if (typeof DataSource === "undefined") {
         get PATTERN_JAVASCRIPT() {return /^\s*text\s*\/\s*javascript\s*$/i},    
         
         /** Constant for attribute type */
-        get ATTRIBUTE_TYPE() {return "type"}
+        get ATTRIBUTE_TYPE() {return "type"},
+        
+        /** The currently used language. */
+        get locale() {return DataSource.locales ? DataSource.locales.selection : null;}
     };
-    
-    /** Internal cache of locales.xml */
-    DataSource.data;
-
-    /** List of available locales (as standard marked are at the beginning) */
-    DataSource.locales;
-    
-    /** Internal cache of XML/XSLT data. */
-    DataSource.cache;
     
     /**
      *  Enhancement of the JavaScript API
@@ -378,16 +486,26 @@ if (typeof DataSource === "undefined") {
         };     
     };    
     
-    /** The available languages in the 'locales.xml' with label-value pairs. */
-    DataSource.locale;
-    
     (function() {
+
+        //DataSource.cache
+        //    Internal cache of XML/XSLT data    
+        Object.defineProperty(DataSource, "cache", {
+            value: {}
+        });        
         
+        //DataSource.locales
+        //    List of available locales (as standard marked are at the beginning)
+        Object.defineProperty(DataSource, "locales", {
+            value: [],
+            enumerable: true
+        });        
+
         var locale = (navigator.language || "").trim().toLowerCase();
         locale = locale.match(/^([a-z]+)/);
         if (!locale)
             throw new Error("Locale not available");
-        DataSource.locale = locale[0];
+        DataSource.locales.selection = locale[0];
         
         var request;
         request = new XMLHttpRequest();
@@ -400,14 +518,16 @@ if (typeof DataSource === "undefined") {
         request.open("GET", DataSource.DATA + "/locales.xml", false);
         request.overrideMimeType("application/xslt+xml");
         request.send();
-
-        if (request.status == 200)
-            DataSource.data = request.responseXML;
+        
+        //DataSource.data
+        //    Internal cache of locales.xml
+        Object.defineProperty(DataSource, "data", {
+            value: request.status == 200 ? request.responseXML : null
+        });
         if (!DataSource.data
                 && request.status != 404)
             throw new Error("Locale not available");
-        
-        DataSource.locales = [];
+
         if (!DataSource.data)
             return;
         
@@ -430,7 +550,7 @@ if (typeof DataSource === "undefined") {
             locale = DataSource.locales && DataSource.locales.length > 0 ? DataSource.locales[0] : null;
         if (!locale)
             throw new Error("Locale not available");
-        DataSource.locale = locale;
+        DataSource.locales.selection = locale;
     })();
     
     /**
@@ -454,7 +574,7 @@ if (typeof DataSource === "undefined") {
                 || !DataSource.locales.includes(locale))
             throw new Error("Locale not available");
 
-        DataSource.locale = locale;
+        DataSource.locales.selection = locale;
     };
     
     /**
@@ -683,12 +803,12 @@ if (typeof DataSource === "undefined") {
  *      
  *  <h1 output="{{Messages['contact.title']}}"/>
  *  
- *  Messages 1.1.1 20191024
+ *  Messages 1.2.0 20191213
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.1 20191024
+ *  @version 1.2.0 20191213
  */
 if (typeof Messages === "undefined") {
     
@@ -706,11 +826,9 @@ if (typeof Messages === "undefined") {
         //loading of the key-value pairs is embedded.
         var localize = DataSource.localize;
         DataSource.localize = function(locale) {
-            for (var property in Messages)
-                if (typeof Messages[property] === "string")
-                    delete Messages[property];
-            DataSource.localize.internal(locale);
+            DataSource.localize$origin(locale);
 
+            window["Messages"] = {};
             var xpath = "/locales/" + DataSource.locale + "/label";
             var label = DataSource.data.evaluate(xpath, DataSource.data, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
             for (var node = label.iterateNext(); node; node = label.iterateNext()) {
@@ -720,11 +838,14 @@ if (typeof Messages === "undefined") {
                 var value = ((node.getAttribute("value") || "").trim()
                         + " " + (node.textContent).trim()).trim();
                 value = value.unescape();
-                Messages[key] = value;
+                if (!Messages.hasOwnProperty(key))
+                    Object.defineProperty(Messages, key, {
+                        value
+                    });
             }
         };
         
-        DataSource.localize.internal = localize;
+        DataSource.localize$origin = localize;
         
         if (DataSource.data
                 && DataSource.locale
@@ -749,10 +870,10 @@ if (typeof Messages === "undefined") {
  *          namespace
  *          ----
  *  The namespace is a sequence of characters or words consisting of letters,
- *  numbers, and an underscore that describes the path in an object tree. The
- *  dot is used as a separator, it defines the boundary from one level to the
- *  next in the object tree. Each element in the namespace must contain at least
- *  one character, begin with a letter, and end with a letter or number.
+ *  numbers, and underscores that describes the path in an object tree. The dot
+ *  is used as a separator, it defines the boundary from one level to the next
+ *  in the object tree. Each element in the namespace must contain at least one
+ *  character ans begin with a letter.
  *  
  *          scope
  *          ----
@@ -823,12 +944,12 @@ if (typeof Messages === "undefined") {
  *  Thus virtual paths, object structure in JavaScript (namespace) and the
  *  nesting of the DOM must match.
  *
- *  Composite 1.2.0 20191106
+ *  Composite 1.2.0 20191213
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20191106
+ *  @version 1.2.0 20191213
  */
 if (typeof Composite === "undefined") {
     
@@ -878,6 +999,9 @@ if (typeof Composite === "undefined") {
         /** Constant for attribute render */
         get ATTRIBUTE_RENDER() {return "render"},  
         
+        /** Constant for attribute release */
+        get ATTRIBUTE_RELEASE() {return "release"},
+        
         /** Constant for attribute text */
         get ATTRIBUTE_TEXT() {return "text"},
 
@@ -892,17 +1016,18 @@ if (typeof Composite === "undefined") {
 
         /**
          *  Pattern for all accepted attributes.
-         *  Accepted attributes are all attributes, even without an expression that
-         *  is cached in the meta object. Other attributes are only cached if they
-         *  contain an expression.
+         *  Accepted attributes are all attributes, even without an expression
+         *  that is cached in the meta object. Other attributes are only cached
+         *  if they contain an expression.
          */
         get PATTERN_ATTRIBUTE_ACCEPT() {return /^(composite|condition|events|id|import|interval|iterate|message|notification|output|release|render|validate)$/i},
         
         /**
          *  Pattern for all static attributes.
-         *  Static attributes are not removed from the element during rendering, but
-         *  are also set in the meta object like non-static attributes.
-         *  These attributes are also intended for direct use in JavaScript and CSS.
+         *  Static attributes are not removed from the element during rendering,
+         *  but are also set in the meta object like non-static attributes.
+         *  These attributes are also intended for direct use in JavaScript and
+         *  CSS.
          */
         get PATTERN_ATTRIBUTE_STATIC() {return /^(composite|id)$/i},
 
@@ -913,9 +1038,9 @@ if (typeof Composite === "undefined") {
         get PATTERN_EXPRESSION_CONTAINS() {return /\{\{((?:(?:.*?[^\\](?:\\\\)*)|(?:(?:\\\\)*))*?)\}\}/g},   
         
         /**
-         *  Patterns to test whether an expression is exclusive, i.e. an expression
-         *  without additional text fragments before or after.
-         *  The test is based on the check that the text has an expression (group 1)
+         *  Patterns to test whether an expression is exclusive, i.e. an
+         *  expression without additional text fragments before or after.
+         *  The test based on the check that the text has an expression (group1)
          *  and at the end no more literal or other expressions (group 2) exist.
          */
         get PATTERN_EXPRESSION_EXCLUSIVE() {return /^\s*\{\{((?:(?:.*?[^\\](?:\\\\)*)|(?:(?:\\\\)*))*?)\}\}\s*(.*)$/},
@@ -935,9 +1060,9 @@ if (typeof Composite === "undefined") {
 
         /** 
          *  Pattern for all composite-script elements.
-         *  These elements are not automatically executed by the browser but must be
-         *  triggered by rendering. Therefore, these scripts can be combined and
-         *  controlled with the condition attribute.
+         *  These elements are not automatically executed by the browser but
+         *  must be triggered by rendering. Therefore, these scripts can be
+         *  combined and controlled with the condition attribute.
          */
         get PATTERN_COMPOSITE_SCRIPT() {return /^composite\/javascript$/i},
 
@@ -953,6 +1078,12 @@ if (typeof Composite === "undefined") {
         
         /** Pattern for a scope (namespace) */
         get PATTERN_CUSTOMIZE_SCOPE() {return /^[a-z](?:(?:\w*)|([\-\w]*\w))$/i},
+        
+        /** Pattern for the namespace separator */
+        get PATTERN_NAMESPACE_SEPARATOR() {return /[\.:]/g},
+        
+        /** Pattern for a valid namespace. */
+        get PATTERN_NAMESPACE() {return /^\w+(\.\w+)*(\:\w+)*$/i},
         
         /** Pattern for a datasource url */
         get PATTERN_DATASOURCE_URL() {return /^\s*xml:\s*(\/[^\s]+)\s*(?:\s*(?:xslt|xsl):\s*(\/[^\s]+))*$/i},
@@ -1032,7 +1163,7 @@ if (typeof Composite === "undefined") {
     };
     
     /**
-     *  List of attributes to be hardened.
+     *  Set of attributes to be hardened.
      *  The hardening of attributes is part of the safety concept and should
      *  make it more difficult to manipulate the markup at runtime. Hardening
      *  observes attributes and undoes changes.
@@ -1059,28 +1190,52 @@ if (typeof Composite === "undefined") {
      *      iterate       output            release
      *      render        validate
      */
-    Composite.statics;    
+    Object.defineProperty(Composite, "statics", {
+        value: new Set()
+    });  
     
-    /** Assoziative array for custom tags (key:tag, value:function) */
-    Composite.macros;
-
-    /** Assoziative array for custom selectors (key:hash, value:{selector, function}) */
-    Composite.selectors;
+    /**
+     *  Composite.macros
+     *      Map for custom tags (key:tag, value:function)
+     */
+    Object.defineProperty(Composite, "macros", {
+        value: new Map()
+    });  
     
-    /** Assoziative array with acceptor and their registered listerners */
-    Composite.acceptors;
-
-    /** Assoziative array with events and their registered listerners */
-    Composite.listeners;
+    /**
+     *  Composite.selectors
+     *      Map for custom selectors (key:hash, value:{selector, function})
+     */
+    Object.defineProperty(Composite, "selectors", {
+        value: new Map()
+    });  
+    
+    /**
+     *  Composite.acceptors
+     *      Set with acceptor and their registered listerners
+     */
+    Object.defineProperty(Composite, "acceptors", {
+        value: new Set()
+    });  
+    
+    /**
+     *  Composite.listeners
+     *      Map with events and their registered listerners
+     */
+    Object.defineProperty(Composite, "listeners", {
+        value: new Map()
+    }); 
     
     /** 
-     *  Array with docked models.
-     *  The array is used for the logic to call the dock and undock methods,
+     *  Set with docked models.
+     *  The set is used for the logic to call the dock and undock methods,
      *  because the static models themselves have no status and the decision
      *  about the current existence in the DOM is not stable.
-     *  All docked models are included in the array.
+     *  All docked models are included in the set.
      */
-    Composite.models;
+    Object.defineProperty(Composite, "models", {
+        value: new Set()
+    });  
 
     /**
      *  Lock mechanism for the render, mound and scan methods. The lock controls
@@ -1103,11 +1258,11 @@ if (typeof Composite === "undefined") {
         if (context.lock === undefined
                 || context.lock === false) {
             context.lock = {ticks:1, selector:selector, queue:[],
-                    share:function() {
+                    share() {
                         this.ticks++;
                         return this;
                     },
-                    release:function() {
+                    release() {
                         this.ticks--;
                         if (this.ticks > 0)
                             return;
@@ -1186,16 +1341,28 @@ if (typeof Composite === "undefined") {
     
     /**
      *  Enhancement of the JavaScript API
-     *  Adds a static function to determine an object via the namespace.
+     *  Adds a static function to validate the namespace for an object.
+     *  Without arguments, the method returns the global namespace window.
+     *  In difference to the namespace function of the same name, qualifiers are
+     *  also supported in the namespace. The effect is the same. Qualifiers are
+     *  optional namespace elements at the end that use the colon as a separator.
      *  The method has the following various signatures:
-     *      Object.lookup(namespace);
-     *      Object.lookup(object, namespace);
-     */ 
-    if (Object.lookup === undefined)
-        Object.lookup = function(variants) {
+     *      Object.using();
+     *      Object.using(namespace);
+     *      Object.using(object, namespace);
+     *  @param  object
+     *  @param  namespace
+     *  @return the created or already existing object(-level)
+     *  @throws An error occurs in case of invalid data types or syntax 
+     */     
+    if (Object.locate === undefined)
+        Object.locate = function(variants) {
         
             var scope;
             var namespace;
+            
+            if (arguments.length == 0)
+                return {scope:window};
             
             if (arguments.length > 1) {
                 scope = arguments[0];
@@ -1204,34 +1371,87 @@ if (typeof Composite === "undefined") {
                 scope = window;
                 namespace = arguments[0];
             } else throw new TypeError("Invalid namespace");
-
+            
             if (typeof scope !== "object")
                 throw new TypeError("Invalid scope: " + typeof scope);        
             if (typeof namespace !== "string")
-                throw new TypeError("Invalid namespace: " + typeof namespace);        
-            namespace = (namespace || "").trim();
-            if (!namespace.match(/^(?:[a-z]\w*)(?:(?:\:\w+)|(?:\.[a-z]\w*))*$/i))
-                throw new Error("Invalid namespace: " + namespace);
-            namespace = namespace.split(/[\.\:]/);
-            if (!namespace
-                    || namespace.length <= 0)
-                return null;
-            for (var index = 0; scope && index < namespace.length; index++) {
-                if (namespace[index] in scope
-                        && scope[namespace[index]] instanceof Object)
-                    scope = scope[namespace[index]];
-                else return null;
-            }
-            return scope;
+                throw new TypeError("Invalid namespace: " + typeof namespace);
+    
+            if (!namespace.match(Composite.PATTERN_NAMESPACE)
+                    || (scope == window && namespace.match(/^\d/)))
+                throw new Error("Invalid namespace" + (namespace.trim() ? ": " + namespace : ""));
+            
+            namespace = namespace.replace(Composite.PATTERN_NAMESPACE_SEPARATOR, ".");
+            
+            return {scope, namespace};
+        };      
+        
+    /**
+     *  Enhancement of the JavaScript API
+     *  Adds a static function to create a namespace for an object.
+     *  Without arguments, the method returns the global namespace window.
+     *  In difference to the namespace function of the same name, qualifiers are
+     *  also supported in the namespace. The effect is the same. Qualifiers are
+     *  optional namespace elements at the end that use the colon as a separator.
+     *  The method has the following various signatures:
+     *      Object.using();
+     *      Object.using(namespace);
+     *      Object.using(object, namespace);
+     *  @param  object
+     *  @param  namespace
+     *  @return the created or already existing object(-level)
+     *  @throws An error occurs in case of invalid data types or syntax 
+     */ 
+    if (Object.using === undefined)
+        Object.using = function(...variants) {
+            var meta = Object.locate(...variants);
+            if (typeof meta.namespace === "undefined")
+                return meta.scope; 
+            return Namespace.using.call(null, meta.scope, meta.namespace);
+        };
+    
+    /**
+     *  Enhancement of the JavaScript API
+     *  Adds a static function to determine an object via the namespace.
+     *  Without arguments, the method returns the global namespace window.
+     *  In difference to the namespace function of the same name, qualifiers are
+     *  also supported in the namespace. The effect is the same. Qualifiers are
+     *  optional namespace elements at the end that use the colon as a separator.
+     *  The method has the following various signatures:
+     *      Object.lookup();
+     *      Object.lookup(namespace);
+     *      Object.lookup(object, namespace);
+     *  @param  object
+     *  @param  namespace
+     *  @return the determined object(-level)
+     *  @throws An error occurs in case of invalid data types or syntax
+     */ 
+    if (Object.lookup === undefined)
+        Object.lookup = function(...variants) {
+            var meta = Object.locate(...variants);
+            if (typeof meta.namespace === "undefined")
+                return meta.scope; 
+            return Namespace.lookup.call(null, meta.scope, meta.namespace);       
         };
         
     /**
      *  Enhancement of the JavaScript API
      *  Adds a static function to check whether an object exists in a namespace.
+     *  In difference to the namespace function of the same name, qualifiers are
+     *  also supported in the namespace. The effect is the same. Qualifiers are
+     *  optional namespace elements at the end that use the colon as a separator.
+     *  The method has the following various signatures:
+     *      Object.exists();
+     *      Object.exists(namespace);
+     *      Object.exists(object, namespace);
+     *  @param  object
+     *  @param  namespace
+     *  @return true if the namespace exists
+     *  @throws An error occurs in case of invalid data types or syntax
      */ 
     if (Object.exists === undefined)
-        Object.exists = function(namespace) {
-            return Object.lookup(namespace) != null; 
+        Object.exists = function(...variants) {
+            return Object.lookup(...variants) != null;   
         };        
 
     /**
@@ -1239,8 +1459,8 @@ if (typeof Composite === "undefined") {
      *  Implements an own open method for event management.
      *  The original method is reused in the background.
      */ 
-    XMLHttpRequest.prototype.internalOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(variants) {
+    XMLHttpRequest.prototype.open$origin = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(...variants) {
 
         var callback = function() {
             if (arguments.length > 0) {
@@ -1266,8 +1486,8 @@ if (typeof Composite === "undefined") {
             }
         };
         
-        if (typeof this.internalInit === "undefined") {
-            this.internalInit = true;
+        if (typeof this.open$init === "undefined") {
+            this.open$init = true;
             this.addEventListener("loadstart", callback);
             this.addEventListener("progress", callback);
             this.addEventListener("readystatechange", callback);
@@ -1278,7 +1498,7 @@ if (typeof Composite === "undefined") {
             this.addEventListener("loadend", callback);
         }
         
-        this.internalOpen.apply(this, arguments);
+        this.open$origin(...variants);
     };
     
     /**
@@ -1301,10 +1521,10 @@ if (typeof Composite === "undefined") {
             throw new Error("Invalid event" + (event.trim() ? ": " + event : ""));
         
         event = event.toLowerCase();
-        Composite.listeners = Composite.listeners || [];
-        if (!Array.isArray(Composite.listeners[event]))
-            Composite.listeners[event] = [];
-        Composite.listeners[event].push(callback);
+        if (!Composite.listeners.has(event)
+                || !Array.isArray(Composite.listeners.get(event)))
+            Composite.listeners.set(event, []);
+        Composite.listeners.get(event).push(callback);
     };
     
     /**
@@ -1314,20 +1534,18 @@ if (typeof Composite === "undefined") {
      *  @param variants up to five additional optional arguments that are passed
      *      as arguments when the callback function is called
      */
-    Composite.fire = function(event, variants) {
+    Composite.fire = function(event, ...variants) {
 
         event = (event || "").trim();
-        if (!Composite.listeners
+        if (Composite.listeners.size <= 0
                 || !event)
             return;
-        var listeners = Composite.listeners[event.toLowerCase()];
+        var listeners = Composite.listeners.get(event.toLowerCase());
         if (!Array.isArray(listeners))
             return;
-        variants = Array.from(arguments);
-        variants = variants.slice(1);
-        variants.unshift(event);
+        variants = [event, ...variants];
         listeners.forEach((callback) => {
-            callback.apply(null, variants);
+            callback(...variants);
         });        
     };
 
@@ -1339,13 +1557,10 @@ if (typeof Composite === "undefined") {
      *  @param variants up to five additional optional arguments that are passed
      *      as arguments when the callback function is called
      */
-    Composite.asynchron = function(task, variants) {
-        
-        arguments = Array.from(arguments);
-        arguments = arguments.slice(1);
-        window.setTimeout((invoke, variants) => {
-            invoke.apply(null, variants);
-        }, 0, task, arguments);
+    Composite.asynchron = function(task, ...variants) {
+        window.setTimeout((invoke, ...variants) => {
+            invoke(...variants);
+        }, 0, task, ...variants);
     };
     
     /**
@@ -1982,10 +2197,7 @@ if (typeof Composite === "undefined") {
             return null;
         
         var lookup = {
-            meta: {
-                composite: meta.composite,
-                model: meta.model,
-            },
+            meta,
             composite: Object.lookup(meta.composite),
             model: Object.lookup(meta.model)
         };
@@ -2004,12 +2216,7 @@ if (typeof Composite === "undefined") {
         } 
         
         var lookup = {
-            meta: {
-                composite: meta.composite,
-                model: meta.model,
-                property: meta.property,
-                name: meta.name
-            },
+            meta,
             composite: Object.lookup(meta.composite),
             model: Object.lookup(meta.model),
             get property() {
@@ -2116,7 +2323,6 @@ if (typeof Composite === "undefined") {
         //The composite-specific static attributes (PATTERN_ATTRIBUTE_ACCEPT)
         //are excluded from this function because they are already actively
         //monitored by the MutationObserver.
-        Composite.statics = Composite.statics || [];
         if (typeof scope === "string"
                 && arguments.length > 1 
                 && typeof arguments[1] === "string"
@@ -2125,9 +2331,9 @@ if (typeof Composite === "undefined") {
             var statics = (arguments[1] || "").trim().split(/\s+/);
             statics.forEach((entry) => {
                 entry = entry.toLowerCase();
-                if (!Composite.statics.includes(entry)
+                if (!Composite.statics.has(entry)
                         && !entry.match(Composite.PATTERN_ATTRIBUTE_ACCEPT)) {
-                    Composite.statics.push(entry);
+                    Composite.statics.add(entry);
                     changes.push(entry); 
                 }
             });
@@ -2159,8 +2365,7 @@ if (typeof Composite === "undefined") {
         //registered as a acceptor.
         if (typeof scope === "function"
                 && arguments.length == 1) {
-            Composite.acceptors = Composite.acceptors || [];
-            Composite.acceptors.push(scope);
+            Composite.acceptors.add(scope);
             return;
         }
 
@@ -2180,16 +2385,14 @@ if (typeof Composite === "undefined") {
             throw new Error("Invalid scope");
             
         if (scope.match(Composite.PATTERN_CUSTOMIZE_SCOPE)) {
-            Composite.macros = Composite.macros || {};
             if (callback == null)
-                delete Composite.macros[scope.toLowerCase()];
-            else Composite.macros[scope.toLowerCase()] = callback;
+                Composite.macros.delete(scope.toLowerCase());
+            else Composite.macros.set(scope.toLowerCase(), callback);
         } else {
             var hash = scope.toLowerCase().hashCode();
-            Composite.selectors = Composite.selectors || {};
             if (callback == null)
-                delete Composite.selectors[hash];
-            else Composite.selectors[hash] = {selector:scope, callback:callback};
+                Composite.selectors.delete(hash);
+            else Composite.selectors.set(hash, {selector:scope, callback});
         } 
     };
     
@@ -2324,9 +2527,10 @@ if (typeof Composite === "undefined") {
      *      
      *      Release
      *      ----
-     *  TODO: Inverse indicator that an element was rendered.
-     *  The renderer removes this attribute when an element is rendered. This
-     *  effect can be used for CSS to display elements only in rendered state.    
+     *  Inverse indicator that an element was rendered.
+     *  The renderer removes this attribute when an element is rendered.
+     *  This effect is used by CSS to display elements only when rendered.
+     *  The required CSS rule is automatically added to the head.   
      *             
      *      Scripting
      *      ----
@@ -2410,9 +2614,7 @@ if (typeof Composite === "undefined") {
             //used or not. Only the return value false (not void, not empty)
             //terminates the rendering for the macro without using the standard
             //functions.
-            //TODO:
-            Composite.macros = Composite.macros || {};
-            var macro = Composite.macros[selector.nodeName.toLowerCase()];
+            var macro = Composite.macros.get(selector.nodeName.toLowerCase());
             if (macro && macro(selector) === false)
                 return;
             
@@ -2429,11 +2631,8 @@ if (typeof Composite === "undefined") {
             //Only the return value false (not void, not empty) terminates the
             //loop and the rendering for the selector without using the standard
             //functions.
-            //TODO:
-            Composite.selectors = Composite.selectors || {};
             if (selector.parentNode) {
-                for (var macro in Composite.selectors) {
-                    macro = Composite.selectors[macro];
+                for (let [key, macro] of Composite.selectors) {
                     var nodes = selector.parentNode.querySelectorAll(macro.selector);
                     if (Array.from(nodes).includes(selector)) {
                         if (macro.callback(selector) === false)
@@ -2465,29 +2664,27 @@ if (typeof Composite === "undefined") {
                 //processes them. This does not affect the implementation of the
                 //rendering. The method call with a acceptor:
                 //    Composite.customize(function(element) {...});
-                //TODO:
-                Composite.acceptors = Composite.acceptors || [];
                 Composite.acceptors.forEach((acceptor) => {
                     acceptor.call(null, selector);
                 });
 
-                object = {serial:serial, element:selector, attributes:{}};
+                object = {serial, element:selector, attributes:{}};
                 Composite.render.meta[serial] = object;
                 if ((selector instanceof Element)
                         && selector.attributes) {
                     Array.from(selector.attributes).forEach((attribute) => {
                         attribute = {name:attribute.name.toLowerCase(), value:(attribute.value || "").trim()};
-                        Composite.statics = Composite.statics || []; 
                         if (attribute.value.match(Composite.PATTERN_EXPRESSION_CONTAINS)
                                 || attribute.name.match(Composite.PATTERN_ATTRIBUTE_ACCEPT)
-                                || Composite.statics.includes(attribute.name)) {
+                                || Composite.statics.has(attribute.name)) {
                             
                             //Remove all internal attributes but not the statics.
                             //Static attributes are still used in the markup or
                             //for the rendering.
                             if (attribute.name.match(Composite.PATTERN_ATTRIBUTE_ACCEPT)
                                     && !attribute.name.match(Composite.PATTERN_ATTRIBUTE_STATIC)
-                                    && !Composite.statics.includes(attribute.name))
+                                    && !Composite.statics.has(attribute.name)
+                                    && attribute.name != Composite.ATTRIBUTE_RELEASE)
                                 selector.removeAttribute(attribute.name);
                             
                             object.attributes[attribute.name] = attribute.value;
@@ -2508,7 +2705,7 @@ if (typeof Composite === "undefined") {
                                     && (attribute.name.match(Composite.PATTERN_ATTRIBUTE_STATIC)
                                             || attribute.name == Composite.ATTRIBUTE_ID
                                             || attribute.name == Composite.ATTRIBUTE_EVENTS
-                                            || Composite.statics.includes(attribute.name)))
+                                            || Composite.statics.has(attribute.name)))
                                 attribute.value = Expression.eval(selector.ordinal() + ":" + attribute.name, attribute.value);
                             
                             //The initial value of the static attribute is
@@ -2523,7 +2720,7 @@ if (typeof Composite === "undefined") {
                             //registered for the restore. This is a part of the
                             //markup hardening of the MutationObserver.
                             object.statics = object.statics || {};
-                            if (Composite.statics.includes(attribute.name))
+                            if (Composite.statics.has(attribute.name))
                                 object.statics[attribute.name] = attribute.value;
                             
                             //The result of the expression must be written back
@@ -2531,7 +2728,7 @@ if (typeof Composite === "undefined") {
                             if (attribute.name.match(Composite.PATTERN_ATTRIBUTE_STATIC)
                                     || attribute.name == Composite.ATTRIBUTE_ID
                                     || attribute.name == Composite.ATTRIBUTE_EVENTS
-                                    || Composite.statics.includes(attribute.name))
+                                    || Composite.statics.has(attribute.name))
                                 selector.setAttribute(attribute.name, attribute.value);
                         }
                     });
@@ -2564,7 +2761,7 @@ if (typeof Composite === "undefined") {
                         //already known.
                         var placeholder = document.createTextNode("");
                         object = {serial:placeholder.ordinal(), element:placeholder, attributes:object.attributes,
-                                condition:condition, template:selector.cloneNode(true), output:null, complete:false, share:null
+                                condition, template:selector.cloneNode(true), output:null, complete:false, share:null
                         };
 
                         //The Meta object is registered.
@@ -2694,8 +2891,8 @@ if (typeof Composite === "undefined") {
                             return "";
                         var node = document.createTextNode("");
                         var serial = node.ordinal();
-                        var object = {serial:serial, element:node, attributes:{}, value:null,
-                            render:function() {
+                        var object = {serial, element:node, attributes:{}, value:null,
+                            render() {
                                 if (this.attributes.hasOwnProperty(Composite.ATTRIBUTE_NAME)) {
                                     var name = (this.attributes[Composite.ATTRIBUTE_NAME] || "").trim();
                                     var value = (this.attributes[Composite.ATTRIBUTE_VALUE] || "").trim();
@@ -2734,7 +2931,7 @@ if (typeof Composite === "undefined") {
                             } else {
                                 var node = document.createTextNode(word);
                                 var serial = node.ordinal();
-                                var object = {serial:serial, element:node, attributes:{}};
+                                var object = {serial, element:node, attributes:{}};
                                 object.element.textContent = word;
                                 object.attributes[Composite.ATTRIBUTE_TEXT] = word;
                                 Composite.render.meta[serial] = object; 
@@ -2778,8 +2975,8 @@ if (typeof Composite === "undefined") {
             //temporary container element. The help method is required for the
             //lookup and locate methods to work with templates, because both
             //require the complete composite hierarchy to determine the
-            //namespace of the models.
-            //TODO: return value
+            //namespace of the models. The return value is a DIV structure that
+            //corresponds to the composite hierarchy.
             var imitate = function(element) {
                 if (!(element instanceof Element))
                     return null;
@@ -2803,11 +3000,10 @@ if (typeof Composite === "undefined") {
             //Only composites are mounted based on their model.
             //This excludes the placeholders (are text nodes) of conditions.
             var dock = function(model) {
-                Composite.models = Composite.models || [];
                 if (typeof model !== "string"
-                        || Composite.models.includes(model))
+                        || Composite.models.has(model))
                     return;
-                Composite.models.push(model);
+                Composite.models.add(model);
                 model = Object.lookup(model);
                 if (model && typeof model.dock === "function")
                     model.dock.call(model);
@@ -2862,7 +3058,7 @@ if (typeof Composite === "undefined") {
                             //meta-objects do not exist for templates, so it
                             //must be created temporarily and then removed again.
                             var serial = placeholder.template.ordinal();
-                            var object = {serial:serial, element:placeholder.template, attributes:placeholder.attributes, share:null};
+                            var object = {serial, element:placeholder.template, attributes:placeholder.attributes, share:null};
                             Composite.render.meta[serial] = object; 
                             Composite.render.include(placeholder.template);
                             delete Composite.render.meta[serial];
@@ -2886,7 +3082,9 @@ if (typeof Composite === "undefined") {
                         //Therefore, rendering can be stopped afterwards.
                         var template = placeholder.template.cloneNode(true);
 
-                        //TODO: Doku
+                        //Rendering templates should have the same effects as
+                        //rendering markups in the current DOM. This requires
+                        //the real composite hierarchy, which is simulated here.
                         var container = imitate(selector.parentNode);
                         container.appendChild(template);
                                                 
@@ -2900,7 +3098,7 @@ if (typeof Composite === "undefined") {
                         //the attributes of the placeholder are available for
                         //rendering.
                         var serial = template.ordinal();
-                        var object = {serial:serial, element:template, attributes:object.attributes};
+                        var object = {serial, element:template, attributes:object.attributes};
                         Composite.render.meta[serial] = object; 
                         
                         //The placeholder output is rendered recursively and
@@ -3073,9 +3271,9 @@ if (typeof Composite === "undefined") {
                     }
                     interval = parseInt(interval);
                     object.interval = {
-                        object:object,
-                        selector:selector,
-                        task:function(interval) {
+                        object,
+                        selector,
+                        task(interval) {
                             var serial = interval.selector.ordinal();
                             var object = Composite.render.meta[serial];
                             var interrupt = !document.body.contains(interval.selector);
@@ -3139,7 +3337,20 @@ if (typeof Composite === "undefined") {
                         if (iterate) {
                             iterate = Array.from(iterate);
                             iterate.forEach((item, index, array) => {
-                                window[object.iterate.name] = {item:item, index:index, data:array};
+                                var meta = {}; 
+                                Object.defineProperty(meta, "item", {
+                                    value: item,
+                                    enumerable: true
+                                });
+                                Object.defineProperty(meta, "index", {
+                                    value: index,
+                                    enumerable: true
+                                });
+                                Object.defineProperty(meta, "data", {
+                                    value: array,
+                                    enumerable: true
+                                });
+                                window[object.iterate.name] = meta;
                                 var template = document.createElement("div");
                                 var container = imitate(selector.parentNode);
                                 container.appendChild(template);
@@ -3248,6 +3459,10 @@ if (typeof Composite === "undefined") {
                     Composite.render(node, lock.share());
                 });
             }
+            
+            if (selector.hasAttribute(Composite.ATTRIBUTE_RELEASE))
+                selector.removeAttribute(Composite.ATTRIBUTE_RELEASE);
+            
         } finally {
             lock.release();
         }
@@ -3431,7 +3646,6 @@ if (typeof Composite === "undefined") {
                 //Changes at the renderer-specific and static attributes are
                 //monitored. Manipulations are corrected/restored.
                 if (object && record.type == "attributes") {
-                    Composite.statics = Composite.statics || []; 
                     var attribute = (record.attributeName || "").toLowerCase().trim();
                     if (attribute.match(Composite.PATTERN_ATTRIBUTE_ACCEPT)
                             && !attribute.match(Composite.PATTERN_ATTRIBUTE_STATIC)) {
@@ -3454,7 +3668,7 @@ if (typeof Composite === "undefined") {
                                     || object.attributes[attribute] !== record.target.getAttribute(attribute))
                                 record.target.setAttribute(attribute, object.attributes[attribute]);
                         }
-                    } else if (Composite.statics.includes(attribute)) {
+                    } else if (Composite.statics.has(attribute)) {
                         object.statics = object.statics || {};
                         if (!object.statics.hasOwnProperty(attribute)) {
                             //If the renderer has not registered an initial
@@ -3528,8 +3742,8 @@ if (typeof Composite === "undefined") {
                             if (object && object.attributes.hasOwnProperty(Composite.ATTRIBUTE_COMPOSITE)) {
                                 var meta = Composite.mount.lookup(node);
                                 if (meta && meta.meta && meta.meta.model && meta.model
-                                        && Composite.models.includes(meta.meta.model)) {
-                                    Composite.models = Composite.models.filter(model => model != meta.meta.model);
+                                        && Composite.models.has(meta.meta.model)) {
+                                    Composite.models.delete(meta.meta.model);
                                     if (typeof meta.model.undock === "function")
                                         meta.model.undock.call(meta.model);
                                 }
@@ -3586,9 +3800,12 @@ if (typeof Expression === "undefined") {
         /** Constant for element type logic */
         get TYPE_LOGIC() {return 9}
     };
-
-    /** Cache (expression/script) */
-    Expression.cache;
+    
+    //Expression.cache
+    //    Cache (expression/script)    
+    Object.defineProperty(Expression, "cache", {
+        value: new Map()
+    });    
     
     /**
      *  Resolves a value-expression recursively if necessary.
@@ -3916,8 +4133,6 @@ if (typeof Expression === "undefined") {
      */
     Expression.eval = function(variants) {
         
-        Expression.cache = Expression.cache || [];
-        
         var expression = null;
         if (arguments.length > 1)
             expression = arguments[1];
@@ -3929,10 +4144,10 @@ if (typeof Expression === "undefined") {
             serial = arguments[0];
         
         var script = null;
-        script = serial ? Expression.cache[serial] || null : null;
+        script = serial ? Expression.cache.get(serial) || null : null;
         if (!script)
             script = Expression.parse(expression);
-        Expression.cache[serial] = script;
+        Expression.cache.set(serial, script);
         
         try {return eval(script);
         } catch (exception) {
@@ -3978,8 +4193,25 @@ if (typeof Expression === "undefined") {
  *  component. For example, the input mask and result table of a search can be
  *  separate facets of a face, as can articles or sections of a face. Both face
  *  and facet can be accessed via virtual paths. The path to a facet has the
- *  effect that the face is displayed with any other faces, but the requested
- *  facet is displayed in the visible area and focused.
+ *  effect that the face is displayed with any other faces.
+ *  The facet is no longer automatically focused, because the own implementation
+ *  is very simple and much flexible.
+ *   
+ *  window.addEventListener("hashchange", (event) => {
+ *      var path = Path.normalize(event.newURL || "#");
+ *      var target = SiteMap.lookup(path);
+ *      if (target) {
+ *          target = target.facet || target.face;
+ *          if (target) {
+ *              target = target.replace(/(?!=#)#/, " #");
+ *              target = document.querySelector(target);
+ *              if (target) {
+ *                  target.scrollIntoView(true);
+ *                  target.focus();
+ *              }
+ *          }
+ *      }
+ *  }); 
  *  
  *  Faces are also components that can be nested.
  *  Thus, parent faces become partial faces when the path refers to a sub-face.
@@ -4006,12 +4238,12 @@ if (typeof Expression === "undefined") {
  *  is taken over by the Composite API in this implementation. SiteMap is an
  *  extension and is based on the Composite API.
  *  
- *  MVC 1.0.1 20191024
+ *  MVC 1.1.0 20191209
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.0.1 20191024
+ *  @version 1.1.0 20191209
  */
 if (typeof Path === "undefined") {
     
@@ -4024,7 +4256,7 @@ if (typeof Path === "undefined") {
     Path = {
             
         /** Pattern for a valid path. */
-        get PATTERN_PATH() {return /^(?:(?:#*(?:[a-z](?:(?:\w+)|(?:[\w\-]+\w+))*)*)(?:#+(?:[a-z](?:(?:\w+)|(?:[\w\-]+\w+))*)*)*)*$/},
+        get PATTERN_PATH() {return /(^$)|(^#+$)|(^[a-z](\-*\w)*)|(^([a-z](\-*\w)*)*((#+[a-z](\-*\w)*)+)#*$)/},
     
         /** Pattern for a url path. */
         get PATTERN_URL() {return /^[a-z]+:\/.*?(#.*)*$/i},
@@ -4165,8 +4397,8 @@ if (typeof SiteMap === "undefined") {
      *  search can be separate facets of a face, as can articles or sections of
      *  a face. Both face and facet can be accessed via virtual paths. The path
      *  to a facet has the effect that the face is displayed with any other
-     *  faces, but the requested facet is displayed in the visible area and
-     *  focused.
+     *  faces. The facet is no longer automatically focused, because the own
+     *  implementation is very simple and much flexible.
      *  
      *  Faces are also components that can be nested.
      *  Thus, parent faces become partial faces when the path refers to a
@@ -4195,35 +4427,66 @@ if (typeof SiteMap === "undefined") {
         get PATTERN_PATH() {return /^(#([a-z](?:(?:\w+)|(?:[\w\-]+\w+))*)*)+$/},
 
         /** Pattern for a valid face path with optional facets. */
-        get PATTERN_PATH_FACETS() {return /^(#[a-z](?:(?:\w+)|(?:[\w\-]+\w+))*)(\s+(#[a-z](?:(?:\w+)|(?:[\w\-]+\w+))*)+)*$/}
+        get PATTERN_PATH_FACETS() {return /^(#[a-z](?:(?:\w+)|(?:[\w\-]+\w+))*)(\s+(#[a-z](?:(?:\w+)|(?:[\w\-]+\w+))*)+)*$/},
+        
+        /**
+         *  Primarily, the root is always used when loading the page, since the
+         *  renderer is executed before the MVC. Therefore, the renderer may not
+         *  yet know all the paths and authorizations. After the renderer, the
+         *  MVC is loaded and triggers the renderer again if the path requested
+         *  with the URL differs.
+         */        
+        get location() {
+            if (SiteMap.history.size <= 0)
+                return "#";
+            var history = Array.from(SiteMap.history);
+            return history[history.length -1];
+        },
+                
+        set location(path) {
+            if (SiteMap.history.has(path)) {
+                var values = Array.from(SiteMap.history.values());
+                while (SiteMap.history.has(path)
+                        && values.includes(path)) {
+                    var entry = values.pop();
+                    if (entry == path)
+                        return;
+                    SiteMap.history.delete(entry);
+                }
+            } else SiteMap.history.add(path);  
+        }
     };
+        
+    //SiteMap.paths
+    //    Map with all paths without facets paths (key:path, value:facets)    
+    Object.defineProperty(SiteMap, "paths", {
+        value: new Map()
+    });
 
-    /**
-     *  Primarily, the root is always used when loading the page, since the
-     *  renderer is executed before the MVC. Therefore, the renderer may not yet
-     *  know all the paths and authorizations. After the renderer, the MVC is
-     *  loaded and triggers the renderer again if the path requested with the
-     *  URL differs.
-     */
-    SiteMap.location = "#";
+    //SiteMap.facets
+    //    Map with all paths with facet paths {path:key, facet:facet}
+    //    The sum of all paths and assigned facets)
+    Object.defineProperty(SiteMap, "facets", {
+        value: new Map()
+    });
+
+    //SiteMap.acceptors
+    //    Set with all supported acceptors
+    Object.defineProperty(SiteMap, "acceptors", {
+        value: new Set()
+    });
+
+    //SiteMap.history
+    //    Set with the path history (optimized)
+    Object.defineProperty(SiteMap, "history", {
+        value: new Set()
+    });
     
     /**
      *  Internal counter of the path changes, is actually only used for
      *  initiation/detection of the initial rendering.
      */
     SiteMap.ticks;
-    
-    /** Assosiative array with all real paths without facets paths (key:path, value:facets). */
-    SiteMap.paths;
-
-    /** 
-     *   Assosiative array with all paths with facet paths {path:key, facet:facet}
-     *   The sum of all paths and assigned facets).
-     */
-    SiteMap.facets;
-
-    /** Array with all supported acceptors. */  
-    SiteMap.acceptors;
     
     /**
      *  Checks a path using existing/registered permit methods.
@@ -4234,10 +4497,8 @@ if (typeof SiteMap === "undefined") {
      *  @return true if the path has been confirmed as permitted 
      */
     SiteMap.permit = function(path) {
-
-        var acceptors = (SiteMap.acceptors || []).slice();
-        while (acceptors.length > 0) {
-            var acceptor = acceptors.shift();
+        
+        for (let acceptor of SiteMap.acceptors) {
             if (acceptor.pattern
                     && !acceptor.pattern.test(path))
                 continue; 
@@ -4248,7 +4509,6 @@ if (typeof SiteMap === "undefined") {
                 return acceptor; 
             }
         }
-        
         return true;
     };
 
@@ -4290,9 +4550,9 @@ if (typeof SiteMap === "undefined") {
         if (path.match(Path.PATTERN_PATH_FUNCTIONAL))
             return path;
 
-        var paths = Object.keys(SiteMap.paths || {});
+        var paths = Array.from(SiteMap.paths.keys());
         if (!strict)
-            paths = paths.concat(Object.keys(SiteMap.facets || {}));
+            paths = paths.concat(Array.from(SiteMap.facets.keys()));
         while (paths && path.length > 1) {
             if (paths.includes(path))
                 return path;
@@ -4325,9 +4585,6 @@ if (typeof SiteMap === "undefined") {
      */
     SiteMap.lookup = function(path) {
         
-        var paths = SiteMap.paths || {};
-        var facets = SiteMap.facets || {};
-        
         if (arguments.length <= 0)
             path = SiteMap.location;
 
@@ -4338,25 +4595,13 @@ if (typeof SiteMap === "undefined") {
                 return meta.path + meta.facet;
             return meta.path + "#" + meta.facet;
         };
-        
-        var focus = function(focus) {
-            Composite.asynchron((focus) => {
-                focus = focus ? document.querySelector("#" + focus) : focus;
-                if (focus) {
-                    focus.scrollIntoView(true);
-                    focus.focus();
-                }
-            }, (focus.facet || focus.face).replace(/^.*#/, ""));
-        };
 
-        if (paths.hasOwnProperty(path))
-            return {path:path, face:path, facet:null, focus:function() {
-                focus(this);
-            }};
-        else if (facets.hasOwnProperty(path))
-            return {path:canonical(facets[path]), face:facets[path].path, facet:facets[path].facet, focus:function() {
-                focus(this);
-            }};
+        if (SiteMap.paths.has(path)) {
+            return {path, face:path, facet:null};
+        } else if (SiteMap.facets.has(path)) {
+            var facet = SiteMap.facets.get(path);
+            return {path:canonical(facet), face:facet.path, facet:facet.facet};
+        }
         return null;
     };
 
@@ -4460,12 +4705,12 @@ if (typeof SiteMap === "undefined") {
      *  path, it is used.
      *       
      *      String:
-     *  The validation (iteration over further permit-merhodes) will be aborted
+     *  The validation (iteration over further permit-merhods) will be aborted
      *  and it will be forwarded to the path corresponding to the string. 
-
+     * 
      *      In all other cases:
      *  The path is regarded as invalid/unauthorized, the validation (iteration
-     *  over further permit-merhodes) will be aborted and is forwarded to the
+     *  over further permit-merhods) will be aborted and is forwarded to the
      *  original path.
      *  
      *  A permit method for paths can optionally be passed to each meta object.
@@ -4493,7 +4738,7 @@ if (typeof SiteMap === "undefined") {
      *      SiteMap.customize(RegExp, function);
      * 
      *  Permit methods and acceptors are regarded as one set and called in the
-     *  order of their registration. 
+     *  order of their registration.
      *  
      *      Important note about how the SiteMap works:
      *      ----
@@ -4523,8 +4768,7 @@ if (typeof SiteMap === "undefined") {
                 && arguments[0] instanceof RegExp) {
             if (typeof arguments[1] !== "function")
                 throw new TypeError("Invalid acceptor: " + typeof arguments[1]);
-            SiteMap.acceptors = SiteMap.acceptors || [];
-            SiteMap.acceptors.push({pattern:arguments[0], action:arguments[1]});
+            SiteMap.acceptors.add({pattern:arguments[0], action:arguments[1]});
             return;
         }
 
@@ -4533,25 +4777,25 @@ if (typeof SiteMap === "undefined") {
             throw new TypeError("Invalid map: " + typeof arguments[0]);
         var map = arguments[0];
 
-        var acceptors = (SiteMap.acceptors || []).slice();
+        var acceptors = new Set(SiteMap.acceptors);
         if (arguments.length > 1) {
             if (typeof arguments[1] !== "function")
                 throw new TypeError("Invalid permit: " + typeof arguments[1]);
-            acceptors.push({pattern:null, action:arguments[1]});
+            acceptors.add({pattern:null, action:arguments[1]});
         }
         
-        var paths = {};
-        Object.keys(SiteMap.paths || {}).forEach((key) => {
+        var paths = new Map();
+        SiteMap.paths.forEach((value, key, map) => {
             if (typeof key === "string"
                     && key.match(SiteMap.PATTERN_PATH))
-                paths[key] = SiteMap.paths[key];
+            paths.set(key, value);
         });
 
-        var facets = {};
-        Object.keys(SiteMap.facets || {}).forEach((key) => {
+        var facets = new Map();
+        SiteMap.facets.forEach((value, key, map) => {
             if (typeof key === "string"
                     && key.match(SiteMap.PATTERN_PATH))
-                facets[key] = SiteMap.facets[key];
+                facets.set(key, value);
         });
 
         Object.keys(map).forEach((key) => {
@@ -4571,7 +4815,8 @@ if (typeof SiteMap === "undefined") {
             //The entry is added to the path map, if necessary as empty array.
             //Thus the following path map object will be created:
             //    {#path:[facet, facet, ...], ...}
-            paths[key] = paths[key] || [];
+            if (!paths.has(key))
+                paths.set(key, []); 
             
             //In the next step, the facets for a path are determined.
             //These are added to the path in the path map if these do not
@@ -4587,16 +4832,25 @@ if (typeof SiteMap === "undefined") {
                 if (!facet.match(SiteMap.PATTERN_PATH_FACET))
                     throw new Error("Invalid facet: " + facet);
                 //If the facet does not exist at the path, the facet is added.
-                if (!paths[key].includes(facet))
-                    paths[key].push(facet);
+                if (!paths.get(key).includes(facet))
+                    paths.get(key).push(facet);
                 //The facet map object is assembled.
-                facets[Path.normalize(key, facet)] = {path:key, facet:facet};
+                facets.set(Path.normalize(key, facet), {path:key, facet});
             });
         });
         
-        SiteMap.acceptors = acceptors;
-        SiteMap.paths = paths;
-        SiteMap.facets = facets;
+        SiteMap.acceptors.clear();
+        acceptors.forEach((value, key, map) => {
+            SiteMap.acceptors.add(value);
+        });
+        SiteMap.paths.clear();
+        paths.forEach((value, key, map) => {
+            SiteMap.paths.set(key, value);
+        });
+        SiteMap.facets.clear();
+        facets.forEach((value, key, map) => {
+            SiteMap.facets.set(key, value);
+        });
     };
     
     /**
@@ -4679,7 +4933,7 @@ if (typeof SiteMap === "undefined") {
 
         //Without a SiteMap the page will be rendered initially after loading.
         //Then the page has to take control.
-        if (Object.keys(SiteMap.paths || {}).length <= 0) {
+        if (SiteMap.paths.size <= 0) {
             Composite.render(document.body);
             return;
         }
@@ -4725,7 +4979,7 @@ if (typeof SiteMap === "undefined") {
     window.addEventListener("hashchange", (event) => {
         
         //Without a SiteMap no automatic rendering can be initiated.
-        if (Object.keys(SiteMap.paths || {}).length <= 0)
+        if (SiteMap.paths.size <= 0)
             return;
             
         var source = Path.normalize(SiteMap.location);
@@ -4768,16 +5022,6 @@ if (typeof SiteMap === "undefined") {
         source = SiteMap.lookup(source);
         target = SiteMap.lookup(target);
         
-        //The new focus is determined and set with a delay after the rendering.
-        //This is important because the target may not exist before rendering.
-        //The focus is only changed if the face or facet has changed.
-        //In the case of functional links, the focus must not be set, since it
-        //scrolls relative to the last position.
-        if (source && target
-                && (source.face != target.face
-                        || source.facet != target.facet))
-            target.focus();
-        
         //Only if the face is changed or initial, a rendering is necessary.
         if (source.face == target.face
                 && SiteMap.ticks > 1)
@@ -4818,7 +5062,7 @@ if (typeof SiteMap === "undefined") {
  *  task, because case is a keyword. It can be implemented alone, but is always
  *  used in a scenario.
  *  
- *  Test.create({test:function() {
+ *  Test.create({test() {
  *      Assert.assertTrue(true);
  *  }});
  *  
@@ -4829,23 +5073,23 @@ if (typeof SiteMap === "undefined") {
  *      ----
  *  A scenario is a sequence of a lot of test cases usually in one file.
  *  
- *  Test.create({test:function() {
+ *  Test.create({test() {
  *      Assert.assertTrue(true);
  *  }});
  *  
- *  Test.create({name:"example", timeout:1000, test:function() {
+ *  Test.create({name:"example", timeout:1000, test() {
  *      Assert.assertTrue(true);
  *  }});
  *  
- *  Test.create({error:Error test:function() {
+ *  Test.create({error:Error test() {
  *      throw new Error();
  *  }});
  *  
- *  Test.create({error:/^My Error/i, test:function() {
+ *  Test.create({error:/^My Error/i, test() {
  *      throw new Error("My Error");
  *  }});
  *  
- *  Test.create({ignore:true, test:function() {
+ *  Test.create({ignore:true, test() {
  *      Assert.assertTrue(true);
  *  }});
  *  
@@ -4869,12 +5113,12 @@ if (typeof SiteMap === "undefined") {
  *  assertion was not true, a error is thrown -- see as an example the
  *  implementation here. 
  *  
- *  Test 1.1.0 20190906
+ *  Test 1.1.0 20191213
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0 20190906
+ *  @version 1.1.0 20191213
  */
 if (typeof Test === "undefined") {
     
@@ -4916,45 +5160,180 @@ if (typeof Test === "undefined") {
         
         if (typeof Test.activate.lock !== "undefined")
             return;
-        Test.activate.lock = true;
-        
-        /** The output to be used for all messages and errors */
-        Test.output;
-        
-        /** The monitor to be used */
-        Test.monitor;
-        
-        /** Stack of created/registered test tasks (backlog) */
-        Test.stack;
-        
-        /** Queue of currently running test tasks */ 
-        Test.queue;
-        
-        /** The currently performed test task */  
-        Test.task;
-        
-        /** Timer for processing the queue */
-        Test.interval;
-        
-        /** Counter for identification of test tasks */
-        Test.serial;
-        
-        /** Timer for controlling test tasks with timeout */
-        Test.timeout;
-        
-        /** Indicator if the autostart function can be used */
-        Test.autostart;
-        
-        /** Assoziative array with events and their registered listeners */
-        Test.listeners;
+
+        /** 
+         *  Test.activate.lock
+         *      Lock with the activation of the test API.
+         *      The flag cannot be revoked at runtime.    
+         */
+        Object.defineProperty(Test.activate, "lock", {
+            value: true
+        });
+
+        /** 
+         *  Test.stack
+         *      Stack of created/registered test tasks (backlog)
+         */
+        Object.defineProperty(Test, "stack", {
+            value: new Set()
+        }); 
+
+        /** 
+         *  Test.listeners
+         *      Map with events and their registered listeners
+         */
+        Object.defineProperty(Test, "listeners", {
+            value: new Map()
+        }); 
 
         /**
-         *  Optional configuration of the test environment.
-         *  You can configure (also separately): the output and a monitor.
+         *  Registers a callback function for test events.
+         *  @param  event    see Test.EVENT_***
+         *  @param  callback callback function
+         *  @throws An error occurs in the following cases:
+         *      - event is not valid or is not supported
+         *      - callback function is not implemented correctly or does not exist
+         */
+        Test.listen = function(event, callback) {
+            
+            if (typeof event !== "string")
+                throw new TypeError("Invalid event: " + typeof event);
+            if (typeof callback !== "function"
+                    && callback !== null
+                    && callback !== undefined)
+                throw new TypeError("Invalid callback: " + typeof callback);        
+            if (!event.match(Test.PATTERN_EVENT))
+                throw new Error("Invalid event" + (event.trim() ? ": " + event : ""));
+            
+            event = event.toLowerCase();
+            if (!Test.listeners.has(event)
+                    && !Array.isArray(Test.listeners.get(event)))
+                Test.listeners.set(event, []);
+            Test.listeners.get(event).push(callback);
+        };  
+        
+        /**
+         *  Internal method to trigger an event.
+         *  All callback functions for this event are called.
+         *  If the script is in a frame, at the parent object it will also try
+         *  to trigger this method. The parent object is always triggered after
+         *  the current object. If an error occurs when calling the current
+         *  object, the parent object is not triggered.
+         *  @param event  see Test.EVENT_***
+         *  @param status meta object with information about the test execution
+         */
+        Test.fire = function(event, status) {
+            
+            if (typeof Test.worker === "object")
+                Test.worker.status = event; 
+            
+            var invoke = function(context, event, status) {
+                if (typeof context.Test.worker === "object"
+                        && typeof context.Test.worker.monitor === "object"
+                        && typeof context.Test.worker.monitor[event] === "function")
+                try {context.Test.worker.monitor[event](status);
+                } catch (error) {
+                    console.error(error);
+                }        
+                
+                event = (event || "").trim();
+                if (context.Test.listeners.size <= 0
+                        || !event)
+                    return;
+                var listeners = context.Test.listeners.get(event.toLowerCase());
+                if (!Array.isArray(listeners))
+                    return;
+                listeners.forEach((callback) => {
+                    callback(event, status);
+                });                  
+            };
+            
+            invoke(window, event, status);
+            if (parent && parent !== window)
+                try {invoke(parent, event, status);
+                } catch (exception) {
+                }
+        };    
+        
+        /**
+         *  Creates and registers a test task.
+         *  A test task is a function or object with the required meta information
+         *  for performing and a test method to be executed.
          *  
-         *      Output
-         *      ----
+         *      structure of meta: {name:..., test:..., timeout:..., expected:..., ignore:...}
          *      
+         *  meta.name       optional name of the test task
+         *  meta.test       an implemented method to be executed as a test
+         *  meta.timeout    maximum runtime of the test task in milliseconds
+         *                  Exceeding this limit will cause the test to fail.
+         *                  A value greater than 0 is expected, otherwise the
+         *                  timeout is ignored.
+         *  meta.expected   if you want to test for the occurrence of an error
+         *                  The error must occur if the test is successful.
+         *                  An error object or a RegExp is expected as value.
+         *  meta.ignore     true, if the test is to be ignored
+         *  
+         *      usage:
+         *      
+         *  Test.create({test() {
+         *      Assert.assertTrue(true);
+         *  }});
+         *  
+         *  Test.create({name:"example", timeout:1000, test() {
+         *      Assert.assertTrue(true);
+         *  }});
+         *  
+         *  Test.create({error:Error test() {
+         *      throw new Error();
+         *  }});
+         *  
+         *  Test.create({error:/^My Error/i, test() {
+         *      throw new Error("My Error");
+         *  }});
+         *  
+         *  Test.create({ignore:true, test() {
+         *      Assert.assertTrue(true);
+         *  }});
+         *  
+         *  @param meta
+         */
+        Test.create = function(meta) {
+            
+            if (typeof meta !== "object"
+                    || typeof meta.test !== "function")
+                return;
+            
+            if (typeof meta.ignore !== "undefined"
+                    && meta.ignore === true)
+                return;
+            
+            if (Test.stack.has(meta))
+                return;
+            
+            Test.stack.add(meta);
+            var stack = Array.from(Test.stack);
+            Object.defineProperty(meta, "serial", {
+                value: Math.max(stack.length, stack.length > 1 ? stack[stack.length -2].serial +1: 1)
+            });       
+        };
+
+        /**
+         *  Starts the test run.
+         *  The execution of the tests can optionally be configured with the
+         *  start by passing a meta object. The parameters in the meta object
+         *  are optional and cannot be changed at test runtime. Only with the
+         *  next start can new parameters be passed as meta objects.
+         *  
+         *      Test.start({auto: boolean, ouput: {...}, monitor: {...}});
+         *      
+         *      auto
+         *      ----
+         *  true, the start is triggered when the page is loaded     
+         *  If the page is already loaded, the parameter auto is
+         *  ignored and the start is executed immediately.
+         *  
+         *      output
+         *      ----
          *  Simple function or object for outputting messages and errors.
          *  If not specified, console object is used.    
          *  
@@ -4962,18 +5341,17 @@ if (typeof Test === "undefined") {
          *      
          *  var output = {
          *  
-         *      log:function(message) {
+         *      log(message) {
          *          ...
          *      },
          *      
-         *      error:function(message) {
+         *      error(message) {
          *          ...
          *      }
          *  };
          *  
-         *      Monitor
+         *      monitor
          *      ----
-         *      
          *  Monitors the test procedure and is informed about the various cycles
          *  during execution. The monitor also controls the data output. For
          *  example, the output can be redirected to DOM elements. Without a
@@ -4986,34 +5364,34 @@ if (typeof Test === "undefined") {
          *      
          *  var monitor = {
          *  
-         *      start:function(status) {
+         *      start(status) {
          *          The method is called with the start.
          *      },
          *      
-         *      suspend:function(status) {
+         *      suspend(status) {
          *          The method is called with suspension.
          *      },
          *      
-         *      resume:function(status) {
+         *      resume(status) {
          *          The method is called if the test run is stopped and is to be
          *          continued later.
          *      },
          *      
-         *      interrupt:function(status) {
+         *      interrupt(status) {
          *          The method is called if you want to abort the test run.
          *          The test run cannot then be resumed.
          *      },
          *      
-         *      perform:function(status) {
+         *      perform(status) {
          *          The method is called before a test task is performed.
          *      },
          *      
-         *      response:function(status) {
+         *      response(status) {
          *          The method is called when a test task has been performed.
          *          Here you can find the result of the test task.
          *      },
          *      
-         *      finish:function(status) {
+         *      finish(status) {
          *          The method is called when all test tasks have been completed.
          *      }
          *  };
@@ -5045,165 +5423,22 @@ if (typeof Test === "undefined") {
          *                  waiting
          *  queue.faults    number of detected faults
          *  
-         *  @param options
+         *  @param meta  
          */
-        Test.configure = function(options) {
+        Test.start = function(meta) {
             
-            if (typeof options !== "object"
-                    && typeof options !== "function")
-                return;
-            
-            if (typeof options.output === "object"
-                    || typeof options.output === "function")
-                Test.output = options.output;
-            if (typeof options.monitor === "object"
-                    || typeof options.monitor === "function")
-                Test.monitor = options.monitor;
-        };
-        
-        /**
-         *  Registers a callback function for test events.
-         *  @param  event    see Test.EVENT_***
-         *  @param  callback callback function
-         *  @throws An error occurs in the following cases:
-         *      - event is not valid or is not supported
-         *      - callback function is not implemented correctly or does not exist
-         */
-        Test.listen = function(event, callback) {
-            
-            if (typeof event !== "string")
-                throw new TypeError("Invalid event: " + typeof event);
-            if (typeof callback !== "function"
-                    && callback !== null
-                    && callback !== undefined)
-                throw new TypeError("Invalid callback: " + typeof callback);        
-            if (!event.match(Test.PATTERN_EVENT))
-                throw new Error("Invalid event" + (event.trim() ? ": " + event : ""));
-            
-            event = event.toLowerCase();
-            Test.listeners = Test.listeners || [];
-            if (!Array.isArray(Test.listeners[event]))
-                Test.listeners[event] = [];
-            Test.listeners[event].push(callback);
-        };  
-        
-        /**
-         *  Internal method to trigger an event.
-         *  All callback functions for this event are called.
-         *  If the script is in a frame, at the parent object it will also try
-         *  to trigger this method. The parent object is always triggered after
-         *  the current object. If an error occurs when calling the current
-         *  object, the parent object is not triggered.
-         *  @param event  see Test.EVENT_***
-         *  @param status meta object with information about the test execution
-         */
-        Test.fire = function(event, status) {
-            
-            var invoke = function(context, event, status) {
-                if (typeof context.Test.monitor === "object"
-                    && typeof context.Test.monitor[event] === "function")
-                try {context.Test.monitor[event](status);
-                } catch (error) {
-                    console.error(error);
-                }        
-
-                event = (event || "").trim();
-                if (!context.Test.listeners
-                        || !event)
-                    return;
-                var listeners = context.Test.listeners[event.toLowerCase()];
-                if (!Array.isArray(listeners))
-                    return;
-                listeners.forEach((callback) => {
-                    Composite.asynchron(callback, event, status);
-                }); 
-            };
-            
-            invoke(window, event, status);
-            if (parent && parent !== window)
-                try {invoke(parent, event, status);
-                } catch (exception) {
-                }
-        };    
-        
-        /**
-         *  Creates and registers a test task.
-         *  A test task is a function or object with the required meta information
-         *  for performing and a test method to be executed.
-         *  
-         *      structure of meta: {name:..., test:..., timeout:..., expected:..., ignore:...}
-         *      
-         *  meta.name       optional name of the test task
-         *  meta.test       an implemented method to be executed as a test
-         *  meta.timeout    maximum runtime of the test task in milliseconds
-         *                  Exceeding this limit will cause the test to fail.
-         *                  A value greater than 0 is expected, otherwise the
-         *                  timeout is ignored.
-         *  meta.expected   if you want to test for the occurrence of an error
-         *                  The error must occur if the test is successful.
-         *                  An error object or a RegExp is expected as value.
-         *  meta.ignore     true, if the test is to be ignored
-         *  
-         *      usage:
-         *      
-         *  Test.create({test:function() {
-         *      Assert.assertTrue(true);
-         *  }});
-         *  
-         *  Test.create({name:"example", timeout:1000, test:function() {
-         *      Assert.assertTrue(true);
-         *  }});
-         *  
-         *  Test.create({error:Error test:function() {
-         *      throw new Error();
-         *  }});
-         *  
-         *  Test.create({error:/^My Error/i, test:function() {
-         *      throw new Error("My Error");
-         *  }});
-         *  
-         *  Test.create({ignore:true, test:function() {
-         *      Assert.assertTrue(true);
-         *  }});
-         *  
-         *  @param meta
-         */
-        Test.create = function(meta) {
-            
-            if (typeof meta !== "object"
-                    || typeof meta.test !== "function")
-                return;
-            
-            if (typeof meta.ignore !== "undefined"
-                    && meta.ignore === true)
-                return;
-            
-            Test.stack = Test.stack || [];
-            if (Test.stack.indexOf(meta) >= 0)
-                return;
-            if (Test.serial == undefined)
-                Test.serial = 0;
-            meta.serial = ++Test.serial;
-            Test.stack.push(meta);
-        };
-
-        /**
-         *  (Re)Starts the test run.
-         *  The start can be done manually or when using auto = true, by loading
-         *  the page. If the page is already loaded, the parameter auto is
-         *  ignored and the start is executed immediately.
-         *  @param auto true, the start is triggered when the page is loaded
-         */
-        Test.start = function(auto) {
-
-            if (Test.interval)
+            if (typeof Test.worker !== "undefined")
                 return;
 
-            if (auto && document.readyState == "loaded") {
-                if (typeof Test.autostart === "undefined") {
-                    Test.autostart = true;
+            if (meta && meta.auto
+                    && (document.readyState == "loading"
+                        || document.readyState == "interactive")) {
+                if (typeof Test.start.auto === "undefined") {
+                    Object.defineProperty(Test.start, "auto", {
+                        value: true
+                    });  
                     window.addEventListener("load", () => {
-                        Test.start();
+                        Test.start(meta);
                     });
                 }
                 return;
@@ -5212,91 +5447,116 @@ if (typeof Test === "undefined") {
             var numerical = function(number, text) {
                 return number + " " + text + (number != 1 ? "s" : "");
             };
+
+            Test.worker = {};
+
+            //Test.worker.output
+            //    Output to be used for all messages and errors
+            Test.worker.output = meta ? meta.output : null;
+            Test.worker.output = Test.worker.output || console;
             
-            Test.output = Test.output || console;
-            Test.monitor = Test.monitor || {
-                start:function(status) {
-                    Test.output.log(new Date().toUTCString() + " Test is started"
+            //Test.worker.monitor
+            //    Monitoring of test processing
+            Test.worker.monitor = meta ? meta.monitor : null;
+            Test.worker.monitor = Test.worker.monitor || {
+                start(status) {
+                    Test.worker.output.log(new Date().toUTCString() + " Test is started"
                             + ", " + numerical(status.queue.size, "task") + " in the queue");
                 },
-                suspend:function(status) {
-                    Test.output.log(new Date().toUTCString() + " Test is suspended"
+                suspend(status) {
+                    Test.worker.output.log(new Date().toUTCString() + " Test is suspended"
                             + ", " + numerical(status.queue.length, "task") + " still outstanding");
                 },
-                resume:function(status) {
-                    Test.output.log(new Date().toUTCString() + " Test is continued "
+                resume(status) {
+                    Test.worker.output.log(new Date().toUTCString() + " Test is continued "
                             + ", " + numerical(status.queue.size, "task") + " in the queue");
                 },
-                interrupt:function(status) {
-                    Test.output.log(new Date().toUTCString() + " Test is interrupted"
+                interrupt(status) {
+                    Test.worker.output.log(new Date().toUTCString() + " Test is interrupted"
                             + "\n\t" + numerical(status.queue.size -status.queue.progress, "task") + " still outstanding"
                             + "\n\t" + numerical(status.queue.faults, "fault") + " were detected"
                             + "\n\ttotal time " + (new Date().getTime() -status.queue.timing) + " ms");
                 },
-                perform:function(status) {
+                perform(status) {
                 },
-                response:function(status) {
+                response(status) {
                     var timing = new Date().getTime() -status.task.timing;
                     if (status.task.error)
-                        Test.output.error(new Date().toUTCString() + " Test task " + status.task.title + " " + status.task.error.message);
-                    else Test.output.log(new Date().toUTCString() + " Test task " + status.task.title + " was successful (" + timing + " ms)");
+                        Test.worker.output.error(new Date().toUTCString() + " Test task " + status.task.title + " " + status.task.error.message);
+                    else Test.worker.output.log(new Date().toUTCString() + " Test task " + status.task.title + " was successful (" + timing + " ms)");
                 },
-                finish:function(status) {
-                    Test.output.log(new Date().toUTCString() + " Test is finished"
+                finish(status) {
+                    Test.worker.output.log(new Date().toUTCString() + " Test is finished"
                             + "\n\t" + numerical(status.queue.size, "task") + " were performed"
                             + "\n\t" + numerical(status.queue.faults, "fault") + " were detected"
                             + "\n\ttotal time " + (new Date().getTime() -status.queue.timing) + " ms");
                 }            
             };
 
-            Test.stack = Test.stack || [];
-            Test.queue = Test.queue || {timing:false, stack:[], size:0, lock:false, progress:0, faults:0};
-            if (Test.queue.stack.length == 0) {
-                Test.queue.stack = Test.stack.slice();
-                Test.queue.size = Test.queue.stack.length;
-                Test.queue.timing = new Date().getTime();
+            //Test.worker.queue
+            //    Queue of currently running test tasks
+            Test.worker.queue = Test.worker.queue || {timing:false, stack:[], size:0, lock:false, progress:0, faults:0};
+            if (Test.worker.queue.stack.length == 0) {
+                Test.worker.queue.stack = Array.from(Test.stack);
+                Test.worker.queue.size = Test.worker.queue.stack.length;
+                Test.worker.queue.timing = new Date().getTime();
             }
             
-            Test.timeout = window.setInterval(() => {
-
-                if (!Test.task
-                        || !Test.task.running
-                        || !Test.queue.lock)
+            //Test.worker.timeout
+            //    Timer for controlling test tasks with timeout
+            Test.worker.timeout = window.setInterval(() => {
+            
+                if (Test.worker.status == Test.EVENT_SUSPEND)
                     return;
-                if (!Test.task.timeout
-                        || Test.task.timeout > new Date().getTime())
+                
+                if (typeof Test.worker.task === "undefined"
+                        || !Test.worker.task.running
+                        || !Test.worker.queue.lock)
                     return;
-                Test.task.duration = new Date().getTime() -task.timing;
-                Test.task.error = new Error("Timeout occurred, expected " + Test.task.timeout + " ms but was " + Test.task.duration + " ms");
+                
+                var task = Test.worker.task;
+                if (!task.timeout
+                        || task.timeout > new Date().getTime())
+                    return;
+                
+                task.duration = new Date().getTime() -task.timing;
+                task.error = new Error("Timeout occurred, expected " + task.timeout + " ms but was " + task.duration + " ms");
                 Test.fire(Test.EVENT_RESPONSE, Test.status());
-                Test.queue.faults++;
-                Test.queue.lock = false;
+                Test.worker.queue.faults++;
+                Test.worker.queue.lock = false;
             }, 25);
             
-            Test.interval = window.setInterval(() => {
-                
-                if (!Test.queue.lock
-                        && Test.queue.progress <= 0)
-                    Test.fire(Test.EVENT_START, Test.status());
-                
-                if (Test.queue.lock)
+            //Test.worker.interval
+            //    Timer for processing the queue
+            Test.worker.interval = window.setInterval(() => {
+
+                if (Test.worker.status == Test.EVENT_SUSPEND)
                     return;
                 
-                if (Test.queue.stack.length > 0) {
-                    Test.queue.lock = true;
-                    Test.queue.progress++;
-                    var meta = Test.queue.stack.shift();
+                if (!Test.worker.queue.lock
+                        && Test.worker.queue.progress <= 0)
+                    Test.fire(Test.EVENT_START, Test.status());
+                
+                if (Test.worker.queue.lock)
+                    return;
+                
+                if (Test.worker.queue.stack.length > 0) {
+                    Test.worker.queue.lock = true;
+                    Test.worker.queue.progress++;
+                    var meta = Test.worker.queue.stack.shift();
                     var timeout = false;
                     if ((meta.timeout || 0) > 0)
                         timeout = new Date().getTime() +meta.timeout;
-                    Test.task = {title:null, meta:meta, running:true, timing:new Date().getTime(), timeout:timeout, duration:false, error:null};
-                    Test.task.title = "#" + meta.serial;
+                    //Test.worker.task
+                    //    Currently performed test task
+                    Test.worker.task = {title:null, meta, running:true, timing:new Date().getTime(), timeout, duration:false, error:null};
+                    Test.worker.task.title = "#" + meta.serial;
                     if (typeof meta.name === "string"
                             && meta.name.trim().length > 0)
-                        Test.task.title += " " + meta.name.replace(/[\x00-\x20]+/g, " ").trim();
+                        Test.worker.task.title += " " + meta.name.replace(/[\x00-\x20]+/g, " ").trim();
                     Test.fire(Test.EVENT_PERFORM, Test.status());
                     Composite.asynchron(() => {
-                        var task = Test.task;
+                        var task = Test.worker.task;
                         try {task.meta.test();
                         } catch (error) {
                             task.error = error;
@@ -5322,74 +5582,69 @@ if (typeof Test === "undefined") {
                                     && !task.error) {
                                 task.error = new Error("Timeout occurred, expected " + task.meta.timeout + " ms but was " + task.duration + " ms");                            
                                 Test.fire(Test.EVENT_RESPONSE, Test.status());
-                                Test.queue.faults++;
+                                Test.worker.queue.faults++;
                             }
                             if (!task.error
                                     || !String(task.error.message).match(/^Timeout occurred/)) {
                                 if (task.error)
-                                    Test.queue.faults++;
+                                    Test.worker.queue.faults++;
                                 Test.fire(Test.EVENT_RESPONSE, Test.status());
                             }
-                            Test.queue.lock = false;
+                            Test.worker.queue.lock = false;
                         }
                     });
                     return;
                 }
                 
-                window.clearTimeout(Test.interval);
-                Test.interval = null;
-                Test.task = null;
+                window.clearTimeout(Test.worker.interval);
+                window.clearTimeout(Test.worker.timeout);
                 Test.fire(Test.EVENT_FINISH, Test.status());
+                delete Test.worker;
             }, 25);
         };
-        
+
         /**
          *  Suspends the current test run, which can be continued from the
          *  current test with Test.resume().
+         *  @throws An error occurs in the following cases:
+         *      - No worker is present or cannot be suspended
          */
         Test.suspend = function() {
 
-            if (!Test.interval)
-                return;
-            window.clearTimeout(Test.interval);
-            Test.interval = null;
-            while (Test.queue.lock)
-                continue;
-            Test.task = null;
+            if (typeof Test.worker === "undefined")
+                throw new Error("Suspend is not available"); 
             Test.fire(Test.EVENT_SUSPEND, Test.status());
         };
         
-        /** Continues the test run if it was previously suspended. */
+        /** 
+         *  Continues the test run if it was previously suspended.
+         *  @throws An error occurs in the following cases:
+         *      - No worker is present or cannot be resumed
+         */
         Test.resume = function() {
-
-            if (!Test.interval)
-                return;
-            while (Test.queue.lock)
-                continue;
-            Test.task = null;        
-            if (Test.queue.stack.length <= 0)
-                return;
-            Test.start();
+            
+            if (typeof Test.worker === "undefined"
+                    || Test.worker.status !== Test.EVENT_SUSPEND)
+                throw new Error("Resume is not available"); 
             Test.fire(Test.EVENT_RESUME, Test.status());
         };
         
         /**
          *  Interrupts the current test run and discards all outstanding tests.
          *  The test run can be restarted with Test.start().
+         *  @throws An error occurs in the following cases:
+         *      - No worker is present or cannot be interrupted
          */
         Test.interrupt = function() {
             
-            if (!Test.interval)
-                return;
-            window.clearTimeout(Test.interval);
-            Test.interval = null;
-            while (Test.queue.lock)
-                continue;
-            Test.task = null;        
-            Test.queue.stack = [];
+            if (typeof Test.worker === "undefined")
+                throw new Error("Interrupt is not available"); 
+            window.clearTimeout(Test.worker.interval);
+            window.clearTimeout(Test.worker.timeout);
             Test.fire(Test.EVENT_INTERRUPT, Test.status());
+            delete Test.worker;
         };
-        
+
         /**
          *  Makes a snapshot of the status of the current test.
          *  The status contains details of the current task and the queue. The
@@ -5422,30 +5677,73 @@ if (typeof Test === "undefined") {
          */
         Test.status = function() {
             
-            var task = null;
-            if (Test.task)
-                task = {
-                    title:Test.task.title,
-                    meta:Test.task.meta,
-                    running:Test.task.running,
-                    timing:Test.task.timing,
-                    timeout:Test.task.timeout,
-                    duration:Test.task.duration,
-                    error:Test.task.error
-                };
-
-            var queue = null;
-            if (Test.queue)
-                queue = {
-                    timing:Test.queue.timing,
-                    size:Test.queue.size,
-                    length:Test.queue.stack.length,
-                    progress:Test.queue.progress,
-                    lock:Test.queue.lock,
-                    faults:Test.queue.faults
-                };
+            var status = {};
+            if (typeof Test.worker === "object"
+                    && typeof Test.worker.task === "object") {
+                status.task = {};
+                Object.defineProperty(status.task, "title", {
+                    value: Test.worker.task.title,
+                    enumerable: true
+                });
+                Object.defineProperty(status.task, "meta", {
+                    value: Test.worker.task.meta,
+                    enumerable: true
+                });
+                Object.defineProperty(status.task, "running", {
+                    value: Test.worker.task.running,
+                    enumerable: true
+                });
+                Object.defineProperty(status.task, "timing", {
+                    value: Test.worker.task.timing,
+                    enumerable: true
+                });
+                Object.defineProperty(status.task, "timeout", {
+                    value: Test.worker.task.timeout,
+                    enumerable: true
+                });
+                Object.defineProperty(status.task, "duration", {
+                    value: Test.worker.task.duration,
+                    enumerable: true
+                });
+                Object.defineProperty(status.task, "error", {
+                    value: Test.worker.task.error,
+                    enumerable: true
+                });
+            }
             
-            return {task:task, queue:queue};
+            if (typeof Test.worker === "object"
+                    && typeof Test.worker.queue === "object") {
+                status.queue = {};
+                Object.defineProperty(status.queue, "timing", {
+                    value: Test.worker.queue.timing,
+                    enumerable: true
+                });
+                Object.defineProperty(status.queue, "size", {
+                    value: Test.worker.queue.size,
+                    enumerable: true
+                });
+                Object.defineProperty(status.queue, "length", {
+                    value: Test.worker.queue.stack.length,
+                    enumerable: true
+                });
+                Object.defineProperty(status.queue, "progress", {
+                    value: Test.worker.queue.progress,
+                    enumerable: true
+                });
+                Object.defineProperty(status.queue, "lock", {
+                    value: Test.worker.queue.lock,
+                    enumerable: true
+                });
+                Object.defineProperty(status.queue, "faults", {
+                    value: Test.worker.queue.faults,
+                    enumerable: true
+                });
+            }
+            
+            if (typeof status.task === "undefined"
+                    && typeof status.queue === "undefined")
+                return false;
+            return status;
         };    
     
         if (typeof Assert === "undefined") {
@@ -5467,7 +5765,7 @@ if (typeof Test === "undefined") {
              */
             Assert.create = function(arguments, size) {
     
-                var assert = {message:null, values:[], error:function() {
+                var assert = {message:null, values:[], error() {
                     var words = Array.from(arguments);
                     words.forEach((argument, index, array) => {
                         array[index] = String(argument).replace(/\{(\d+)\}/g, (match, index) => {
@@ -5665,7 +5963,7 @@ if (typeof Test === "undefined") {
                 throw new Error(message);
             }
         };
-    
+        
         /**
          *  Redirection of the console level INFO, ERROR, WARN, LOG when using
          *  tests. The outputs are buffered for analysis and listeners can be
@@ -5683,8 +5981,10 @@ if (typeof Test === "undefined") {
             console.output.info = "";
         };
         
-        /** Array of registered listeners for occurring console outputs. */
-        console.listeners = [];
+        /** Set of registered listeners for occurring console outputs. */
+        Object.defineProperty(console, "listeners", {
+            value: new Set()
+        });        
         
         /**
          *  Registers a callback function for console output.
@@ -5694,9 +5994,7 @@ if (typeof Test === "undefined") {
          *  @param callback callback function
          */
         console.listen = function(callback) {
-            
-            console.listeners = console.listeners || [];
-            console.listeners.push(callback);
+            console.listeners.add(callback);
         };
         
         /** 
@@ -5714,16 +6012,13 @@ if (typeof Test === "undefined") {
             console.output[level] += Array.from(variants).join(", ");
             
             if (output)
-                output.apply(null, variants);
+                output(...variants);
             
-            var values = Array.from(variants);
-            values.unshift(level);
+            var values = [level, ...variants];
             
-            var listeners = console.listeners;
-            if (Array.isArray(listeners))
-                listeners.forEach((callback) => {
-                    callback.apply(null, values);
-                }); 
+            console.listeners.forEach((callback) => {
+                callback(...values);
+            }); 
             
             arguments = Array.from(arguments);
             if (arguments.length > 2)
@@ -5731,31 +6026,31 @@ if (typeof Test === "undefined") {
             if (parent && parent !== window
                     && parent.console
                     && typeof parent.console.forward === "function")
-                parent.console.forward.apply(null, arguments);
+                parent.console.forward(...arguments);
         };
         
         /** Redirect for the level: LOG */
-        console.forward.log = console.log;
+        console.log$origin = console.log;
         console.log = function(message) {
-            console.forward("log", arguments, console.forward.log);
+            console.forward("log", arguments, console.log$origin);
         };
         
         /** Redirect for the level: WARN */
-        console.forward.warn = console.warn;
+        console.warn$origin = console.warn;
         console.warn = function(message) {
-            console.forward("warn", arguments, console.forward.warn);
+            console.forward("warn", arguments, console.warn$origin);
         };
         
         /** Redirect for the level: ERROR */
-        console.forward.error = console.error;
+        console.error$origin = console.error;
         console.error = function(message) {
-            console.forward("error", arguments, console.forward.error);
+            console.forward("error", arguments, console.error$origin);
         };
         
         /** Redirect for the level: INFO */
-        console.forward.info = console.info;
+        console.info$origin = console.info;
         console.info = function(message) {
-            console.forward("info", arguments, console.forward.info);
+            console.forward("info", arguments, console.info$origin);
         };
         
         /** In the case of an error, the errors are forwarded to the console. */
@@ -5814,6 +6109,9 @@ if (typeof Test === "undefined") {
          */      
         if (Object.prototype.toPlainString === undefined)
             Object.prototype.toPlainString = function() {
+                if (this != null
+                        && typeof this[Symbol.iterator] === 'function')
+                    return JSON.stringify([...this])
                 return JSON.stringify(this);
             };     
           
