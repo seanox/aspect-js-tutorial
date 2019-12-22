@@ -803,12 +803,12 @@ if (typeof DataSource === "undefined") {
  *      
  *  <h1 output="{{Messages['contact.title']}}"/>
  *  
- *  Messages 1.2.0 20191213
+ *  Messages 1.2.0 20191219
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20191213
+ *  @version 1.2.0 20191219
  */
 if (typeof Messages === "undefined") {
     
@@ -825,7 +825,7 @@ if (typeof Messages === "undefined") {
         //To initialize, the DataSource.localize method must be overwritten and
         //loading of the key-value pairs is embedded.
         var localize = DataSource.localize;
-        DataSource.localize = function(locale) {
+        DataSource.localize = (locale) => {
             DataSource.localize$origin(locale);
 
             window["Messages"] = {};
@@ -944,12 +944,12 @@ if (typeof Messages === "undefined") {
  *  Thus virtual paths, object structure in JavaScript (namespace) and the
  *  nesting of the DOM must match.
  *
- *  Composite 1.2.0 20191213
+ *  Composite 1.2.0 20191219
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20191213
+ *  @version 1.2.0 20191219
  */
 if (typeof Composite === "undefined") {
     
@@ -1462,28 +1462,27 @@ if (typeof Composite === "undefined") {
     XMLHttpRequest.prototype.open$origin = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(...variants) {
 
-        var callback = function() {
-            if (arguments.length > 0) {
-                var event = arguments[0];
-                if (event.type == "loadstart")
-                    event = Composite.EVENT_AJAX_START;
-                else if (event.type == "progress")
-                    event = Composite.EVENT_AJAX_PROGRESS; 
-                else if (event.type == "readystatechange")
-                    event = Composite.EVENT_AJAX_RECEIVE; 
-                else if (event.type == "load")
-                    event = Composite.EVENT_AJAX_LOAD; 
-                else if (event.type == "abort")
-                    event = Composite.EVENT_AJAX_ABORT; 
-                else if (event.type == "error")
-                    event = Composite.EVENT_AJAX_ERROR;   
-                else if (event.type == "timeout")
-                    event = Composite.EVENT_AJAX_TIMEOUT;   
-                else if (event.type == "loadend")
-                    event = Composite.EVENT_AJAX_END; 
-                else return;
-                Composite.fire(event, arguments); 
-            }
+        var callback = (event = null) => {
+            if (!event)
+                return;
+            if (event.type == "loadstart")
+                event = Composite.EVENT_AJAX_START;
+            else if (event.type == "progress")
+                event = Composite.EVENT_AJAX_PROGRESS; 
+            else if (event.type == "readystatechange")
+                event = Composite.EVENT_AJAX_RECEIVE; 
+            else if (event.type == "load")
+                event = Composite.EVENT_AJAX_LOAD; 
+            else if (event.type == "abort")
+                event = Composite.EVENT_AJAX_ABORT; 
+            else if (event.type == "error")
+                event = Composite.EVENT_AJAX_ERROR;   
+            else if (event.type == "timeout")
+                event = Composite.EVENT_AJAX_TIMEOUT;   
+            else if (event.type == "loadend")
+                event = Composite.EVENT_AJAX_END; 
+            else return;
+            Composite.fire(event, arguments); 
         };
         
         if (typeof this.open$init === "undefined") {
@@ -1985,7 +1984,7 @@ if (typeof Composite === "undefined") {
                             //property value. Other targets are ignored.
                             //The synchronization expects a positive validation,
                             //otherwise it will not be executed.
-                            var accept = function(property) {
+                            var accept = (property) => {
                                 var type = typeof property;
                                 if (typeof property === "undefined")
                                     return false;
@@ -2337,7 +2336,7 @@ if (typeof Composite === "undefined") {
                     changes.push(entry); 
                 }
             });
-            var scanning = function(element) {
+            var scanning = (element) => {
                 if (!(element instanceof Element))
                     return;
                 var serial = element.ordinal();
@@ -2977,7 +2976,7 @@ if (typeof Composite === "undefined") {
             //require the complete composite hierarchy to determine the
             //namespace of the models. The return value is a DIV structure that
             //corresponds to the composite hierarchy.
-            var imitate = function(element) {
+            var imitate = (element) => {
                 if (!(element instanceof Element))
                     return null;
                 var container = document.createElement("div");
@@ -2999,7 +2998,7 @@ if (typeof Composite === "undefined") {
             //Internal method for docking models.
             //Only composites are mounted based on their model.
             //This excludes the placeholders (are text nodes) of conditions.
-            var dock = function(model) {
+            var dock = (model) => {
                 if (typeof model !== "string"
                         || Composite.models.has(model))
                     return;
@@ -3518,7 +3517,7 @@ if (typeof Composite === "undefined") {
         Composite.render.cache[context + ".composite"] = null;
         var request = new XMLHttpRequest();
         request.overrideMimeType("text/plain");
-        request.onreadystatechange = function() {
+        request.onreadystatechange = () => {
             if (request.readyState != 4
                     || request.status == "404")
                 return;
@@ -3713,7 +3712,7 @@ if (typeof Composite === "undefined") {
                 //method is called if an object binding exists.
                 if (record.removedNodes) {
                     record.removedNodes.forEach((node) => {
-                        var cleanup = function(node) {
+                        var cleanup = (node) => {
                             //Clean up all the child elements first.
                             if (node.childNodes) {
                                 Array.from(node.childNodes).forEach((node) => {
@@ -3930,7 +3929,7 @@ if (typeof Expression === "undefined") {
         
         expression = expression.replace(/(^\n+)|(\n+$)/g, "");
 
-        var collate = function(word) {
+        var collate = (word) => {
             if (word.type == Expression.TYPE_TEXT)
                 cascade.text.push(word);
             else if (word.type == Expression.TYPE_EXPRESSION)
@@ -4067,7 +4066,7 @@ if (typeof Expression === "undefined") {
         //Create a flat sequence from the cascade.
         
         var words = [];
-        var merge = function(word) {
+        var merge = (word) => {
             if (Array.isArray(word))
                 word.forEach((entry) => {
                     merge(entry);    
@@ -4238,12 +4237,12 @@ if (typeof Expression === "undefined") {
  *  is taken over by the Composite API in this implementation. SiteMap is an
  *  extension and is based on the Composite API.
  *  
- *  MVC 1.1.0 20191209
+ *  MVC 1.1.0 20191222
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0 20191209
+ *  @version 1.1.0 20191222
  */
 if (typeof Path === "undefined") {
     
@@ -4256,7 +4255,7 @@ if (typeof Path === "undefined") {
     Path = {
             
         /** Pattern for a valid path. */
-        get PATTERN_PATH() {return /(^$)|(^#+$)|(^[a-z](\-*\w)*)|(^([a-z](\-*\w)*)*((#+[a-z](\-*\w)*)+)#*$)/},
+        get PATTERN_PATH() {return /(?:^(?:\w(?:\-*\w)*)*(?:(?:#+\w(?:\-*\w)*)+)#*$)|(?:^\w(?:\-*\w)*$)|(?:^#+$)|(?:^$)/},
     
         /** Pattern for a url path. */
         get PATTERN_URL() {return /^[a-z]+:\/.*?(#.*)*$/i},
@@ -4327,50 +4326,60 @@ if (typeof Path === "undefined") {
      *      - if the root and/or the path is invalid
      */
     Path.normalize = function(variants) {
-            
-        var path = null;
-        var root = null;
-        if (arguments.length == 1) {
-            path = arguments[0];
-        } else if (arguments.length >= 1) {
+        
+        if (arguments.length <= 0)
+            return null;
+        if (arguments.length > 0
+                && arguments[0] == null)
+            return null;
+        if (arguments.length > 1
+                && arguments[1] == null)
+            return null;        
+
+        if (arguments.length > 1
+                && arguments[0] != null
+                && typeof arguments[0] !== "string")
+            throw new TypeError("Invalid root: " + typeof arguments[0]);
+        var root = "#";
+        if (arguments.length > 1) {
             root = arguments[0];
             try {root = Path.normalize(root);
             } catch (exception) {
-                throw new TypeError("Invalid root" + (String(root).trim() ? ": " + root : ""));
-            }
-            path = arguments[1];
+                root = (root || "").trim();
+                throw new TypeError("Invalid root" + (root ? ": " + root : ""));
+            }        
         }
         
-        if (root == null
-                || root.match(/^(#+)*$/))
-            root = "#";
-
-        if (path == null)
-            return null;
-        
-        if (typeof path === "string"
+        if (arguments.length > 1
+                && arguments[1] != null
+                && typeof arguments[1] !== "string")
+            throw new TypeError("Invalid path: " + typeof arguments[1]);
+        if (arguments.length > 0
+                && arguments[0] != null
+                && typeof arguments[0] !== "string")
+            throw new TypeError("Invalid path: " + typeof arguments[0]);
+        var path = "";
+        if (arguments.length == 1)
+            path = arguments[0];
+        if (arguments.length == 1
                 && path.match(Path.PATTERN_URL))
             path = path.replace(Path.PATTERN_URL, "$1");
+        else if (arguments.length > 1)
+            path = arguments[1];
+        path = (path || "").trim();
         
-        if (typeof path !== "string"
-                || !path.match(Path.PATTERN_PATH))
+        if (!path.match(Path.PATTERN_PATH))
             throw new TypeError("Invalid path" + (String(path).trim() ? ": " + path : ""));
         
-        path = path.toLowerCase();
+        path = path.replace(/([^#])#$/, "$1");
+        path = path.replace(/^([^#])/, "#$1");
         
         //Functional paths are detected.
         if (path.match(Path.PATTERN_PATH_FUNCTIONAL))
             return "###";
 
-        //Paths to the current root are detected.
-        if (path.length == 0)
-            return root;
-        
-        //Relative paths are extended with the root.
-        if (path.match(/^[^#].*$/))
-            path = root + "#" + path;
-        if (path.match(/^#{2}.*$/))
-            path = root + path;
+        path = root + path;
+        path = path.toLowerCase();
         
         //Path will be balanced
         var pattern = /#[^#]+#{2}/;
@@ -4422,12 +4431,37 @@ if (typeof SiteMap === "undefined") {
      *  and/or redirected/forwarded with own logic. 
      */
     SiteMap = {
-            
-        /** Pattern for a valid face path. */
-        get PATTERN_PATH() {return /^(#([a-z](?:(?:\w+)|(?:[\w\-]+\w+))*)*)+$/},
-
-        /** Pattern for a valid face path with optional facets. */
-        get PATTERN_PATH_FACETS() {return /^(#[a-z](?:(?:\w+)|(?:[\w\-]+\w+))*)(\s+(#[a-z](?:(?:\w+)|(?:[\w\-]+\w+))*)+)*$/},
+           
+        /** 
+         *  Pattern for a valid face path:
+         *      - Paths and path segments must always begin with a letter
+         *      - Allowed are the characters a-z _ 0-9 and -
+         *      - Character - always embedded between the characters: a-z _ 0-9,
+         *        it can not be used at the beginning and end
+         *      - Character # is used to separate the path segments
+         *      - After the separator # at least one letter is expected
+         *      - Only # as root path is also allowed
+         */
+        get PATTERN_PATH_FACE() {return /(^((#[a-z][\-\w]+\w)|(#[a-z]\w*))+$)|(^#$)/},
+        
+        /** 
+         *  Pattern for a valid facet path:
+         *      - Paths and path segments must always begin with a letter
+         *      - Allowed are the characters a-z _ 0-9 and -
+         *      - Character - always embedded between the characters: a-z _ 0-9,
+         *        it can not be used at the beginning and end
+         *      - Character # is used to separate the path segments
+         *      - After the separator # at least one letter is expected 
+         */
+        get PATTERN_PATH_FACET() {return /^(([a-z][\-\w]+\w)|([a-z]\w*))(#(([a-z][\-\w]+\w)|([a-z]\w*)))*$/},
+        
+        /** 
+         *  Pattern for a valid variable facet path:
+         *      - Same conditions as for the pattern for a valid facet path
+         *      - Every path must end with ...
+         *      - Only ... as facet path is also allowed
+         */
+        get PATTERN_PATH_FACET_VARIABLE() {return /(^(([a-z][\-\w]+\w)|([a-z]\w*))(#(([a-z][\-\w]+\w)|([a-z]\w*)))*(\.){3}$)|(^\.{3}$)/},
         
         /**
          *  Primarily, the root is always used when loading the page, since the
@@ -4438,7 +4472,7 @@ if (typeof SiteMap === "undefined") {
          */        
         get location() {
             if (SiteMap.history.size <= 0)
-                return "#";
+                return window.location.hash || "#";
             var history = Array.from(SiteMap.history);
             return history[history.length -1];
         },
@@ -4470,6 +4504,12 @@ if (typeof SiteMap === "undefined") {
         value: new Map()
     });
 
+    //SiteMap.variables
+    //    TODO:
+    Object.defineProperty(SiteMap, "variables", {
+        value: new Set()
+    });
+
     //SiteMap.acceptors
     //    Set with all supported acceptors
     Object.defineProperty(SiteMap, "acceptors", {
@@ -4481,12 +4521,6 @@ if (typeof SiteMap === "undefined") {
     Object.defineProperty(SiteMap, "history", {
         value: new Set()
     });
-    
-    /**
-     *  Internal counter of the path changes, is actually only used for
-     *  initiation/detection of the initial rendering.
-     */
-    SiteMap.ticks;
     
     /**
      *  Checks a path using existing/registered permit methods.
@@ -4527,7 +4561,7 @@ if (typeof SiteMap === "undefined") {
      *  @return the real path determined in the SiteMap, or the unchanged
      *      function path.
      */  
-    SiteMap.locate = function(path, strict) {
+    SiteMap.locate = function(path) {
         
         path = path || "";
         
@@ -4535,11 +4569,19 @@ if (typeof SiteMap === "undefined") {
         //Invalid paths are shortened when searching for a valid partial path.
         //Theoretically, the shortening must end automatically with the root or
         //the current path.
-        try {path = Path.normalize(SiteMap.location, path);
+        
+        var locate = (path) => {
+            var variants = [SiteMap.location, path];
+            if (path.match(/(^#[^\#].*$)|(^#$)/))
+                variants.shift();
+            return variants;
+        };
+        
+        try {path = Path.normalize(...locate(path));
         } catch (exception) {
             while (true) {
                 path = path.replace(/(^[^#]+$)|(#[^#]*$)/, "");
-                try {path = Path.normalize(SiteMap.location, path);
+                try {path = Path.normalize(...locate(path));
                 } catch (exception) {
                     continue;
                 }
@@ -4551,9 +4593,11 @@ if (typeof SiteMap === "undefined") {
             return path;
 
         var paths = Array.from(SiteMap.paths.keys());
-        if (!strict)
-            paths = paths.concat(Array.from(SiteMap.facets.keys()));
+        paths = paths.concat(Array.from(SiteMap.facets.keys()));
         while (paths && path.length > 1) {
+            for (let variable of SiteMap.variables)
+                if ((path + "#").startsWith(variable + "#"))
+                    return path;
             if (paths.includes(path))
                 return path;
             path = Path.normalize(path + "##");
@@ -4567,17 +4611,48 @@ if (typeof SiteMap === "undefined") {
      *  All paths are checked against the SiteMap. Invalid paths are searched
      *  for a valid partial path. To do this, the path is shortened piece by
      *  piece. If no valid partial path can be found, the root is the target.
+     *  
+     *  In difference to the forward method, navigate is not executed directly,
+     *  instead the change is triggered by the location hash.
+     *  
      *  @param path (URL is also supported, only the hash is used here and the
      *      URL itself is ignored)
      */    
     SiteMap.navigate = function(path) {
         window.location.hash = SiteMap.locate(path);
     };
+
+    /**
+     *  Forwards to the given path, if it exists in the SiteMap.
+     *  All paths are checked against the SiteMap. Invalid paths are searched
+     *  for a valid partial path. To do this, the path is shortened piece by
+     *  piece. If no valid partial path can be found, the root is the target.
+     *  
+     *  In difference to the navigate method, the forwarding is executed
+     *  directly, instead the navigate method triggers asynchronous forwarding
+     *  by changing the location hash.
+     *  
+     *  @param path (URL is also supported, only the hash is used here and the
+     *      URL itself is ignored)
+     */  
+    SiteMap.forward = function(path) {
+        
+        var event = document.createEvent("HTMLEvents");
+        event.initEvent("hashchange", false, true);
+        event.newURL = path;
+        window.dispatchEvent(event);
+    };
     
     /**
      *  Returns the meta data for a path.
      *  The meta data is an object with the following structure:
      *      {path:..., face:..., facet:...}
+     *      
+     *  If variable paths are used, an additional data field is available. It
+     *  contains the additional data passed with the path, comparable to
+     *  PHAT_INFO in CGI.    
+     *      {path:..., face:..., facet:..., data:...}
+     *      
      *  If no meta data can be determined because the path is invalid or not
      *  declared in the SiteMap, null is returned.
      *  @param  path optional, without SiteMap.location is used
@@ -4588,7 +4663,7 @@ if (typeof SiteMap === "undefined") {
         if (arguments.length <= 0)
             path = SiteMap.location;
 
-        var canonical = function(meta) {
+        var canonical = (meta) => {
             if (!meta.facet)
                 return meta.path;
             if (meta.path.endsWith("#"))
@@ -4596,6 +4671,22 @@ if (typeof SiteMap === "undefined") {
             return meta.path + "#" + meta.facet;
         };
 
+        for (let variable of SiteMap.variables) {
+            if (!(path + "#").startsWith(variable + "#"))
+                continue;
+            if (SiteMap.paths.has(variable)) {
+                return {path, face:variable, facet:null, get data() {
+                    return path.substring(variable.length) || null;
+                }};
+            } else if (SiteMap.facets.has(variable)) {
+                var facet = SiteMap.facets.get(variable);
+                return {path, face:facet.path, facet:facet.facet, get data() {
+                    return path.substring(facet.path.length +facet.facet.length) || null;
+                }};
+            }
+            break;
+        }
+        
         if (SiteMap.paths.has(path)) {
             return {path, face:path, facet:null};
         } else if (SiteMap.facets.has(path)) {
@@ -4669,6 +4760,12 @@ if (typeof SiteMap === "undefined") {
      *          "#products#envelope": ["envelopeA4", "envelopeA5", "envelopeA6"],
      *          "#products#pens": ["pencil", "ballpoint", "stylograph"],
      *          "#legal": ["terms", "privacy"],
+     *          ...
+     *      };
+     *      
+     *      sitemap = {
+     *          "#": ["news", "products", "about", "contact...", "legal"],
+     *          "#product": ["..."],
      *          ...
      *      };
      *      
@@ -4787,15 +4884,22 @@ if (typeof SiteMap === "undefined") {
         var paths = new Map();
         SiteMap.paths.forEach((value, key, map) => {
             if (typeof key === "string"
-                    && key.match(SiteMap.PATTERN_PATH))
+                    && key.match(SiteMap.PATTERN_PATH_FACE))
             paths.set(key, value);
         });
 
         var facets = new Map();
         SiteMap.facets.forEach((value, key, map) => {
             if (typeof key === "string"
-                    && key.match(SiteMap.PATTERN_PATH))
+                    && key.match(SiteMap.PATTERN_PATH_FACET))
                 facets.set(key, value);
+        });
+        
+        var variables = new Set();
+        SiteMap.variables.forEach((variable) => {
+            if (typeof variable === "string"
+                    && key.match(SiteMap.PATTERN_PATH_FACE))
+                variables.add(variable);
         });
 
         Object.keys(map).forEach((key) => {
@@ -4803,7 +4907,7 @@ if (typeof SiteMap === "undefined") {
             //A map entry is based on a path (datatype string beginning with #)
             //and an array of String or null as value. 
             if (typeof key !== "string"
-                    || !key.match(SiteMap.PATTERN_PATH))
+                    || !key.match(SiteMap.PATTERN_PATH_FACE))
                 return;
             var value = map[key];
             if (value != null
@@ -4824,13 +4928,33 @@ if (typeof SiteMap === "undefined") {
             //    {#facet-path:{path:#path, facet:facet}, ...}
             value = value || [];
             value.forEach((facet) => {
+
                 //Facets is an array of strings with the names of the facets.
                 //The names must correspond to the PATTERN_PATH_FACET.
                 if (typeof facet !== "string")
                     throw new TypeError("Invalid facet: " + typeof facet);
                 facet = facet.toLowerCase().trim();
-                if (!facet.match(SiteMap.PATTERN_PATH_FACET))
-                    throw new Error("Invalid facet: " + facet);
+                if (!facet.match(SiteMap.PATTERN_PATH_FACET)
+                        && !facet.match(SiteMap.PATTERN_PATH_FACET_VARIABLE))
+                    throw new Error("Invalid facet" + (facet ? ": " + facet : ""));
+                
+                //Variable paths are collected additionally, so that later on
+                //when determining the path, the complete SiteMap does not have
+                //to be searched for variable paths. Variable paths are also
+                //registered without ... at the end as normal paths.
+                if (facet.match(SiteMap.PATTERN_PATH_FACET_VARIABLE)) {
+                    //If the facet is only "...", it is registered as a variable
+                    //face, otherwise as a variable facet.
+                    facet = facet.replace(/\.+$/, "");
+                    var variable = facet ? key.replace(/#+$/, "") + "#" + facet : key;
+                    if (!variables.has(variable))
+                        variables.add(variable);
+                    //If the face is only "...", it is registered as a face.
+                    //Therefore nothing needs to be done now.
+                    if (!facet)
+                        return;
+                }
+                
                 //If the facet does not exist at the path, the facet is added.
                 if (!paths.get(key).includes(facet))
                     paths.get(key).push(facet);
@@ -4843,13 +4967,24 @@ if (typeof SiteMap === "undefined") {
         acceptors.forEach((value, key, map) => {
             SiteMap.acceptors.add(value);
         });
+        
         SiteMap.paths.clear();
         paths.forEach((value, key, map) => {
             SiteMap.paths.set(key, value);
         });
+        
         SiteMap.facets.clear();
         facets.forEach((value, key, map) => {
             SiteMap.facets.set(key, value);
+        });
+        
+        SiteMap.variables.clear();
+        variables = Array.from(variables);
+        variables.sort((value1, value2) => {
+            return value1.localeCompare(value2);
+        });
+        variables.forEach((value) => {
+            SiteMap.variables.add(value);
         });
     };
     
@@ -4926,48 +5061,15 @@ if (typeof SiteMap === "undefined") {
                 var source = SiteMap.lookup(Path.normalize(SiteMap.location));
                 if (source && target
                         && source.face == target.face
-                        && source.facet == target.facet)
+                        && source.facet == target.facet
+                        && typeof target.focus === "function")
                     target.focus();
             }
         });
 
-        //Without a SiteMap the page will be rendered initially after loading.
-        //Then the page has to take control.
-        if (SiteMap.paths.size <= 0) {
-            Composite.render(document.body);
-            return;
-        }
-
-        var source = window.location.hash;
-        var target = SiteMap.locate(source);
-
-        if (!source
-                && window.location.href.match(/[^#]#$/))
-            source = "#";
-
-        //Some browsers have problems with forwarding from / to /# and do not
-        //trigger the hashchange event. Therefore, this must be checked with a
-        //time delay and, if necessary, triggered manually.
-        
-        var forward = function(target) {
-            var event = document.createEvent("HTMLEvents");
-            event.initEvent("hashchange", false, true);
-            event.newURL = target;
-            window.dispatchEvent(event);
-        };
-
-        if (source != target) {
-            SiteMap.navigate(target);
-            Composite.asynchron((forward) => {
-                var source = window.location.hash;
-                var target = SiteMap.locate(source);
-                if (!source
-                        && window.location.href.match(/[^#]#$/))
-                    source = "#";
-                if (source != target)
-                    forward(target);
-            }, forward);
-        } else forward(target);
+        //The initial rendering is started by the direct call of the hashchange
+        //event, thus without trigger.
+        SiteMap.forward(window.location.hash || "#");
     });
     
     /**
@@ -4977,22 +5079,31 @@ if (typeof SiteMap === "undefined") {
      *  organizes partial rendering.
      */
     window.addEventListener("hashchange", (event) => {
+
+        //Determine if it is the initial rendering.
+        //If this is the case, the history is empty.
+        //In case of the initial rendering:
+        //    - SiteMap.location must be set finally
+        //    - window.location.hash must be set finally
+        //    - Body must be rendered
+        var initial = SiteMap.history.size <= 0;
         
-        //Without a SiteMap no automatic rendering can be initiated.
-        if (SiteMap.paths.size <= 0)
+        //Without a SiteMap no partiell rendering can be initiated.
+        if (SiteMap.paths.size <= 0) {
+            if (initial)
+                Composite.render(document.body);
             return;
-            
+        }
+        
         var source = Path.normalize(SiteMap.location);
         var locate = (event.newURL || "").replace(Path.PATTERN_URL, "$1");
         var target = SiteMap.locate(locate);
-        
-        //Discrepancies in the path cause a forwarding to a valid path.
-        if (locate != target) {
-            SiteMap.navigate(target);
-            return;
-        }        
-        
-        SiteMap.ticks = (SiteMap.ticks || 0) +1;
+
+        //Initially, no function path is useful, and so in this case will be
+        //forwarded to the root.
+        if (target.match(Path.PATTERN_PATH_FUNCTIONAL)
+                && initial)
+            target = "#";
         
         //For functional interaction paths, the old path must be restored.
         //Rendering is not necessary because the face/facet does not change or
@@ -5004,6 +5115,13 @@ if (typeof SiteMap === "undefined") {
             window.scrollTo(x, y);
             return;
         }
+
+        //If window.location.hash, SiteMap.location and new URL match, no update
+        //or rendering is required.
+        if (target == window.location.hash
+                && target == SiteMap.location
+                && !initial)
+            return;
         
         //If the permission is not confirmed, will be forwarded to the next
         //higher known/permitted path, based on the requested path.
@@ -5012,20 +5130,24 @@ if (typeof SiteMap === "undefined") {
         var forward = SiteMap.permit(target);
         if (forward !== true) {
             if (typeof forward === "string")
-                SiteMap.navigate(forward);
-            else SiteMap.navigate(target != "#" ? target + "##" : "#");
+                SiteMap.forward(forward);
+            else SiteMap.forward(target != "#" ? target + "##" : "#");
             return;
         }
         
+        //The locations are updated synchronously.
+        //The possible triggering of the hashchange-event can be ignored,
+        //because SiteMap.location and window.location.hash are the same and
+        //therefore no update or rendering is triggered.
         SiteMap.location = target;
+        window.location.replace(target);
         
+        //Source and target for rendering are determined.
+        //Because of possible variable paths, the current path does not have to
+        //correspond to the current face/facet and must be determined via the
+        //parent if necessary.
         source = SiteMap.lookup(source);
-        target = SiteMap.lookup(target);
-        
-        //Only if the face is changed or initial, a rendering is necessary.
-        if (source.face == target.face
-                && SiteMap.ticks > 1)
-            return;
+        target = SiteMap.lookup(target);        
         
         source = source.face;
         if (!source.endsWith("#"))
@@ -5039,13 +5161,14 @@ if (typeof SiteMap === "undefined") {
         //  old: #a#b#c#d#e#f  new: #a#b#c#d      -> render #d
         //  old: #a#b#c#d      new: #a#b#c#d#e#f  -> render #d
         //  old: #a#b#c#d      new: #e#f          -> render # (body)
+        //Initially always the body is rendered.
         var render = "#";
         if (source.startsWith(target))
             render = target;
         else if (target.startsWith(source))
             render = source;
-        render = render.match(/((?:#[^#]+)|(?:^))#*$/)[0];
-        if (render && render[1])
+        render = render.match(/((?:#[^#]+)|(?:^))#*$/);
+        if (render && render[1] && !initial)
             Composite.render(render[1]);
         else Composite.render(document.body);
     });
@@ -5113,12 +5236,12 @@ if (typeof SiteMap === "undefined") {
  *  assertion was not true, a error is thrown -- see as an example the
  *  implementation here. 
  *  
- *  Test 1.1.0 20191213
+ *  Test 1.1.0 20191219
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0 20191213
+ *  @version 1.1.0 20191219
  */
 if (typeof Test === "undefined") {
     
@@ -5227,7 +5350,7 @@ if (typeof Test === "undefined") {
             if (typeof Test.worker === "object")
                 Test.worker.status = event; 
             
-            var invoke = function(context, event, status) {
+            var invoke = (context, event, status) => {
                 if (typeof context.Test.worker === "object"
                         && typeof context.Test.worker.monitor === "object"
                         && typeof context.Test.worker.monitor[event] === "function")
@@ -5444,7 +5567,7 @@ if (typeof Test === "undefined") {
                 return;
             }
             
-            var numerical = function(number, text) {
+            var numerical = (number, text) => {
                 return number + " " + text + (number != 1 ? "s" : "");
             };
 
