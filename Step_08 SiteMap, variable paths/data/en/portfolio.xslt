@@ -21,7 +21,7 @@
                 <div class="w3-display-container">
                   <div class="w3-display-topleft w3-black w3-padding"><xsl:value-of select="title"/></div>
                   <!-- Link with path to the project-face -->
-                  <a href="#project">
+                  <a href="#project#{id}">
                     <img src="./assets/images/house{id}.jpg" alt="{title}"/>
                   </a>
                 </div>
