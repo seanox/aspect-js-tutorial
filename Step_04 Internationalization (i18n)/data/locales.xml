@@ -65,22 +65,17 @@
     </label>
     <label key="person.john.text">
       <![CDATA[
-      <h2>{{Messages['person.john.name']}}</h2>
-      <p class="w3-opacity">{{Messages['person.john.role']}}</p>          
-      <p>
-        John ist der Gr&uuml;nder und CEO von EXAMPLE Architects. Vor der Gr&uuml;ndung
-        der Firma im Jahr 1996 arbeitete John in Kopenhagen und Berlin f&uuml;r
-        namhafte Unternehmen. "Mein Ziel als Architekt ist es, Kunden bei der Realisierung
-        von Geb&auml;uden zu unterst&uuml;tzen, die ihre Ambitionen und Tr&auml;ume
-        f&ouml;rdern. Ich glaube, dass ein Geb&auml;ude den Geschmack und die Werte
-        seiner Eigent&uuml;mer und Nutzer widerspiegeln kann und sollte", eine Philosophie,
-        die das gesamte Unternehmen durchdringt. 
-      </p>
-      <p>
-        John schloss sein Studium mit einem Bachelor of Architecture ab. Er liebt
-        es zu reisen und nach neuen Erfahrungen und Inspirationen zu suchen; Architektur
-        ist seine Leidenschaft.
-      </p>    
+      John ist der Gr&uuml;nder und CEO von EXAMPLE Architects. Vor der Gr&uuml;ndung
+      der Firma im Jahr 1996 arbeitete John in Kopenhagen und Berlin f&uuml;r
+      namhafte Unternehmen. "Mein Ziel als Architekt ist es, Kunden bei der Realisierung
+      von Geb&auml;uden zu unterst&uuml;tzen, die ihre Ambitionen und Tr&auml;ume
+      f&ouml;rdern. Ich glaube, dass ein Geb&auml;ude den Geschmack und die Werte
+      seiner Eigent&uuml;mer und Nutzer widerspiegeln kann und sollte", eine Philosophie,
+      die das gesamte Unternehmen durchdringt.<br/>
+      <br/>
+      John schloss sein Studium mit einem Bachelor of Architecture ab. Er liebt
+      es zu reisen und nach neuen Erfahrungen und Inspirationen zu suchen; Architektur
+      ist seine Leidenschaft.
       ]]>
     </label>
     <label key="person.jane.name">
@@ -213,20 +208,15 @@
     </label>
     <label key="person.john.text">
       <![CDATA[
-      <h2>{{Messages['person.john.name']}}</h2>
-      <p class="w3-opacity">{{Messages['person.john.role']}}</p>          
-      <p>
-        John is the founder and CEO of EXAMPLE Architects. Prior to founding
-        the firm in 1996, John worked in Copenhagen and Berlin for well-known
-        companies. "My goal as an architect is to support clients in realizing
-        buildings that promote their ambitions and dreams. I believe that
-        a building can and should reflect the tastes and values of its owners
-        and users", a philosophy that permeates the entire company. 
-      </p>
-      <p>
-        John graduated with a Bachelor of Architecture. He loves to travel
-        for new experiences and inspiration; architecture is his passion.
-      </p>    
+      John is the founder and CEO of EXAMPLE Architects. Prior to founding
+      the firm in 1996, John worked in Copenhagen and Berlin for well-known
+      companies. "My goal as an architect is to support clients in realizing
+      buildings that promote their ambitions and dreams. I believe that
+      a building can and should reflect the tastes and values of its owners
+      and users", a philosophy that permeates the entire company.<br/>
+      <br/> 
+      John graduated with a Bachelor of Architecture. He loves to travel
+      for new experiences and inspiration; architecture is his passion.
       ]]>
     </label>
     <label key="person.jane.name">
@@ -364,21 +354,16 @@
     </label>
     <label key="person.john.text">
       <![CDATA[
-      <h2>{{Messages['person.john.name']}}</h2>
-      <p class="w3-opacity">{{Messages['person.john.role']}}</p>          
-      <p>
-        John является основателем и генеральным директором компании EXAMPLE Architects.
-        До основания компании в 1996 году, Джон работал в Копенгагене и Берлине
-        для известные компании. "Моя цель как архитектора состоит в том, чтобы помогать
-        клиентам в реализации следующих задач зданий, которые поддерживают их амбиции
-        и мечты. для продвижения по службе. Я верю, что здание усилит вкус и ценности.
-        Его владельцев и пользователей могут и должны отражать философию", которая
-        пронизывает всю компанию.
-      </p>
-      <p>
-        John закончил обучение со степенью бакалавра архитектуры. Он любит путешествовать
-        и искать новые впечатления и вдохновения; архитектура - его страсть.
-      </p>    
+      John является основателем и генеральным директором компании EXAMPLE Architects.
+      До основания компании в 1996 году, Джон работал в Копенгагене и Берлине
+      для известные компании. "Моя цель как архитектора состоит в том, чтобы помогать
+      клиентам в реализации следующих задач зданий, которые поддерживают их амбиции
+      и мечты. для продвижения по службе. Я верю, что здание усилит вкус и ценности.
+      Его владельцев и пользователей могут и должны отражать философию", которая
+      пронизывает всю компанию.<br/>
+      <br/>
+      John закончил обучение со степенью бакалавра архитектуры. Он любит путешествовать
+      и искать новые впечатления и вдохновения; архитектура - его страсть.
       ]]>
     </label>
     <label key="person.jane.name">
@@ -388,8 +373,8 @@
       Архитектор
     </label>
     <label key="person.jane.summary">
-     С момента присоединения к компании в 2016 году Джейн отвечает за технико-экономическое
-     обоснование, разработку, планирование и управление проектами.
+      С момента присоединения к компании в 2016 году Джейн отвечает за технико-экономическое
+      обоснование, разработку, планирование и управление проектами.
     </label>
     <label key="person.jane.text">
       <![CDATA[
