@@ -166,7 +166,6 @@
     <label key="person.title" value="Детали команды (пример)"/>
       
     <label key="projects.title" value="Проекты"/>
-    
     <label key="project.title" value="Детали проекта (пример)"/>
     <label key="project.type.brick.title" value="Mассивный дом"/>
     <label key="project.type.renovated.title" value="Ремонт"/>

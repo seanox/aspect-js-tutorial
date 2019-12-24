@@ -6,5 +6,7 @@
     <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_03 Splitting of the prototype into components/assets" overwrite="true"/>
     <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
     <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_05 The first module/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_06 DataSource, usage of dynamic data/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_07 SiteMap, controlling components and views/assets" overwrite="true"/>
   </target>
 </project>

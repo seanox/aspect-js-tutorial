@@ -77,6 +77,12 @@
           see also https://github.com/seanox/aspect-js/blob/master/manual/en/expression.md#expression-language
       This has full JavaScript support and provides the additional object Messages for the resource bundle.
 
+
+
+      Using the DataSource is only one of many ways to use dynamic data.
+          see also https://github.com/seanox/aspect-js/blob/master/manual/en/datasource.md#datasource
+      However, the DataSource is more of an example for semi-dynamic data because it is based on static data in the web space.  
+
     -->
   
     <!-- Navbar (sit on top) -->
@@ -94,9 +100,25 @@
   
     <!-- Page content -->
     <main class="w3-content w3-padding">
+
+      <!-- 
+      
+        Example for the projection of data by XSL Transformation.
+        The transformation takes over the file portfolio.xslt, the data source is portfolio.
+
+        The data and templates are stored separately for each language.
+        However, the language is not specified during access, the framework and the browser take care of this.
+        
+        A separate HTML file is not required.
+        Module files for JavaScript and CSS can be used.
+        The Expression Lanuage can also be used in the XSL template.
+        The expressions are then executed after the final XSL transformation.
+        
+      -->
   
       <!-- Project Section -->
-      <section id="projects" composite release>
+      <section id="projects" composite release
+          output="{{DataSource.fetch('xml://portfolio', true)}}">
       </section>
       
       <!-- Project Details Section -->

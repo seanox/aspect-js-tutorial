@@ -445,12 +445,12 @@ if (window.location.pathcontext === undefined) {
  *  The data is queried with XPath, the result can be concatenated and
  *  aggregated and the result can be transformed with XSLT. 
  *  
- *  DataSource 1.2.0 20191206
+ *  DataSource 1.2.0 20191223
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20191206
+ *  @version 1.2.0 20191223
  */
 if (typeof DataSource === "undefined") {
     
@@ -655,6 +655,8 @@ if (typeof DataSource === "undefined") {
      *  Optionally the data can be transformed via XSLT.
      *  @param  locators  locator
      *  @param  transform locator of the transformation style
+     *      With the boolean true, the style is derived from the locator by
+     *      using the file extension xslt.
      *  @param  raw       option in combination with transform
      *      true returns the complete XML document, otherwise only the root
      *      entity as node
@@ -701,8 +703,15 @@ if (typeof DataSource === "undefined") {
         if (!transform)
             return data.clone();
         
-        var style = DataSource.fetch(locator.replace(/^[a-z]+/i, "xslt"));
-        return DataSource.transform(data, style, raw);
+        var style = locator.replace(/^[a-z]+/i, "xslt");
+        if (typeof transform !== "boolean") {
+            style = transform;
+            if (typeof style !== "string"
+                    || !style.match(DataSource.PATTERN_LOCATOR))
+                throw new Error("Invalid style: " + String(style));  
+        }
+        
+        return DataSource.transform(data, DataSource.fetch(style), raw);
     };
     
     /**
@@ -944,12 +953,12 @@ if (typeof Messages === "undefined") {
  *  Thus virtual paths, object structure in JavaScript (namespace) and the
  *  nesting of the DOM must match.
  *
- *  Composite 1.2.0 20191219
+ *  Composite 1.2.0 20191223
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20191219
+ *  @version 1.2.0 20191223
  */
 if (typeof Composite === "undefined") {
     
@@ -3334,7 +3343,12 @@ if (typeof Composite === "undefined") {
                         selector.innerHTML = "";
                         iterate = Expression.eval(context, object.iterate.expression);
                         if (iterate) {
-                            iterate = Array.from(iterate);
+                            if (iterate instanceof XPathResult) {
+                                var meta = {entry:null, array:[], iterate:iterate};
+                                while (meta.entry = meta.iterate.iterateNext())
+                                    meta.array.push(meta.entry);
+                                iterate = meta.array;
+                            } else iterate = Array.from(iterate);
                             iterate.forEach((item, index, array) => {
                                 var meta = {}; 
                                 Object.defineProperty(meta, "item", {
@@ -4237,12 +4251,12 @@ if (typeof Expression === "undefined") {
  *  is taken over by the Composite API in this implementation. SiteMap is an
  *  extension and is based on the Composite API.
  *  
- *  MVC 1.1.0 20191222
+ *  MVC 1.1.0 20191223
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0 20191222
+ *  @version 1.1.0 20191223
  */
 if (typeof Path === "undefined") {
     
@@ -5070,6 +5084,10 @@ if (typeof SiteMap === "undefined") {
         //The initial rendering is started by the direct call of the hashchange
         //event, thus without trigger.
         SiteMap.forward(window.location.hash || "#");
+        
+        //Update of the hash and thus of the page focus, if the new focus (hash)
+        //was hidden before rendering or did not exist.
+        window.location.hash = window.location.hash;
     });
     
     /**
@@ -5171,6 +5189,10 @@ if (typeof SiteMap === "undefined") {
         if (render && render[1] && !initial)
             Composite.render(render[1]);
         else Composite.render(document.body);
+        
+        //Update of the hash and thus of the page focus, if the new focus (hash)
+        //was hidden before rendering or did not exist.
+        window.location.hash = window.location.hash; 
     });
 };
 
