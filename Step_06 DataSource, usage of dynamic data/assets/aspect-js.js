@@ -4251,12 +4251,12 @@ if (typeof Expression === "undefined") {
  *  is taken over by the Composite API in this implementation. SiteMap is an
  *  extension and is based on the Composite API.
  *  
- *  MVC 1.1.0 20191223
+ *  MVC 1.1.0 20191225
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0 20191223
+ *  @version 1.1.0 20191225
  */
 if (typeof Path === "undefined") {
     
@@ -4627,13 +4627,16 @@ if (typeof SiteMap === "undefined") {
      *  piece. If no valid partial path can be found, the root is the target.
      *  
      *  In difference to the forward method, navigate is not executed directly,
-     *  instead the change is triggered by the location hash.
+     *  instead the change is triggered asynchronous by the location hash.
      *  
      *  @param path (URL is also supported, only the hash is used here and the
      *      URL itself is ignored)
      */    
     SiteMap.navigate = function(path) {
-        window.location.hash = SiteMap.locate(path);
+        Composite.asynchron((path) => {
+            window.location.hash = path;
+        }, SiteMap.locate(path));
+        SiteMap.locate(path)
     };
 
     /**
@@ -5084,10 +5087,6 @@ if (typeof SiteMap === "undefined") {
         //The initial rendering is started by the direct call of the hashchange
         //event, thus without trigger.
         SiteMap.forward(window.location.hash || "#");
-        
-        //Update of the hash and thus of the page focus, if the new focus (hash)
-        //was hidden before rendering or did not exist.
-        window.location.hash = window.location.hash;
     });
     
     /**

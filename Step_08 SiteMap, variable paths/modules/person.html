@@ -19,8 +19,13 @@
 {{xpath:'/team/person[id="' + id + '"]'}}
 {{person:xml.evaluate ? xml.evaluate(xpath, xml, null, XPathResult.ANY_TYPE, null) : xml.selectNodes(xpath)}}
 {{person:person.iterateNext()}}
+<!-- Automatic redirection to about if the requested person does not exist. -->
+<script type="composite/javascript" condition="{{person eq null}}">
+    SiteMap.navigate("#about");
+</script>
+<!-- The content is only displayed if the requested entity exists. -->
+<div class="w3-row w3-grayscale" condition="{{person ne null}}">
 {{person:Object.parse(person)}}
-<div class="w3-row w3-grayscale">
   <div class="w3-twothird w3-container">
     <h2>{{person.name}}</h2>
     <p class="w3-opacity">{{person.role}}</p>

@@ -19,9 +19,11 @@
 {{xpath:'/portfolio/project[id="' + id + '"]'}}
 {{project:xml.evaluate ? xml.evaluate(xpath, xml, null, XPathResult.ANY_TYPE, null) : xml.selectNodes(xpath)}}
 {{project:project.iterateNext()}}
+<!-- Automatic redirection to the projects if the requested project does not exist. -->
 <script type="composite/javascript" condition="{{project eq null}}">
-  SiteMap.forward("#projects");
+    SiteMap.navigate("#projects");
 </script>
+<!-- The content is only displayed if the requested entity exists. -->
 <div class="w3-row w3-grayscale" condition="{{project ne null}}">
   {{project:Object.parse(project)}}
   <div class="w3-third w3-container">

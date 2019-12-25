@@ -1,4 +1,12 @@
 <?xml version="1.0"?>
+<!DOCTYPE  definition [
+  <!ENTITY auml "&#228;">
+  <!ENTITY ouml "&#246;">
+  <!ENTITY uuml "&#252;">
+  <!ENTITY Auml "&#196;">
+  <!ENTITY Ouml "&#214;">
+  <!ENTITY Uuml "&#220;">
+]>
 <team>
   <person>
     <id>2</id>
@@ -36,6 +44,13 @@
     </summary>
     <text>
       <![CDATA[
+      Jane completed her Bachelor of Engineering at the Technische Hochschule Mittelhessen
+      Giessen in 2001 and completed her academic education with a Master of Science
+      at the Beuth Hochschule für Technik in Berlin.<br/>
+      <br/>
+      Since joining EXAMPLE Architects in the summer of 2016, she has been working
+      on feasibility studies, design and implementation plans and independently
+      manages projects in all phases of the work. 
       ]]>
     </text>
   </person>
@@ -50,6 +65,13 @@
     </summary>
     <text>
       <![CDATA[
+      Mike studied architecture at the Technical University of Braunschweig, Germany,
+      where he graduated with a degree in architecture. He received his Master of
+      Architecture at the Southern California Institute of Architecture, Los Angeles,
+      USA.<br/>
+      <br/>
+      Mike has received numerous national and international awards and is internationally
+      known and enjoys great popularity. 
       ]]>
     </text>
   </person>
@@ -64,6 +86,12 @@
     </summary>
     <text>
       <![CDATA[
+      Dan joined EXAMPLE Architects in 2017. He is a civil engineer with a Bachelor's 
+      degree in architectural technology and construction management from VIA University
+      College in Denmark and a New Zealand diploma in architectural technology.<br/>
+      <br/>
+      Dan has extensive knowledge in Building Information Modeling (BIM), technical
+      and sustainable design. He positions himself as a guardian of building performance. 
       ]]>
     </text>
   </person>
