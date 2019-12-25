@@ -17,6 +17,10 @@
 //     see also https://github.com/seanox/aspect-js/blob/master/manual/en/mvc.md#binding
 //              https://github.com/seanox/aspect-js/blob/master/manual/en/mvc.md#dock
 //              https://github.com/seanox/aspect-js/blob/master/manual/en/mvc.md#undock
+//
+// Variable paths ends with ... and have no physical length.
+// After the path, the delimiter character # can be used to specify any other path of any depth.
+// Variable paths always refer to a real path and the extension can be used to pass parameters.
 SiteMap.customize({
     "#": ["home", "projects", "about", "contact"],
     "#project": ["..."],
