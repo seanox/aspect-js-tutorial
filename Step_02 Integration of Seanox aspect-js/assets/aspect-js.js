@@ -445,12 +445,12 @@ if (window.location.pathcontext === undefined) {
  *  The data is queried with XPath, the result can be concatenated and
  *  aggregated and the result can be transformed with XSLT. 
  *  
- *  DataSource 1.2.0 20191223
+ *  DataSource 1.2.0 20191226
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0 20191223
+ *  @version 1.2.0 20191226
  */
 if (typeof DataSource === "undefined") {
     
@@ -611,11 +611,13 @@ if (typeof DataSource === "undefined") {
         //The escape attribute converts text to HTML.
         //Without the escape attribute, the HTML tag symbols < and > are masked
         //and output as text.
-        
         var escape = xml.evaluate("string(/*/@escape)", xml, null, XPathResult.ANY_TYPE, null).stringValue;
         escape = !!escape.match(/^yes|on|true|1$/i);
-        
-        var result = processor.transformToDocument(xml);
+
+        //Workaround for some browsers, e.g. MS Edge, if they have problems with
+        //!DOCTYPE + !ENTITY. Therefore the document is copied so that the
+        //DOCTYPE declaration is omitted.
+        var result = processor.transformToDocument(xml.clone());
         var nodes = result.querySelectorAll(escape ? "*" : "*[escape]");
         nodes.forEach((node) => {
             if (escape || (node.getAttribute("escape") || "on").match(/^yes|on|true|1$/i)) {
@@ -786,7 +788,7 @@ if (typeof DataSource === "undefined") {
  *  file. Locales is a set of supported country codes. In each country code, the
  *  key values are recorded as label entries.  
  *    
- *  <?xml version="1.0" encoding="ISO-8859-1"?>
+ *  <?xml version="1.0"?>
  *  <locales>
  *    <de>
  *      <label key="contact.title" value="Kontakt"/>
@@ -4251,12 +4253,12 @@ if (typeof Expression === "undefined") {
  *  is taken over by the Composite API in this implementation. SiteMap is an
  *  extension and is based on the Composite API.
  *  
- *  MVC 1.1.0 20191225
+ *  MVC 1.1.0 20191226
  *  Copyright (C) 2019 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0 20191225
+ *  @version 1.1.0 20191226
  */
 if (typeof Path === "undefined") {
     
@@ -4519,7 +4521,7 @@ if (typeof SiteMap === "undefined") {
     });
 
     //SiteMap.variables
-    //    TODO:
+    //     Set with all variables paths
     Object.defineProperty(SiteMap, "variables", {
         value: new Set()
     });
@@ -5122,14 +5124,11 @@ if (typeof SiteMap === "undefined") {
                 && initial)
             target = "#";
         
-        //For functional interaction paths, the old path must be restored.
+        //For functional interaction paths, old paths are visually restored.
         //Rendering is not necessary because the face/facet does not change or
         //the called function has partially triggered rendering.
         if (target.match(Path.PATTERN_PATH_FUNCTIONAL)) {
-            var x = window.pageXOffset || document.documentElement.scrollLeft;
-            var y = window.pageYOffset || document.documentElement.scrollTop;
-            window.location.replace(source);
-            window.scrollTo(x, y);
+            history.replaceState(null, document.title, SiteMap.location);
             return;
         }
 
@@ -5157,7 +5156,9 @@ if (typeof SiteMap === "undefined") {
         //because SiteMap.location and window.location.hash are the same and
         //therefore no update or rendering is triggered.
         SiteMap.location = target;
-        window.location.replace(target);
+        if (source.match(Path.PATTERN_PATH_FUNCTIONAL))
+            window.location.replace(target);
+        else window.location.assign(target);
         
         //Source and target for rendering are determined.
         //Because of possible variable paths, the current path does not have to

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE  definition [
+<!DOCTYPE portfolio [
   <!ENTITY auml "&#228;">
   <!ENTITY ouml "&#246;">
   <!ENTITY uuml "&#252;">
@@ -13,6 +13,7 @@
     <title>Sommerhaus</title>
     <summary>
       <![CDATA[
+      Schlichte Eleganz hochwertiger H&ouml;lzer. 
       ]]>    
     </summary>
     <text>
@@ -32,6 +33,7 @@
     <title>Massivhaus</title>
     <summary>
       <![CDATA[
+      Schlichte Eleganz in Klinker und Holz.
       ]]>    
     </summary>
     <text>
@@ -51,6 +53,7 @@
     <title>Renovierung</title>
     <summary>
       <![CDATA[
+      Energetischer Umbau zum passiv Haus.
       ]]>    
     </summary>
     <text>
@@ -70,6 +73,7 @@
     <title>Fertighaus</title>
     <summary>
       <![CDATA[
+      Schlichte Eleganz hochwertiger H&ouml;lzer. 
       ]]>    
     </summary>
     <text>
@@ -109,6 +113,7 @@
     <title>Massivhaus</title>
     <summary>
       <![CDATA[
+      Schlichte Eleganz in Klinker und Holz.
       ]]>    
     </summary>
     <text>
@@ -128,6 +133,7 @@
     <title>Renovierung</title>
     <summary>
       <![CDATA[
+      Energetischer Umbau zum passiv Haus.
       ]]>    
     </summary>
     <text>
@@ -147,6 +153,7 @@
     <title>Fertighaus</title>
     <summary>
       <![CDATA[
+      Schlichte Eleganz in Klinker und Holz.
       ]]>    
     </summary>
     <text>
