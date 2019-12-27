@@ -28,12 +28,12 @@
         
       -->       
       <div id="language" class="w3-dropdown-content w3-bar-block w3-card-4"
-        events="click" render="body"
-        iterate="{{locale:DataSource.locales.sort()}}">
+          events="click" render="body"
+          iterate="{{locale:DataSource.locales.sort()}}">
         <!-- Temporary variable with the language -->
         {{language:locale.data[locale.index]}}  
         <a id="{{language}}" class="w3-bar-item w3-button"
-          condition="{{DataSource.locale ne language}}">
+            condition="{{DataSource.locale ne language}}">
           {{Messages['locale.' + language + '.title']}}
         </a>
       </div>
