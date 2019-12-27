@@ -6,9 +6,11 @@
     <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_03 Splitting of the prototype into components/assets" overwrite="true"/>
     <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
     <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_05 The first module/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_06 DataSource, usage of dynamic data/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_07 SiteMap, controlling components and views/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_08 SiteMap, variable paths/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_09 SiteMap, functional paths/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_07 SiteMap - Controlling components and views/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_08 SiteMap - Variable paths/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_09 SiteMap - Functional paths/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_10 MVC - Synchronization/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
   </target>
 </project>
