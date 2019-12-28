@@ -53,6 +53,21 @@
       &CRLF;
       bitte kontaktieren Sie mich wie folgt:
     </label>
+    <!--
+    
+        The use of regular or numerical expressions for validation and their outsourcing
+        is highly recommended. In this way, the rules can be easily used on the
+        server and client side and the server can make this available to the client.  
+    
+     -->
+    <label key="contact.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.name.message" value="Pflichteingabe mit maximal 50 Zeichen ohne Leerzeichen am Anfang und am Ende."/>
+    <label key="contact.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
+    <label key="contact.email.message" value="Pflichteingabe einer g&uuml;ltigen E-Mail-Adresse."/>
+    <label key="contact.subject.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.subject.message" value="Pflichteingabe mit maximal 50 Zeichen ohne Leerzeichen am Anfang und am Ende."/>
+    <label key="contact.comment.pattern" value="^\\s*(\\S(.{0,96}\\S){0,1})\\s*$"/>
+    <label key="contact.comment.message" value="Pflichteingabe mit maximal 100 Zeichen."/>
     
     <label key="locale.de.title" value="Deutsch"/>
     <label key="locale.en.title" value="English"/>
@@ -115,6 +130,21 @@
       &CRLF;
       please contact me as follows:
     </label>
+    <!--
+    
+        The use of regular or numerical expressions for validation and their outsourcing
+        is highly recommended. In this way, the rules can be easily used on the
+        server and client side and the server can make this available to the client.  
+    
+     -->
+    <label key="contact.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.name.message" value="Mandatory input with a maximum of 50 characters without spaces at the beginning and end."/>
+    <label key="contact.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
+    <label key="contact.email.message" value="Mandatory input of a valid e-mail address."/>
+    <label key="contact.subject.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.subject.message" value="Mandatory input with a maximum of 50 characters without spaces at the beginning and end."/>
+    <label key="contact.comment.pattern" value="^\\s*(\\S(.{0,96}\\S){0,1})\\s*$"/>
+    <label key="contact.comment.message" value="Mandatory input with maximum 100 characters."/>
 
     <label key="locale.de.title" value="Deutsch"/>
     <label key="locale.en.title" value="English"/>
@@ -177,6 +207,21 @@
       &CRLF;
       пожалуйста, свяжитесь со мной следующим образом:
     </label>
+    <!--
+    
+        The use of regular or numerical expressions for validation and their outsourcing
+        is highly recommended. In this way, the rules can be easily used on the
+        server and client side and the server can make this available to the client.  
+    
+     -->
+    <label key="contact.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.name.message" value="Обязательный ввод максимум 50 символов без пробелов в начале и в конце."/>
+    <label key="contact.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
+    <label key="contact.email.message" value="Обязательный ввод действительного адреса электронной почты."/>
+    <label key="contact.subject.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.subject.message" value="Обязательный ввод максимум 50 символов без пробелов в начале и в конце."/>
+    <label key="contact.comment.pattern" value="^\\s*(\\S(.{0,96}\\S){0,1})\\s*$"/>
+    <label key="contact.comment.message" value="Обязательный ввод максимум 100 символов."/>
 
     <label key="locale.de.title" value="Deutsch"/>
     <label key="locale.en.title" value="English"/>

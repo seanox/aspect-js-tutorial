@@ -6,6 +6,7 @@
   <!ENTITY Auml "&#196;">
   <!ENTITY Ouml "&#214;">
   <!ENTITY Uuml "&#220;">
+  <!ENTITY CRLF "">
 ]>
 <locales>
   <de>
@@ -48,8 +49,8 @@
     <label key="contact.map.title" value="Map"/>
     <label key="contact.mail.title">{{Messages['company.name.1']}} {{Messages['company.name.2']}} - Bitte um Kontaktaufnahme</label>
     <label key="contact.mail.message">
-      Hallo {1},
-      
+      Hallo {1},&CRLF;
+      &CRLF;
       bitte kontaktieren Sie mich wie folgt:
     </label>
     
@@ -110,8 +111,8 @@
     <label key="contact.map.title" value="Map"/>
     <label key="contact.mail.title">{{Messages['company.name.1']}} {{Messages['company.name.2']}} - Please contact me</label>
     <label key="contact.mail.message">
-      Hello {1},
-      
+      Hello {1},&CRLF;
+      &CRLF;
       please contact me as follows:
     </label>
 
@@ -172,8 +173,8 @@
     <label key="contact.map.title" value="Карта"/>
     <label key="contact.mail.title">{{Messages['company.name.1']}} {{Messages['company.name.2']}} - Просим связаться</label>
     <label key="contact.mail.message">
-      Здравствуй {1},
-      
+      Здравствуй {1},&CRLF;
+      &CRLF;
       пожалуйста, свяжитесь со мной следующим образом:
     </label>
 

@@ -22,29 +22,70 @@
             Don't panic :-)
         The attribute required is actually not needed.
         The explanation follows in the next example: Step_11 MVC - Synchronization and validation.    
-         
+
+        The value is only synchronized if the validation is successful.   
+               
     --> 
+    <!-- 
+        Validation:
+        - via pattern
+        - default browser error output
+    -->
     <input type="text" id="name" class="w3-input w3-border"
         placeholder="{{Messages['contact.form.name.title']}}"
-        events="input" render="#contact form"
-        required>
+        pattern="{{contact.NAME_PATTERN}}"
+        events="input" render="#contact form">
     Value of variable contact.name: {{contact.name}}
+    <!--
+        Validation:
+        - via pattern
+        - default browser error output
+        - error message as mouse-over title
+    -->
     <input type="text" id="email" class="w3-input w3-section w3-border" 
         placeholder="{{Messages['contact.form.email.title']}}"
-        events="input" render="#contact form"
-        required>
+        pattern="{{contact.EMAIL_PATTERN}}" message="{{Messages['contact.email.message']}}"
+        events="input" render="#contact form">
     Value of variable contact.email: {{contact.email}}
+    <!--
+        Validation:
+        - via pattern
+        - default browser error output
+        - error message as mouse-over title
+        - error message as notification
+    -->
     <input type="text" id="subject" class="w3-input w3-section w3-border" 
         placeholder="{{Messages['contact.form.subject.title']}}"
-        events="input" render="#contact form"
-        required>
+        pattern="{{contact.SUBJECT_PATTERN}}" message="{{Messages['contact.subject.message']}}" notification
+        events="input" render="#contact form">
     Value of variable contact.subject: {{contact.subject}}
+    <!--
+        Validation:
+        - via model validate methode
+        - default browser error output
+        - error message as mouse-over title
+        - error message as notification
+    -->
     <input type="text" id="comment" class="w3-input w3-section w3-border" 
         placeholder="{{Messages['contact.form.comment.title']}}" 
-        events="input" render="#contact form"
-        required>
+        validate message="{{Messages['contact.subject.message']}}" notification
+        events="input" render="#contact form">
     Value of variable contact.comment: {{contact.comment}}<br/>
-    <button class="w3-button w3-black w3-section">
+    <!--
+        Validation:
+        - is theoretically possible for all elements in the DOM
+        - for the submit button the action can be caught/blocked if the form is not valid
+        - in this implementation the button becomes active only when the data is valid
+              The attribute disabled is interesting:
+          If the value for an attribute is undefined, it is removed until the next
+          rendering if the value is not undefined.
+        - in the expression syntax, the # is interpreted as a reference to an element with the same ID
+              see also in See also the expression for the attribute disabled   
+    -->
+    <button id="submit" class="w3-button w3-black w3-section"
+        disabled="{{contact.validate(#submit) ? undefined : 'disabled'}}"
+        validate message="{{Messages['contact.submit.message']}}" notification
+        events="click">
       <i class="fa fa-paper-plane"></i> {{Messages['contact.form.send.title']}}
     </button>
   </form>
