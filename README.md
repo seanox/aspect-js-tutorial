@@ -1,8 +1,8 @@
 # Description
 The tutorial guides you through the creation of a SPA (Single-Page-Application)
 with [Seanox aspect-js](https://github.com/seanox/aspect-js).   
-Using an example of a frontend for time booking, the implementation from the
-prototype to the final application is explained step by step.
+Using a small example, the implementation is explained step by step from the
+prototype to the finished application.
 
 The tutorial is based on understanding and visualizing the differences of the
 the serveral steps and therefore requires a program for comparison.
