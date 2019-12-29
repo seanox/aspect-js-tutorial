@@ -50,9 +50,6 @@ Coming soon.
 
 # Contact
 [Support](http://seanox.de/contact?support)  
-[Development](http://seanox.de/contact?development)  
-[Project](http://seanox.de/contact?service)  
-[Page](http://seanox.de/contact)
 
 
 # Thanks!
