@@ -22,6 +22,11 @@
   <div class="w3-col l3 m6 w3-margin-bottom">
     <!-- Link with path to the person-face -->
     <a href="#person">
+      <!--
+        Resources with expressions in the src-attribute are initially loaded by the browser.
+        A 404 error will always occur in the browser console.
+        So the attribute or tag should be inserted completely as an expression.
+      -->
       <img src="./assets/images/team{{person.id}}.jpg" alt="{{person.name}}">
     </a>
     <h3>{{person.name}}</h3>

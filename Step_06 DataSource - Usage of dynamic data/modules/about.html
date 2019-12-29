@@ -20,6 +20,11 @@
 <div class="w3-row-padding w3-grayscale" iterate="{{team:team}}">
   {{person:Object.parse(team.item)}}
   <div class="w3-col l3 m6 w3-margin-bottom">
+    <!--
+      Resources with expressions in the src-attribute are initially loaded by the browser.
+      A 404 error will always occur in the browser console.
+      So the attribute or tag should be inserted completely as an expression.
+    -->
     <img src="./assets/images/team{{person.id}}.jpg" alt="{{person.name}}">
     <h3>{{person.name}}</h3>
     <p class="w3-opacity">{{person.role}}</p>
