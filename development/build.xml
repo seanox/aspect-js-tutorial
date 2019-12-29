@@ -2,16 +2,64 @@
 <project name="aspect-js tutorial" default="update" basedir="../../aspect-js">
   <target name="update">
     <ant antfile="./development/build.xml" target="archive"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_03 Splitting of the prototype into components/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_05 The first module/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_07 SiteMap - Controlling components and views/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_08 SiteMap - Variable paths/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_09 SiteMap - Functional paths/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_10 MVC - Synchronization/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
-    <copy file="./releases/aspect-js.js" todir="../aspect-js tutorial/Step_12 Test/assets" overwrite="true"/>
+    <property name="workspace" value="../aspect-js tutorial"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_05 The first module/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_07 SiteMap - Controlling components and views/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_08 SiteMap - Variable paths/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_09 SiteMap - Functional paths/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_10 MVC - Synchronization/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_12 Test/assets" overwrite="true"/>
   </target>
+  
+  <macrodef name="release-locate">
+    <sequential>
+      <copy file="../aspect-js tutorial/CHANGES" tofile="../aspect-js tutorial/CHANGES.tmp" overwrite="true"/>
+      <replaceregexp file="../aspect-js tutorial/CHANGES.tmp"
+        match="(?s)^\s*([\d\.x]+) (\d{4})([\dx]+).*$" flags="g" byline="false"
+        replace="release.version=\1&#x000D;release.year=\2&#x000D;release.date=\2\3&#x000D;"/>
+      <replaceregexp file="../aspect-js tutorial/CHANGES.tmp" match="x+" replace="0000" flags="g" byline="false"/>
+      <loadproperties>
+        <file file="../aspect-js tutorial/CHANGES.tmp"/>
+      </loadproperties>
+      <delete file="../aspect-js tutorial/CHANGES.tmp"/>
+      <echo file="../aspect-js tutorial/CHANGES.tmp" message="release.major=${release.version}"/>
+      <replaceregexp file="../aspect-js tutorial/CHANGES.tmp"
+        match="(?&lt;=\d+)\." byline="true" replace="&#x000D;release.minor="/>
+      <replaceregexp file="../aspect-js tutorial/CHANGES.tmp"
+        match="(?&lt;=\d+)\." byline="true" replace="&#x000D;release.patch="/>
+      <loadproperties>
+        <file file="../aspect-js tutorial/CHANGES.tmp"/>
+      </loadproperties>
+      <delete file="../aspect-js tutorial/CHANGES.tmp"/>
+    </sequential>
+  </macrodef> 
+  
+  <target name="archive">
+    <release-locate/>
+    <property name="workspace" value="../aspect-js tutorial"/>
+    <property name="workspace.releases" value="${workspace}/releases"/>
+    <delete dir="${workspace.releases}/temp"/>
+    <mkdir dir="${workspace.releases}/temp/${ant.project.name}-${release.version}/${ant.project.name}"/>
+    <copy todir="${workspace.releases}/temp/${ant.project.name}-${release.version}/${ant.project.name}">
+      <fileset dir="${workspace}" defaultexcludes="on">
+        <include name="**/**"/>
+        <exclude name="releases/**"/>
+        <exclude name="development/**"/>
+        <exclude name=".*"/>
+      </fileset>
+    </copy>
+    <touch datetime="${release.date}" pattern="yyyyMMdd">
+      <fileset dir="${workspace.releases}/temp"/>
+    </touch>         
+    <delete file="${workspace.releases}/${ant.project.name}-${release.version}.zip"/>
+    <zip destfile="${workspace.releases}/${ant.project.name}-${release.version}.zip">
+      <fileset dir="${workspace.releases}/temp/${ant.project.name}-${release.version}"/>
+    </zip>   
+    <delete dir="${workspace.releases}/temp"/>
+  </target>  
 </project>
