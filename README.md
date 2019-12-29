@@ -15,9 +15,6 @@ This information becomes visible when the steps are compared.
 In addition, there are ToDo' s with small instructions and tips to try for
 yourself.
 
-__The tutorial is currently under construction / in progress.__
-
-
 
 # Licence Agreement
 Seanox Software Solutions ist ein Open-Source-Projekt, im Folgenden
