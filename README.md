@@ -45,12 +45,12 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
 # Downloads
-[1.2.0](https://github.com/seanox/aspect-js-tutorial/archive/1.2.0.zip)
+[1.2.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/archive/1.2.0.zip)
 
 
 # Contact
-[Issues](https://github.com/seanox/aspect-js-tutorial/issues)
-[Requests](https://github.com/seanox/aspect-js-tutorial/pulls)
+[Issues](https://github.com/seanox/aspect-js-tutorial/issues)  
+[Requests](https://github.com/seanox/aspect-js-tutorial/pulls)  
 [Mail](http://seanox.de/contact)
 
 
