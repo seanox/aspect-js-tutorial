@@ -1,3 +1,7 @@
+<img src="https://raw.githubusercontent.com/seanox/seanox/master/sources/assets/images/development-passive.png"> 
+<img src="https://raw.githubusercontent.com/seanox/seanox/master/sources/assets/images/maintenance-active.png"> 
+<img src="https://raw.githubusercontent.com/seanox/seanox/master/sources/assets/images/support-active.png">
+
 # Description
 The tutorial guides you through the creation of a SPA (Single-Page-Application)
 with [Seanox aspect-js](https://github.com/seanox/aspect-js).   
@@ -55,7 +59,7 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
 # Thanks!
-<img src="https://raw.githubusercontent.com/seanox/seanox/master/sources/resources/images/thanks.png">
+<img src="https://raw.githubusercontent.com/seanox/seanox/master/sources/assets/images/thanks.png">
 
 [JetBrains](https://www.jetbrains.com/?from=seanox)  
 Sven Lorenz  
