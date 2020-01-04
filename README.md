@@ -1,8 +1,6 @@
-<p class="status">
-  <span style="font-size:0.75em; padding:7px 7px 5px 7px; color:#FFFFFF; background:#555555;">development</span><span>passive</span>
-  <span style="font-size:0.75em; padding:7px 7px 5px 7px; color:#FFFFFF; background:#555555;">maintenance</span><span>active</span>
-  <span style="font-size:0.75em; padding:7px 7px 5px 7px; color:#FFFFFF; background:#555555;">support</span><span>active</span>
-</p>
+<svg>
+  <circle cx="150" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+</svg> 
 
 # Description
 The tutorial guides you through the creation of a SPA (Single-Page-Application)
