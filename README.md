@@ -1,4 +1,36 @@
-<img src="https://raw.githubusercontent.com/seanox/seanox/master/sources/assets/images/development-passive.png"> <img src="https://raw.githubusercontent.com/seanox/seanox/master/sources/assets/images/maintenance-active.png"> <img src="https://raw.githubusercontent.com/seanox/seanox/master/sources/assets/images/support-active.png">
+<style>
+  *.status span:before {
+    font-size: 0.75em;
+    background: #555555;
+    padding:7 px 7px 5px 7px;
+    color: #FFFFFF;
+    display: inline;
+  }
+  *.status *.development:before {
+    content: 'development';
+  }
+  *.status *.maintenance:before {
+    content: 'maintenance';
+  }
+  *.status *.support:before {
+    content: 'support';
+  }
+  *.status span:after {
+    font-size: 0.75em;
+    padding: 7px 7px 5px 7px;
+    color: #FFFFFF;
+    display: inline;
+  }
+  *.status *.active:after {
+    content: 'active';
+    background: #00FF00;
+  }
+</style>
+<p class="status">
+  <span class="development passive"></span>
+  <span class="maintenance active"></span>
+  <span class="support active"></span>
+</p>
 
 # Description
 The tutorial guides you through the creation of a SPA (Single-Page-Application)
