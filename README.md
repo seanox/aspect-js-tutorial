@@ -1,7 +1,7 @@
 <p class="status">
-  <span>development</span><span>passive</span>
-  <span>maintenance</span><span>active</span>
-  <span>support</span><span>active</span>
+  <span style="font-size:0.75em; padding:7px 7px 5px 7px; color:#FFFFFF; background:#555555;">development</span><span>passive</span>
+  <span style="font-size:0.75em; padding:7px 7px 5px 7px; color:#FFFFFF; background:#555555;">maintenance</span><span>active</span>
+  <span style="font-size:0.75em; padding:7px 7px 5px 7px; color:#FFFFFF; background:#555555;">support</span><span>active</span>
 </p>
 
 # Description
