@@ -1,6 +1,8 @@
-<svg>
-  <circle cx="150" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
-</svg> 
+<p>
+  <img src="https://img.shields.io/badge/development-passive-blue?style=for-the-badge">
+  <img src="https://img.shields.io/badge/maintenance-active-green?style=for-the-badge">
+  <img src="https://img.shields.io/badge/support-active-green?style=for-the-badge">
+</p>
 
 # Description
 The tutorial guides you through the creation of a SPA (Single-Page-Application)
