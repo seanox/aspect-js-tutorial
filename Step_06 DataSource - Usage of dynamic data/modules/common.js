@@ -1,4 +1,19 @@
 /**
+ * Custom selector for img-tags with x-src attribute.
+ * With IMG tags, the browser will immediately use the src attribute and start downloading the image data.
+ * When using dynamic data, this usually results in an unwanted server request.
+ * The Custom Selector is one of several solutions.
+ * It is called at each relevant render cycle and can be used to manipulate the matching element.
+ * In our case, we use the x-src attribute and set the src attribute only with the final value.
+ */
+Composite.customize("img[x-src]", (element) => {
+    var src = element.getAttribute("x-src") || "";
+    if (src.match(Composite.PATTERN_EXPRESSION_CONTAINS))
+        src = String(Expression.eval(src));
+    element.src = src;
+});
+
+/**
  * Creates a object based on data-structures.
  * The method is intended for deserialization.
  * Supported data types: XMLDocument / Node

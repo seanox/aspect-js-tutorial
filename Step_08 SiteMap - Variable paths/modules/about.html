@@ -25,9 +25,10 @@
       <!--
         Resources with expressions in the src-attribute are initially loaded by the browser.
         A 404 error will always occur in the browser console.
-        So the attribute or tag should be inserted completely as an expression.
+        As one solution among many, the x-src attribute and a corresponding custom
+        selector are used to compute the final value and only then set the src attribute.
       -->
-      <img src="./assets/images/team{{person.id}}.jpg" alt="{{person.name}}">
+      <img x-src="./assets/images/team{{person.id}}.jpg" alt="{{person.name}}">
     </a>
     <h3>{{person.name}}</h3>
     <p class="w3-opacity">{{person.role}}</p>
