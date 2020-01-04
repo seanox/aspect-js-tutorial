@@ -1,7 +1,13 @@
 <p>
-  <img src="https://img.shields.io/badge/development-passive-blue?style=for-the-badge">
-  <img src="https://img.shields.io/badge/maintenance-active-green?style=for-the-badge">
-  <img src="https://img.shields.io/badge/support-active-green?style=for-the-badge">
+  <a href="https://github.com/seanox/aspect-js-tutorial/pulls">
+    <img src="https://img.shields.io/badge/development-passive-blue?style=for-the-badge">
+  </a>
+  <a href="https://github.com/seanox/aspect-js-tutorial/issues">
+    <img src="https://img.shields.io/badge/maintenance-active-green?style=for-the-badge">
+  </a>
+  <a href="http://seanox.de/contact">
+    <img src="https://img.shields.io/badge/support-active-green?style=for-the-badge">
+  </a>
 </p>
 
 # Description
