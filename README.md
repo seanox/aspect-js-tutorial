@@ -1,35 +1,7 @@
-<style>
-  *.status span:before {
-    font-size: 0.75em;
-    background: #555555;
-    padding:7 px 7px 5px 7px;
-    color: #FFFFFF;
-    display: inline;
-  }
-  *.status *.development:before {
-    content: 'development';
-  }
-  *.status *.maintenance:before {
-    content: 'maintenance';
-  }
-  *.status *.support:before {
-    content: 'support';
-  }
-  *.status span:after {
-    font-size: 0.75em;
-    padding: 7px 7px 5px 7px;
-    color: #FFFFFF;
-    display: inline;
-  }
-  *.status *.active:after {
-    content: 'active';
-    background: #00FF00;
-  }
-</style>
 <p class="status">
-  <span class="development passive"></span>
-  <span class="maintenance active"></span>
-  <span class="support active"></span>
+  <span>development</span><span>passive</span>
+  <span>maintenance</span><span>active</span>
+  <span>support</span><span>active</span>
 </p>
 
 # Description
