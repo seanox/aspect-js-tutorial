@@ -59,7 +59,7 @@
         is highly recommended. In this way, the rules can be easily used on the
         server and client side and the server can make this available to the client.  
     
-     -->
+    -->
     <label key="contact.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
     <label key="contact.name.message" value="Pflichteingabe mit maximal 50 Zeichen ohne Leerzeichen am Anfang und am Ende."/>
     <label key="contact.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
@@ -136,7 +136,7 @@
         is highly recommended. In this way, the rules can be easily used on the
         server and client side and the server can make this available to the client.  
     
-     -->
+    -->
     <label key="contact.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
     <label key="contact.name.message" value="Mandatory input with a maximum of 50 characters without spaces at the beginning and end."/>
     <label key="contact.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
@@ -213,7 +213,7 @@
         is highly recommended. In this way, the rules can be easily used on the
         server and client side and the server can make this available to the client.  
     
-     -->
+    -->
     <label key="contact.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
     <label key="contact.name.message" value="Обязательный ввод максимум 50 символов без пробелов в начале и в конце."/>
     <label key="contact.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
