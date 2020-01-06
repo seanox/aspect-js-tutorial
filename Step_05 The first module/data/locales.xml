@@ -49,7 +49,7 @@
 
     <label key="locale.de.title" value="Deutsch"/>
     <label key="locale.en.title" value="English"/>
-    <label key="locale.ru.title" value="&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;"/>
+    <label key="locale.ru.title" value="Русский"/>
     
     <label key="person.title" value="Team Details (Beispiel)"/>
     <label key="person.john.name">
@@ -192,7 +192,7 @@
 
     <label key="locale.de.title" value="Deutsch"/>
     <label key="locale.en.title" value="English"/>
-    <label key="locale.ru.title" value="&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;"/>
+    <label key="locale.ru.title" value="Русский"/>
     
     <label key="person.title" value="Team Details (Example)"/>
     <!-- Normally, this data comes as an entity from a data source. -->
@@ -339,7 +339,7 @@
 
     <label key="locale.de.title" value="Deutsch"/>
     <label key="locale.en.title" value="English"/>
-    <label key="locale.ru.title" value="&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;"/>
+    <label key="locale.ru.title" value="Русский"/>
     
     <label key="person.title" value="Детали команды (пример)"/>
     <label key="person.john.name">

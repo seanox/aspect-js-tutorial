@@ -1,12 +1,4 @@
 <?xml version="1.0"?>
-<!DOCTYPE team [
-  <!ENTITY auml "&#228;">
-  <!ENTITY ouml "&#246;">
-  <!ENTITY uuml "&#252;">
-  <!ENTITY Auml "&#196;">
-  <!ENTITY Ouml "&#214;">
-  <!ENTITY Uuml "&#220;">
-]>
 <team>
   <person>
     <id>2</id>
