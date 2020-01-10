@@ -13,7 +13,7 @@
 
 # Description
 The tutorial guides you through the creation of a SPA (Single-Page-Application)
-with [Seanox aspect-js](https://github.com/seanox/aspect-js).   
+with [Seanox aspect-js](https://github.com/seanox/aspect-js).  
 Using a small example, the implementation is explained step by step from the
 prototype to the finished application.
 
