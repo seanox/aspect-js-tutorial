@@ -1,6 +1,8 @@
 1.2.x 2020xxxx
     CR: Markup: Optimization of img tags with dynamic URL
     CR: Assets: Shrinking of images and fonts
+    CR: CSS: Added style for invalid input elements
+    CR: Assets: Update of aspect-js.js 
 
 1.2.0 20191231
     NT: Release is available 

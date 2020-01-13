@@ -100,9 +100,9 @@ Composite.listen(Composite.EVENT_RENDER_END, () => {
             var status = Test.status();
             alert(new Date().toUTCString() + " Test is finished"
                     + "\n"
-                    + "\n\t" + status.queue.size + " task(s) were performed"
-                    + "\n\t" + status.queue.faults + " fault(s) were detected"
-                    + "\n\ttotal time " + (new Date().getTime() -status.queue.timing) + " ms"
+                    + "\n        " + status.queue.size + " task(s) were performed"
+                    + "\n        " + status.queue.faults + " fault(s) were detected"
+                    + "\n        total time " + (new Date().getTime() -status.queue.timing) + " ms"
                     + "\n"
                     + "\nFor more informations open the browser console.");
         });
