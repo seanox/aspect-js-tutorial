@@ -10,29 +10,29 @@ var sequence = {
             window.location.href = "#" + new Date().getTime();
         },        
         () => {
-            window.location.href = "#projects"
+            window.location.href = "#projects";
         },       
         () => {
-            window.location.href = "#project#2"
+            window.location.href = "#project#2";
         },
         () => {
-            window.location.href = "#project#2xx"
+            window.location.href = "#project#2xx";
         },        
         () => {
-            window.location.href = "#about"
+            window.location.href = "#about";
         },       
         () => {
-            window.location.href = "#person#2"
+            window.location.href = "#person#2";
         },
         () => {
-            window.location.href = "#person#2xx"
+            window.location.href = "#person#2xx";
         },
         () => {
             document.querySelector("#about > div:nth-child(2) > div:nth-child(3) > p:nth-child(5) > a:nth-child(1)").click();
             sequence.next();
         },
         () => {
-            window.location.href = "#contact"
+            window.location.href = "#contact";
         },
         () => {
             document.querySelector("#contact #name").typeValue(" Simon Sommer ");
