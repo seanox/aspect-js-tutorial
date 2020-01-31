@@ -126,6 +126,7 @@
     <label key="calendar.day.7.short" value="Sun"/>
     
     <label key="common.text.closed" value="closed"/>
+    <label key="common.text.download" value="Download"/>
     <label key="common.text.powered" value="Powered by"/>
     
     <label key="company.name.1" value="EXAMPLE"/>
@@ -220,6 +221,7 @@
     <label key="calendar.day.7.short" value="ВС"/>
     
     <label key="common.text.closed" value="закрыт"/>
+    <label key="common.text.download" value="Скачать"/>
     <label key="common.text.powered" value="При поддержке"/>
     
     <label key="company.name.1" value="EXAMPLE"/>
