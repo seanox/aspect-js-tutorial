@@ -1,5 +1,4 @@
 #import ui/io
-#import ui/spinner
 
 Namespace.using("ui");
 

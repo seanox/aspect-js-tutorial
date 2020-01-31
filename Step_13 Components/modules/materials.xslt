@@ -126,10 +126,10 @@
               {{ui.text.format('<xsl:value-of select="density"/>', materials.FORMAT_DENSITY)}}
             </td>
             <td>
-              {{ui.text.format('<xsl:value-of select="pei_1"/>', materials.FORMAT_PEI_1)}}
+              {{ui.text.format('<xsl:value-of select="pei_1"/>', materials.FORMAT_PEI)}}
             </td>
             <td>
-              {{ui.text.format('<xsl:value-of select="pei_2"/>', materials.FORMAT_PEI_2)}}
+              {{ui.text.format('<xsl:value-of select="pei_2"/>', materials.FORMAT_PEI)}}
             </td>
             <td>
               {{ui.text.format('<xsl:value-of select="tc"/>', materials.FORMAT_TC)}}
