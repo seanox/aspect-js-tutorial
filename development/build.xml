@@ -14,6 +14,7 @@
     <copy file="./releases/aspect-js.js" todir="${workspace}/Step_10 MVC - Synchronization/assets" overwrite="true"/>
     <copy file="./releases/aspect-js.js" todir="${workspace}/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
     <copy file="./releases/aspect-js.js" todir="${workspace}/Step_12 Test/assets" overwrite="true"/>
+    <copy file="./releases/aspect-js.js" todir="${workspace}/Step_13 Components/assets" overwrite="true"/>
   </target>
   
   <macrodef name="release-locate">

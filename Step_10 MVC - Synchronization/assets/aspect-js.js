@@ -445,12 +445,12 @@ if (window.location.pathcontext === undefined) {
  *  The data is queried with XPath, the result can be concatenated and
  *  aggregated and the result can be transformed with XSLT. 
  *  
- *  DataSource 1.2.0x 20200114
+ *  DataSource 1.2x.0x 20200131
  *  Copyright (C) 2020 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0x 20200114
+ *  @version 1.2x.0x 20200131
  */
 if (typeof DataSource === "undefined") {
     
@@ -601,17 +601,15 @@ if (typeof DataSource === "undefined") {
     /**
      *  Transforms an XMLDocument based on a passed stylesheet.
      *  The data and the stylesheet can be passed as Locator, XMLDocument and in
-     *  mix. The result as a node. In some browsers, the XSLTProcessor may
-     *  create a container object, which is removed automatically. With the
-     *  option raw the cleanup can be deactivated.
+     *  mix. The result as a DocumentFragment.
+     *  Optionally, a meta object or a map with parameters for the XSLTProcessor
+     *  can be passed.
      *  @param  xml   locator or XMLDocument
      *  @param  style locator or XMLDocument 
-     *  @param  raw   option in combination with transform
-     *      true returns the complete XML document, otherwise only the root
-     *      entity as node 
-     *  @return the transformation result as a node
+     *  @param  meta  optional parameters for the XSLTProcessor 
+     *  @return the transformation result as a DocumentFragment
      */
-    DataSource.transform = function(xml, style, raw) {
+    DataSource.transform = function(xml, style, meta) {
         
         if (typeof xml === "string"
                 && xml.match(DataSource.PATTERN_LOCATOR))
@@ -628,6 +626,12 @@ if (typeof DataSource === "undefined") {
 
         var processor = new XSLTProcessor();
         processor.importStylesheet(style);
+        if (meta && typeof meta === "object") {
+            var set = typeof meta[Symbol.iterator] !== "function" ? Object.entries(meta) : meta
+            for (const [key, value] of set)
+                if (typeof meta[key] !== "function")
+                    processor.setParameter(null, key, value);
+        }
         
         //The escape attribute converts text to HTML.
         //Without the escape attribute, the HTML tag symbols < and > are masked
@@ -638,7 +642,7 @@ if (typeof DataSource === "undefined") {
         //Workaround for some browsers, e.g. MS Edge, if they have problems with
         //!DOCTYPE + !ENTITY. Therefore the document is copied so that the
         //DOCTYPE declaration is omitted.
-        var result = processor.transformToDocument(xml.clone());
+        var result = processor.transformToFragment(xml.clone(), document);
         var nodes = result.querySelectorAll(escape ? "*" : "*[escape]");
         nodes.forEach((node) => {
             if (escape || (node.getAttribute("escape") || "on").match(/^yes|on|true|1$/i)) {
@@ -661,33 +665,25 @@ if (typeof DataSource === "undefined") {
                 node.setAttribute("type", "composite/javascript");
         });
         
-        if (arguments.length > 2
-                && !!raw)
-            return result;
-        
-        if (result.body)
-            return result.body.childNodes;
-        if (result.firstChild
-                && result.firstChild.nodeName.match(/^transformiix\b/i))
-            return result.firstChild.childNodes;
-        return result.childNodes;        
+        return result;
     }; 
     
     /**
      *  Fetch the data to a locator as XMLDocument.
-     *  Optionally the data can be transformed via XSLT.
+     *  Optionally the data can be transformed via XSLT, for which a meta object
+     *  or a map with parameters for the XSLTProcessor can also be optionally
+     *  passed. When using the transformation, the return type changes to a
+     *  DocumentFragment.
      *  @param  locators  locator
      *  @param  transform locator of the transformation style
      *      With the boolean true, the style is derived from the locator by
      *      using the file extension xslt.
-     *  @param  raw       option in combination with transform
-     *      true returns the complete XML document, otherwise only the root
-     *      entity as node
-     *  @return the fetched data, optionally transformed, as XMLDocument or the
-     *      root entity as a node when the combination transform and raw is used
+     *  @param  meta      optional parameters for the XSLTProcessor
+     *  @return the fetched data as XMLDocument or as DocumentFragment, if the
+     *      transformation is used
      *  @throws Error in the case of invalid arguments
      */    
-    DataSource.fetch = function(locator, transform, raw) {
+    DataSource.fetch = function(locator, transform, meta) {
         
         if (typeof locator !== "string"
                 || !locator.match(DataSource.PATTERN_LOCATOR))
@@ -734,7 +730,7 @@ if (typeof DataSource === "undefined") {
                 throw new Error("Invalid style: " + String(style));  
         }
         
-        return DataSource.transform(data, DataSource.fetch(style), raw);
+        return DataSource.transform(data, DataSource.fetch(style), meta);
     };
     
     /**
@@ -778,7 +774,7 @@ if (typeof DataSource === "undefined") {
         var root = document.implementation.createDocument(null, collector, null, null);
         collection.forEach((entry) => {
             if (typeof entry !== "string")
-                throw TypeError("Invalid collection entry");
+                throw new TypeError("Invalid collection entry");
             root.documentElement.appendChild(DataSource.fetch(entry).documentElement.cloneNode(true));
         });
 
@@ -978,12 +974,12 @@ if (typeof Messages === "undefined") {
  *  Thus virtual paths, object structure in JavaScript (namespace) and the
  *  nesting of the DOM must match.
  *
- *  Composite 1.2.0x 20200106
+ *  Composite 1.2x.0x 20200127
  *  Copyright (C) 2020 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0x 20200106
+ *  @version 1.2x.0x 20200127
  */
 if (typeof Composite === "undefined") {
     
@@ -1138,15 +1134,15 @@ if (typeof Composite === "undefined") {
         get EVENT_MOUNT_NEXT() {return "MountNext";},
         get EVENT_MOUNT_END() {return "MountEnd";},
 
-        /** Constants of events when using AJAX */
-        get EVENT_AJAX_START() {return "AjaxStart";},
-        get EVENT_AJAX_PROGRESS() {return "AjaxProgress";},
-        get EVENT_AJAX_RECEIVE() {return "AjaxReceive";},
-        get EVENT_AJAX_LOAD() {return "AjaxLoad";},
-        get EVENT_AJAX_ABORT() {return "AjaxAbort";},
-        get EVENT_AJAX_TIMEOUT() {return "AjaxTimeout";},
-        get EVENT_AJAX_ERROR() {return "AjaxError";},
-        get EVENT_AJAX_END() {return "AjaxEnd";},
+        /** Constants of events when using HTTP */
+        get EVENT_HTTP_START() {return "HttpStart";},
+        get EVENT_HTTP_PROGRESS() {return "HttpProgress";},
+        get EVENT_HTTP_RECEIVE() {return "HttpReceive";},
+        get EVENT_HTTP_LOAD() {return "HttpLoad";},
+        get EVENT_HTTP_ABORT() {return "HttpAbort";},
+        get EVENT_HTTP_TIMEOUT() {return "HttpTimeout";},
+        get EVENT_HTTP_ERROR() {return "HttpError";},
+        get EVENT_HTTP_END() {return "HttpEnd";},
 
         /** Constants of events when errors occur */
         get EVENT_ERROR() {return "Error";},
@@ -1503,23 +1499,23 @@ if (typeof Composite === "undefined") {
             if (!event)
                 return;
             if (event.type == "loadstart")
-                event = Composite.EVENT_AJAX_START;
+                event = [Composite.EVENT_HTTP_START, event];
             else if (event.type == "progress")
-                event = Composite.EVENT_AJAX_PROGRESS; 
+                event = [Composite.EVENT_HTTP_PROGRESS, event]; 
             else if (event.type == "readystatechange")
-                event = Composite.EVENT_AJAX_RECEIVE; 
+                event = [Composite.EVENT_HTTP_RECEIVE, event]; 
             else if (event.type == "load")
-                event = Composite.EVENT_AJAX_LOAD; 
+                event = [Composite.EVENT_HTTP_LOAD, event]; 
             else if (event.type == "abort")
-                event = Composite.EVENT_AJAX_ABORT; 
+                event = [Composite.EVENT_HTTP_ABORT, event]; 
             else if (event.type == "error")
-                event = Composite.EVENT_AJAX_ERROR;   
+                event = [Composite.EVENT_HTTP_ERROR, event];   
             else if (event.type == "timeout")
-                event = Composite.EVENT_AJAX_TIMEOUT;   
+                event = [Composite.EVENT_HTTP_TIMEOUT, event];   
             else if (event.type == "loadend")
-                event = Composite.EVENT_AJAX_END; 
+                event = [Composite.EVENT_HTTP_END, event]; 
             else return;
-            Composite.fire(event, arguments); 
+            Composite.fire(...event); 
         };
         
         if (typeof this.open$init === "undefined") {
@@ -1961,13 +1957,26 @@ if (typeof Composite === "undefined") {
                         model = meta.property;
                     else model = null;
 
-                for (var event in model)
-                    if (typeof model[event] === "function"
-                            && event.match(Composite.PATTERN_EVENT_FUNCTIONS)) {
-                        event = event.substring(2).toLowerCase();
-                        if (!events.includes(event))
-                            events.push(event);
+                for (var entry in model)
+                    if (typeof model[entry] === "function"
+                            && entry.match(Composite.PATTERN_EVENT_FUNCTIONS)) {
+                        entry = entry.substring(2).toLowerCase();
+                        if (!events.includes(entry))
+                            events.push(entry);
                     }
+
+                var prototype = model ? Object.getPrototypeOf(model) : null;
+                while (prototype) {
+                    Object.getOwnPropertyNames(prototype).forEach(entry => {
+                        if (typeof model[entry] === "function"
+                                && entry.match(Composite.PATTERN_EVENT_FUNCTIONS)) {
+                            entry = entry.substring(2).toLowerCase();
+                            if (!events.includes(entry))
+                                events.push(entry);
+                        }
+                    });
+                    prototype = Object.getPrototypeOf(prototype);
+                }
             }
 
             //The determined events are registered.
@@ -2586,7 +2595,6 @@ if (typeof Composite === "undefined") {
      *  executes it in each render cycle when the cycle includes the script
      *  element. In this way, the execution of the script element can also be
      *  combined with the attribute condition.
-     *  Embedded scripts must be 'ThreadSafe'.
      *  
      *      Custom Tag (Macro)
      *      ----
@@ -3246,7 +3254,7 @@ if (typeof Composite === "undefined") {
                             request.open("GET", url, false);
                             request.send();
                             if (request.status != "200")
-                                throw Error("HTTP status " + request.status + " for " + url);
+                                throw new Error("HTTP status " + request.status + " for " + request.responseURL);
                             var content = request.responseText.trim();
                             Composite.render.cache[request.responseURL] = content;
                             selector.innerHTML = content;
@@ -3254,7 +3262,7 @@ if (typeof Composite === "undefined") {
                             var object = Composite.render.meta[serial];
                             delete object.attributes[Composite.ATTRIBUTE_IMPORT];
                         } catch (error) {
-                            Composite.fire(Composite.EVENT_AJAX_ERROR, error);
+                            Composite.fire(Composite.EVENT_HTTP_ERROR, error);
                             throw error;
                         } finally {
                             lock.release();
@@ -3479,11 +3487,10 @@ if (typeof Composite === "undefined") {
             //cycle when the cycle includes the script element. In this way, the
             //execution of the script element can also be combined with the
             //attribute condition.
-            //Embedded scripts must be 'ThreadSafe'.
             if (selector.nodeName.match(Composite.PATTERN_SCRIPT)) {
                 var type = (selector.getAttribute(Composite.ATTRIBUTE_TYPE) || "").trim();
                 if (type.match(Composite.PATTERN_COMPOSITE_SCRIPT)) {
-                    try {eval(selector.textContent);
+                    try {Composite.render.include.eval(selector.textContent);
                     } catch (exception) {
                         console.error("Composite JavaScript", exception);
                     }
@@ -3564,85 +3571,131 @@ if (typeof Composite === "undefined") {
             }
             return;
         }
-        
+
         Composite.render.cache[context + ".composite"] = null;
-        var request = new XMLHttpRequest();
-        request.overrideMimeType("text/plain");
-        request.onreadystatechange = () => {
-            if (request.readyState != 4
-                    || request.status == "404")
+
+        //Internal method for loading a composite resource.
+        //Supports CSS, JS and HTML.
+        var loading = (resource) => {
+            var request = new XMLHttpRequest();
+            request.overrideMimeType("text/plain"); 
+
+            //At first, HEAD is used to check if the resource exists.
+            //A HEAD before the GET appeared more friendly than a hard GET with
+            //errors. It costs one request more and has no benefit.
+            //Only server states 200 and 404 are supported, all others will
+            //cause an error.
+            request.open("HEAD", resource, false);
+            request.send();
+            if (request.status == 404)
                 return;
             if (request.status != "200")
                 throw new Error("HTTP status " + request.status + " for " + request.responseURL);
-            
+
+            //If the resource exists it will be loaded.
+            //Only server states 200 and 404 are supported, all others will
+            //cause an error.
+            request.open("GET", resource, false);
+            request.send();
+            if (request.status == 404)
+                return;
+            if (request.status != "200")
+                throw new Error("HTTP status " + request.status + " for " + request.responseURL);
+
             //CSS is inserted into the HEad element as a style element.
             //Without a head element, the inserting causes an error.
 
-            //JavaScript is not inserted as an element, it is executed directly.
-            //For this purpose eval is used. Since the method may form its own
-            //namespace for variables, it is important to initialize the global
-            //variable better with window[...].
+            //JavaScript is not inserted as an element, it is executed
+            //directly. For this purpose eval is used. Since the method may form
+            //its own namespace for variables, it is important to initialize
+            //the global variable better with window[...].
             
             //HTML/Markup is preloaded into the render cache if available.
             //If markup exists for the composite, the import attribute with the
             //URL is added to the item. Inserting then takes over the import
             //implementation, which then also accesses the render cache.
-            
-            var content = request.responseText.trim();
-            if (content) {
-                var url = document.createElement("a");
-                url.href = request.responseURL;
-                Composite.render.cache[url.pathname] = content;
-                if (request.responseURL.match(/\.css$/)) {
-                    var head = document.querySelector("html head");
-                    if (!head)
-                        throw new Error("No head element found");
-                    var style = document.createElement("style");
-                    style.setAttribute("type", "text/css");
-                    style.textContent = content;
-                    head.appendChild(style);
-                } else if (request.responseURL.match(/\.js$/)) {
-                    try {eval(content);
-                    } catch (exception) {
-                        console.error(request.responseURL, exception.name + ": " + exception.message);
-                        throw exception;
-                    }
-                } else if (request.responseURL.match(/\.html$/)) {
-                    if (composite instanceof Element)
-                        composite.innerHTML = content;
-                }
-            }
-        };
 
+            var content = request.responseText.trim();
+            if (!content)
+                return;
+            var url = document.createElement("a");
+            url.href = request.responseURL;
+            Composite.render.cache[url.pathname] = content;
+            if (request.responseURL.match(/\.css$/)) {
+                var head = document.querySelector("html head");
+                if (!head)
+                    throw new Error("No head element found");
+                var style = document.createElement("style");
+                style.setAttribute("type", "text/css");
+                style.textContent = content;
+                head.appendChild(style);
+            } else if (request.responseURL.match(/\.js$/)) {
+                try {Composite.render.include.eval(content);
+                } catch (exception) {
+                    console.error(request.responseURL, exception.name + ": " + exception.message);
+                    throw exception;
+                }
+            } else if (request.responseURL.match(/\.html$/)) {
+                if (composite instanceof Element)
+                    composite.innerHTML = content;
+            }
+        }
+        
         //The sequence of loading is strictly defined.
         //    sequence: CSS, JS, HTML
-        request.open("HEAD", context + ".css", false);
-        request.send();
-        if (request.status != 404) {
-            request.open("GET", context + ".css", false);
-            request.send();
-        }
-        request.open("HEAD", context + ".js", false);
-        request.send();
-        if (request.status != 404) {
-            request.open("GET", context + ".js", false);
-            request.send();
-        }
+        loading(context + ".css");
+        loading(context + ".js");
         
         //HTML/Markup is only loaded if it is a known composite object and the
         //element does not contain a markup (inner HTML) and the attributes
         //import and output are not set. Thus is the assumption that for an
         //empty element outsourced markup should exist.
-        if (object && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
+        if (object
+                && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
                 && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_OUTPUT)
-                && !composite.innerHTML.trim()) {
-            request.open("HEAD", context + ".html", false);
-            request.send();
-            if (request.status != 404) {
-                request.open("GET", context + ".html", false);
-                request.send();
-            }
+                && !composite.innerHTML.trim())
+            loading(context + ".html");
+    };
+
+    /**
+     *  Executes the import of JavaScript und Composite JavaScript.
+     *  As a special feature, Composite JavaScript supports meta-directives.
+     *  
+     *      #import
+     *      ----
+     *  Expects a space-separated list of composite modules whose path must be
+     *  relative to the URL. 
+     *  
+     *  Composite modules consist of the optional resources CSS, JS and HTML.
+     *  The #import meta-directive can only load CSS and JS.
+     *  The behavior is the same as when loading composites in the markup. The
+     *  server status 404 does not cause an error, because all resources of a
+     *  composite are optional, also JavaScript. Server states other than 200
+     *  and 404 cause an error. CSS resources are added to the HEAD and lead to
+     *  an error if no HEAD element exists in the DOM. Markup (HTML) is not
+     *  loaded because no target can be set for the output.
+     *  The meta directive can be used multiple times in the meta section of a
+     *  Composite JavaScript.    
+     *  
+     *  Meta directives can be used only at the beginning of the composite
+     *  JavaScript. The meta-section ends with the first comment or JavaScript
+     *  line.
+     */
+    Composite.render.include.eval = function(script) {
+        
+        script = script.split(/[\r\n]+/);
+        while (script && script.length > 0) {
+            if (!script[0].match(/(^\s*(#import(\s+.*)*)*$)/))
+                break;
+            var line = script.shift().replace(/^\s*#import(\s+|$)/, "");
+            line.split(/\s+/).forEach((include) => {
+                if (include)
+                    Composite.render.include(include);
+            });
         }
+        script = script.join("\r\n").trim();
+        if (script)
+            eval(script);
     };
 
     //Listener when an error occurs and triggers a matching composite-event.
@@ -3670,7 +3723,14 @@ if (typeof Composite === "undefined") {
             style.innerHTML = "*[release] {display:none!important;}";
             document.querySelector("html head").appendChild(style);
         }
-    
+        
+        //Initially the common-module is loaded.
+        //The common-module is similar to an autostart, it is used to initialize
+        //the single page application. It consists of common.js and common.css.
+        //The configuration of the SiteMap and essential styles can/should be
+        //stored here.
+        Composite.render.include("common");
+        
         (new MutationObserver((records) => {
             records.forEach((record) => {
 
@@ -3752,7 +3812,9 @@ if (typeof Composite === "undefined") {
                 //after the rendering with obsolete nodes.
                 if (record.addedNodes) {
                     record.addedNodes.forEach((node) => {
-                        if (node instanceof Element
+                        if ((node instanceof Element
+                                || (node instanceof Node
+                                        && node.nodeType == Node.TEXT_NODE))
                                 && !Composite.render.meta[node.ordinal()]
                                 && document.body.contains(node))
                             Composite.render(node);
@@ -4285,12 +4347,12 @@ if (typeof Expression === "undefined") {
  *  is taken over by the Composite API in this implementation. SiteMap is an
  *  extension and is based on the Composite API.
  *  
- *  MVC 1.1.0x 20200113
+ *  MVC 1.1x.0x 20200122
  *  Copyright (C) 2020 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0x 20200113
+ *  @version 1.1x.0x 20200122
  */
 if (typeof Path === "undefined") {
     
@@ -5098,13 +5160,6 @@ if (typeof SiteMap === "undefined") {
      *  The method initiates the initial usage of the path.
      */
     window.addEventListener("load", (event) => {
-        
-        //Initially the common-module is loaded.
-        //The common-module is similar to an autostart, it is used to initialize
-        //the single page application. It consists of common.js and common.css.
-        //The configuration of the SiteMap and essential styles can/should be
-        //stored here.
-        Composite.render.include("common");
         
         //When clicking on a link with the current path, the focus must be set
         //back to face/facet, as the user may have scrolled on the page.

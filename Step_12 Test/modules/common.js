@@ -68,7 +68,7 @@ if (Object.parse === undefined) {
         if (data instanceof Node) {
             
             if (data.nodeType == 9)
-                return DataSource.convert(data.documentElement);   
+                return Object.parse(data.documentElement);   
             if (data.nodeType != 1)
                 return null;
             
