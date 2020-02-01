@@ -35,7 +35,7 @@ Seanox Software Solutions oder kurz Seanox genannt.
 
 Diese Software unterliegt der Version 2 der GNU General Public License.
 
-Copyright (C) 2019 Seanox Software Solutions
+Copyright (C) 2020 Seanox Software Solutions
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of version 2 of the GNU General Public License as published by the
@@ -59,6 +59,18 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 # Downloads
 [1.2.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/archive/1.2.0.zip)
+
+
+# Changes (Change Log)
+## 1.3.0 2020xxxx (summary of the next version)  
+CR: Markup: Optimization of img tags with dynamic URL  
+CR: CSS: Added style for invalid input elements  
+CR: Assets: Shrinking of images and fonts  
+CR: Assets: Update of aspect-js.js  
+CR: Tutorial: Added Step_13 Components  
+CR: Documentation: Added CHANGES to README  
+
+[Read more](https://raw.githubusercontent.com/seanox/aspect-js-tutorial/master/CHANGES)
 
 
 # Contact
