@@ -21,16 +21,24 @@ ui.xml.Table = class extends ui.Table {
      * The events for the sort function are registered with the insert.
      */
     dock() {
+        // Docking is synchronous, but loading is asynchronous.
+        // This way the page does not block during initial loading and rendering.
         Composite.asynchron(() => {
+            // Temporary a spinner is shown during loading.
             ui.spinner.append(this.selector);
-            var $sorting = null;
-            var $output = table => {
+            var sorting = null;
+            var output = table => {
                 Composite.asynchron(() => {
                     document.querySelector(table.selector).appendChild(table.render(), true);
                     Composite.asynchron(() => {
+                        // The table header is searched for sortable elements.
+                        // These are all elements with the class attribute sortable.
+                        // The default order is defined by sortable-default.
                         var nodes = Array.from(document.querySelectorAll(table.selector + " thead"));
                         if (nodes.length <= 0)
                             throw new Error("Invalid table structure: thead is missing");
+                        // A click event is assigned to all detected elements.
+                        // With the click the sorting and the re-rendering is called.
                         for (let thead of nodes)
                             thead.addEventListener("click", event => {
                                 if (!event.target
@@ -45,17 +53,17 @@ ui.xml.Table = class extends ui.Table {
                                 column = (column.getAttribute("id") || "").trim();
                                 if (!column)
                                     return;
-                                if (!$sorting
-                                        || $sorting.column != column)
-                                    $sorting = {column, reverse:false}
-                                else $sorting.reverse = !$sorting.reverse;
-                                table.sort($sorting.column, $sorting.reverse);
-                                $output(table);  
+                                if (!sorting
+                                        || sorting.column != column)
+                                    sorting = {column, reverse:false}
+                                else sorting.reverse = !sorting.reverse;
+                                table.sort(sorting.column, sorting.reverse);
+                                output(table);  
                             });
                     });                    
                 });
             };
-            $output(this);
+            output(this);
         });
     }
 }
