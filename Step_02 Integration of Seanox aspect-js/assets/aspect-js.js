@@ -24,12 +24,12 @@
  *      ----
  *  General extension of the JavaScript API.
  *  
- *  Extension 1.1.0x 20200106
+ *  Extension 1.1.1 20200106
  *  Copyright (C) 2020 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0x20200106
+ *  @version 1.1.1 20200106
  */
 if (typeof Namespace === "undefined") {
 
@@ -445,12 +445,12 @@ if (window.location.pathcontext === undefined) {
  *  The data is queried with XPath, the result can be concatenated and
  *  aggregated and the result can be transformed with XSLT. 
  *  
- *  DataSource 1.2x.0x 20200131
+ *  DataSource 1.3.0 20200201
  *  Copyright (C) 2020 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2x.0x 20200131
+ *  @version 1.3.0 20200201
  */
 if (typeof DataSource === "undefined") {
     
@@ -642,7 +642,7 @@ if (typeof DataSource === "undefined") {
         //Workaround for some browsers, e.g. MS Edge, if they have problems with
         //!DOCTYPE + !ENTITY. Therefore the document is copied so that the
         //DOCTYPE declaration is omitted.
-        var result = processor.transformToFragment(xml.clone(), document);
+        var result = processor.transformToDocument(xml);
         var nodes = result.querySelectorAll(escape ? "*" : "*[escape]");
         nodes.forEach((node) => {
             if (escape || (node.getAttribute("escape") || "on").match(/^yes|on|true|1$/i)) {
@@ -665,7 +665,17 @@ if (typeof DataSource === "undefined") {
                 node.setAttribute("type", "composite/javascript");
         });
         
-        return result;
+        var nodes = result.childNodes;
+        if (result.body)
+            nodes = result.body.childNodes;
+        else if (result.firstChild
+                && result.firstChild.nodeName.match(/^transformiix\b/i))
+            nodes = result.firstChild.childNodes;
+        var fragment = document.createDocumentFragment();
+        nodes = Array.from(nodes);
+        for (var loop = 0; loop < nodes.length; loop++)
+            fragment.appendChild(nodes[loop]);
+        return fragment;
     }; 
     
     /**
@@ -828,12 +838,12 @@ if (typeof DataSource === "undefined") {
  *      
  *  <h1 output="{{Messages['contact.title']}}"/>
  *  
- *  Messages 1.2.0x 20200106
+ *  Messages 1.2.1 20200106
  *  Copyright (C) 2020 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2.0x 20200106
+ *  @version 1.2.1 20200106
  */
 if (typeof Messages === "undefined") {
     
@@ -974,12 +984,12 @@ if (typeof Messages === "undefined") {
  *  Thus virtual paths, object structure in JavaScript (namespace) and the
  *  nesting of the DOM must match.
  *
- *  Composite 1.2x.0x 20200127
+ *  Composite 1.3.0 20200127
  *  Copyright (C) 2020 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.2x.0x 20200127
+ *  @version 1.3.0 20200127
  */
 if (typeof Composite === "undefined") {
     
@@ -4347,12 +4357,12 @@ if (typeof Expression === "undefined") {
  *  is taken over by the Composite API in this implementation. SiteMap is an
  *  extension and is based on the Composite API.
  *  
- *  MVC 1.1x.0x 20200122
+ *  MVC 1.2.0 20200122
  *  Copyright (C) 2020 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1x.0x 20200122
+ *  @version 1.2.0 20200122
  */
 if (typeof Path === "undefined") {
     
@@ -5351,12 +5361,12 @@ if (typeof SiteMap === "undefined") {
  *  assertion was not true, a error is thrown -- see as an example the
  *  implementation here. 
  *  
- *  Test 1.1.0x 20200106
+ *  Test 1.1.1 20200106
  *  Copyright (C) 2020 Seanox Software Solutions
  *  Alle Rechte vorbehalten.
  *
  *  @author  Seanox Software Solutions
- *  @version 1.1.0x 20200106
+ *  @version 1.1.1 20200106
  */
 if (typeof Test === "undefined") {
     
