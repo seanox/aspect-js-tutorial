@@ -138,7 +138,13 @@
         The component example is based on a table whose data is retrieved from an external interface.
         In this example, the interface is simulated by an XML file.
         The functions of the table: sorting, download, ... are provided by an abstract component.
-        For this purpose imports and inheritance are used. 
+        For this purpose imports and inheritance are used.
+        
+        The use of imports is possible in different ways.
+        The JavaScript-own import is supported as well as the meta-directive #import introduced in Seanox aspect-js. 
+        The main difference is timing, which is asynchronous for the JavaScript standard and linear/synchronous for the #import meta-directive.
+        
+        In this example the meta directive is used. But it can also be combined.
       
       -->
       
