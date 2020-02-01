@@ -59,7 +59,7 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
 # Downloads
-[1.3.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/archive/1.3.0.zip)
+[1.3.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/blob/master/releases/aspect-js%20tutorial-1.3.0.zip)
 
 
 # Changes (Change Log)
