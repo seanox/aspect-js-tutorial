@@ -26,7 +26,27 @@ ui.xml.Table = class extends ui.Table {
         Composite.asynchron(() => {
             // Temporary a spinner is shown during loading.
             ui.spinner.append(this.selector);
+            
+            // The data is loaded initially (if necessary).
+            this.load();
+            
+            // The standard sorting is determined and applied.
+            // To do this, the table must be rendered temporarily without
+            // sorting so that the sortable fields can be determined.
             var sorting = null;
+            var fragment = this.render();
+            var nodes = Array.from(fragment.querySelectorAll("thead"));
+            if (nodes.length <= 0)
+                throw new Error("Invalid table structure: thead is missing");
+            var column = fragment.querySelector("thead *.sortable.sortable-default[id]");
+            if (column) {
+                column = (column.getAttribute("id") || "").trim();
+                if (column) {
+                    sorting = {column, reverse:false}
+                    this.sort(sorting.column, sorting.reverse);
+                }
+            }
+            
             var output = table => {
                 Composite.asynchron(() => {
                     document.querySelector(table.selector).appendChild(table.render(), true);
