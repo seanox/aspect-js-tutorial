@@ -59,11 +59,11 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
 # Downloads
-[1.3.0 Tutorial](https://raw.githubusercontent.com/seanox/aspect-js-tutorial/master/releases/aspect-js%20tutorial-1.3.0.zip)
+[1.3.1 Tutorial](https://raw.githubusercontent.com/seanox/aspect-js-tutorial/master/releases/aspect-js%20tutorial-1.3.1.zip)
 
 
 # Changes (Change Log)
-## 1.3.0 2020xxxx (summary of the next version)  
+## 1.3.1 20200202 (summary of the current version)  
 CR: Markup: Optimization of img tags with dynamic URL  
 CR: CSS: Added style for invalid input elements  
 CR: Assets: Shrinking of images and fonts  

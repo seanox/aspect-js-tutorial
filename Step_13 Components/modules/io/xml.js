@@ -14,6 +14,8 @@ io.xml = {
         request.overrideMimeType("text/xml");
         request.open("GET", url, false);
         request.send();
+        if (request.status != 200)
+            throw new Error("HTTP status " + request.status + " for " + request.responseURL);
         return request.responseXML;
     },
     
