@@ -1,8 +1,20 @@
 <?xml version="1.0" ?>
 <project name="aspect-js tutorial" default="update" basedir="../../aspect-js">
+  <target name="usage">
+    <echo>                                                    </echo>
+    <echo> the following targets are available ...            </echo>
+    <echo>                                                    </echo>
+    <echo>   archive    builds aspect-js in the main project  </echo>
+    <echo>                                                    </echo>
+    <echo>   update     builds aspect-js in the main project  </echo>
+    <echo>              and updates aspect-js in all examples </echo>
+    <echo>                                                    </echo>
+    <echo>   changes    synchronizes README.md with CHANGES   </echo>
+  </target>
+
   <target name="update">
     <ant antfile="./development/build.xml" target="archive"/>
-    <property name="workspace" value="../aspect-js tutorial"/>
+    <property name="workspace" value="../aspect-js-tutorial"/>
     <copy file="./releases/aspect-js.js" todir="${workspace}/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
     <copy file="./releases/aspect-js.js" todir="${workspace}/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
     <copy file="./releases/aspect-js.js" todir="${workspace}/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
