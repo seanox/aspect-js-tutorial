@@ -63,13 +63,10 @@ specific language governing permissions and limitations under the License.
 
 
 # Changes (Change Log)
-## 1.3.1 20200202 (summary of the current version)  
-CR: Markup: Optimization of img tags with dynamic URL  
-CR: CSS: Added style for invalid input elements  
-CR: Assets: Shrinking of images and fonts  
+## 1.4.0 20211210 (summary of the current version)  
+BF: Review: Correction/optimization  
 CR: Assets: Update of aspect-js.js  
-CR: Tutorial: Added Step_13 Components  
-CR: Documentation: Added CHANGES to README  
+CR: License: Changed to Apache License Version 2.0  
 
 [Read more](https://raw.githubusercontent.com/seanox/aspect-js-tutorial/master/CHANGES)
 
