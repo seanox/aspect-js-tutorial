@@ -4,7 +4,8 @@
     <echo>                                                    </echo>
     <echo> the following targets are available ...            </echo>
     <echo>                                                    </echo>
-    <echo>   archive    builds aspect-js in the main project  </echo>
+    <echo>   archive    release of aspect-js tutorial based   </echo>
+    <echo>              on the existing aspect-js version     </echo>
     <echo>                                                    </echo>
     <echo>   update     builds aspect-js in the main project  </echo>
     <echo>              and updates aspect-js in all examples </echo>
@@ -31,24 +32,24 @@
   
   <macrodef name="release-locate">
     <sequential>
-      <copy file="../aspect-js tutorial/CHANGES" tofile="../aspect-js tutorial/CHANGES.tmp" overwrite="true"/>
-      <replaceregexp file="../aspect-js tutorial/CHANGES.tmp"
+      <copy file="../aspect-js-tutorial/CHANGES" tofile="../aspect-js-tutorial/CHANGES.tmp" overwrite="true"/>
+      <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp"
         match="(?s)^\s*([\d\.x]+) (\d{4})([\dx]+).*$" flags="g" byline="false"
         replace="release.version=\1&#x000D;release.year=\2&#x000D;release.date=\2\3&#x000D;"/>
-      <replaceregexp file="../aspect-js tutorial/CHANGES.tmp" match="x+" replace="0000" flags="g" byline="false"/>
+      <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="x+" replace="0000" flags="g" byline="false"/>
       <loadproperties>
-        <file file="../aspect-js tutorial/CHANGES.tmp"/>
+        <file file="../aspect-js-tutorial/CHANGES.tmp"/>
       </loadproperties>
-      <delete file="../aspect-js tutorial/CHANGES.tmp"/>
-      <echo file="../aspect-js tutorial/CHANGES.tmp" message="release.major=${release.version}"/>
-      <replaceregexp file="../aspect-js tutorial/CHANGES.tmp"
+      <delete file="../aspect-js-tutorial/CHANGES.tmp"/>
+      <echo file="../aspect-js-tutorial/CHANGES.tmp" message="release.major=${release.version}"/>
+      <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp"
         match="(?&lt;=\d+)\." byline="true" replace="&#x000D;release.minor="/>
-      <replaceregexp file="../aspect-js tutorial/CHANGES.tmp"
+      <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp"
         match="(?&lt;=\d+)\." byline="true" replace="&#x000D;release.patch="/>
       <loadproperties>
-        <file file="../aspect-js tutorial/CHANGES.tmp"/>
+        <file file="../aspect-js-tutorial/CHANGES.tmp"/>
       </loadproperties>
-      <delete file="../aspect-js tutorial/CHANGES.tmp"/>
+      <delete file="../aspect-js-tutorial/CHANGES.tmp"/>
     </sequential>
   </macrodef> 
   
@@ -77,33 +78,33 @@
   </target> 
   
   <target name="changes">
-    <replaceregexp file="../aspect-js tutorial/CHANGES" match="&#x00E4;" replace="ae" flags="g"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES" match="&#x00C4;" replace="Ae" flags="g"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES" match="&#x00F6;" replace="oe" flags="g"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES" match="&#x00D6;" replace="Oe" flags="g"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES" match="&#x00FC;" replace="ue" flags="g"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES" match="&#x00DC;" replace="Ue" flags="g"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00E4;" replace="ae" flags="g"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00C4;" replace="Ae" flags="g"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00F6;" replace="oe" flags="g"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00D6;" replace="Oe" flags="g"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00FC;" replace="ue" flags="g"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00DC;" replace="Ue" flags="g"/>
       
-    <copy file="../aspect-js tutorial/CHANGES" tofile="../aspect-js tutorial/CHANGES.tmp" overwrite="true"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES.tmp" match="^\s+" replace="" byline="false"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES.tmp" match="(?s)^(.*?)[\r\n]+\d[\d\. x]+.*$" replace="\1" byline="false"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES.tmp" match="^(.*?)\s*$" replace="\1  " flags="g" byline="true"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES.tmp" match="^(\d[\.\d x]+)[^\r\n]*" replace="## \1" byline="false"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES.tmp" match="^ {0,4}([A-Z]+:.*)\s*$" replace="\1" byline="true"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES.tmp" match="(?s)[\r\n]+ [^\r\n]+" replace="" flags="g" byline="false"/>  
-    <replaceregexp file="../aspect-js tutorial/CHANGES.tmp" match="^(## \d[\.\d]+ \d+)(  )" replace="\1 (summary of the current version)\2" flags="g" byline="true"/>
-    <replaceregexp file="../aspect-js tutorial/CHANGES.tmp" match="^(## \d[\.\d]+ [\dx]+)(  )" replace="\1 (summary of the next version)\2" flags="g" byline="true"/>
+    <copy file="../aspect-js-tutorial/CHANGES" tofile="../aspect-js-tutorial/CHANGES.tmp" overwrite="true"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^\s+" replace="" byline="false"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="(?s)^(.*?)[\r\n]+\d[\d\. x]+.*$" replace="\1" byline="false"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^(.*?)\s*$" replace="\1  " flags="g" byline="true"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^(\d[\.\d x]+)[^\r\n]*" replace="## \1" byline="false"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^ {0,4}([A-Z]+:.*)\s*$" replace="\1" byline="true"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="(?s)[\r\n]+ [^\r\n]+" replace="" flags="g" byline="false"/>  
+    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^(## \d[\.\d]+ \d+)(  )" replace="\1 (summary of the current version)\2" flags="g" byline="true"/>
+    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^(## \d[\.\d]+ [\dx]+)(  )" replace="\1 (summary of the next version)\2" flags="g" byline="true"/>
     <loadresource property="changes">
-      <file file="../aspect-js tutorial/CHANGES.tmp"/>
+      <file file="../aspect-js-tutorial/CHANGES.tmp"/>
     </loadresource>
-    <delete file="../aspect-js tutorial/CHANGES.tmp"/>
-    <replaceregexp file="../aspect-js tutorial/README.md"
+    <delete file="../aspect-js-tutorial/CHANGES.tmp"/>
+    <replaceregexp file="../aspect-js-tutorial/README.md"
       match="(?si)(# Changes \(Change Log\)\s+).*?(\[Read more\])" flags="g" byline="false"
       replace="\1${changes}${line.separator}${line.separator}\2"/>
     <tstamp>
       <format property="now.year" pattern="yyyy"/>
     </tstamp>    
-    <replaceregexp file="../aspect-js tutorial/README.md"
+    <replaceregexp file="../aspect-js-tutorial/README.md"
       match="(?si)(?&lt;=\(C\)\s)\d{4}\b" flags="g" byline="true"
       replace="${now.year}"/>
   </target>   
