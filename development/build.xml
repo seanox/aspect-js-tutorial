@@ -55,7 +55,7 @@
   
   <target name="archive">
     <release-locate/>
-    <property name="workspace" value="../aspect-js tutorial"/>
+    <property name="workspace" value="../aspect-js-tutorial"/>
     <property name="workspace.releases" value="${workspace}/releases"/>
     <delete dir="${workspace.releases}/temp"/>
     <mkdir dir="${workspace.releases}/temp/${ant.project.name}-${release.version}/${ant.project.name}"/>
