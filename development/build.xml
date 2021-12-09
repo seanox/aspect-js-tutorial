@@ -64,7 +64,9 @@
         <include name="**/**"/>
         <exclude name="releases/**"/>
         <exclude name="development/**"/>
+        <exclude name=".**/**"/>
         <exclude name=".*"/>
+        <exclude name="*.iml"/>
       </fileset>
     </copy>
     <touch datetime="${release.date}" pattern="yyyyMMdd">
