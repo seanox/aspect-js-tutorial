@@ -62,7 +62,7 @@ specific language governing permissions and limitations under the License.
 [1.4.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/releases/download/1.4.0/aspect-js.tutorial-1.4.0.zip)
 
 
-# Changes (Change Log)
+# Changes
 ## 1.4.0 20211210
 BF: Review: Correction/optimization  
 CR: Assets: Update of aspect-js.js  
