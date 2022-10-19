@@ -1,3 +1,7 @@
+1.5.0 20221224
+  CR: Build: Releases are now only available on the release page
+  CR: Assets: Update of aspect-js.js
+
 1.4.0 20211210
   BF: Review: Correction/optimization
   CR: Assets: Update of aspect-js.js
