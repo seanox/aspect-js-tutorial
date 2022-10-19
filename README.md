@@ -19,7 +19,7 @@ Using a small example, the implementation is explained step by step from the
 prototype to the finished application.
 
 The tutorial is based on understanding and visualizing the differences of the
-the serveral steps and therefore requires a program for comparison.
+the several steps and therefore requires a program for comparison.
 
 After downloading and unpacking, all steps can be called as independent
 applications via a web server.  
@@ -59,11 +59,11 @@ specific language governing permissions and limitations under the License.
 
 
 # Downloads
-[1.3.1 Tutorial](https://raw.githubusercontent.com/seanox/aspect-js-tutorial/master/releases/aspect-js%20tutorial-1.3.1.zip)
+[1.4.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/releases/download/1.4.0/aspect-js.tutorial-1.4.0.zip)
 
 
 # Changes (Change Log)
-## 1.4.0 20211210 (summary of the current version)  
+## 1.4.0 20211210
 BF: Review: Correction/optimization  
 CR: Assets: Update of aspect-js.js  
 CR: License: Changed to Apache License Version 2.0  
@@ -75,20 +75,3 @@ CR: License: Changed to Apache License Version 2.0
 [Issues](https://github.com/seanox/aspect-js-tutorial/issues)  
 [Requests](https://github.com/seanox/aspect-js-tutorial/pulls)  
 [Mail](http://seanox.de/contact)
-
-
-# Thanks!
-<img src="https://raw.githubusercontent.com/seanox/seanox/master/sources/assets/images/thanks.png">
-
-[cantaa GmbH](https://cantaa.de/)  
-[JetBrains](https://www.jetbrains.com/?from=seanox)  
-Sven Lorenz  
-Andreas Mitterhofer  
-[novaObjects GmbH](https://www.novaobjects.de)  
-Leo Pelillo  
-Gunter Pfannm&uuml;ller  
-Annette und Steffen Pokel  
-Edgar R&ouml;stle  
-Michael S&auml;mann  
-Markus Schlosneck  
-[T-Systems International GmbH](https://www.t-systems.com)
