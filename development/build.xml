@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="aspect-js tutorial" default="update" basedir="../../aspect-js">
+<project name="aspect-js-tutorial" default="update" basedir="../../aspect-js">
   <target name="usage">
     <echo>                                                    </echo>
     <echo> the following targets are available ...            </echo>
@@ -34,8 +34,8 @@
     <sequential>
       <copy file="../aspect-js-tutorial/CHANGES" tofile="../aspect-js-tutorial/CHANGES.tmp" overwrite="true"/>
       <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp"
-        match="(?s)^\s*([\d\.x]+) (\d{4})([\dx]+).*$" flags="g" byline="false"
-        replace="release.version=\1&#x000D;release.year=\2&#x000D;release.date=\2\3&#x000D;"/>
+          match="(?s)^\s*([\d\.x]+) (\d{4})([\dx]+).*$" flags="g" byline="false"
+          replace="release.version=\1&#x000D;release.year=\2&#x000D;release.date=\2\3&#x000D;"/>
       <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="x+" replace="0000" flags="g" byline="false"/>
       <loadproperties>
         <file file="../aspect-js-tutorial/CHANGES.tmp"/>
@@ -43,9 +43,9 @@
       <delete file="../aspect-js-tutorial/CHANGES.tmp"/>
       <echo file="../aspect-js-tutorial/CHANGES.tmp" message="release.major=${release.version}"/>
       <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp"
-        match="(?&lt;=\d+)\." byline="true" replace="&#x000D;release.minor="/>
+          match="(?&lt;=\d+)\." byline="true" replace="&#x000D;release.minor="/>
       <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp"
-        match="(?&lt;=\d+)\." byline="true" replace="&#x000D;release.patch="/>
+          match="(?&lt;=\d+)\." byline="true" replace="&#x000D;release.patch="/>
       <loadproperties>
         <file file="../aspect-js-tutorial/CHANGES.tmp"/>
       </loadproperties>
@@ -62,7 +62,7 @@
     <copy todir="${workspace.releases}/temp/${ant.project.name}-${release.version}/${ant.project.name}">
       <fileset dir="${workspace}" defaultexcludes="on">
         <include name="**/**"/>
-        <exclude name="releases/**"/>
+        <exclude name="release/**"/>
         <exclude name="development/**"/>
         <exclude name=".**/**"/>
         <exclude name=".*"/>
@@ -80,6 +80,8 @@
   </target> 
   
   <target name="changes">
+    <release-locate/>
+
     <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00E4;" replace="ae" flags="g"/>
     <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00C4;" replace="Ae" flags="g"/>
     <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00F6;" replace="oe" flags="g"/>
@@ -101,13 +103,17 @@
     </loadresource>
     <delete file="../aspect-js-tutorial/CHANGES.tmp"/>
     <replaceregexp file="../aspect-js-tutorial/README.md"
-      match="(?si)(# Changes\s+).*?(\[Read more\])" flags="g" byline="false"
-      replace="\1${changes}${line.separator}${line.separator}\2"/>
+        match="(?si)(# Changes\s+).*?(\[Read more\])" flags="g" byline="false"
+        replace="\1${changes}${line.separator}${line.separator}\2"/>
     <tstamp>
       <format property="now.year" pattern="yyyy"/>
     </tstamp>    
     <replaceregexp file="../aspect-js-tutorial/README.md"
-      match="(?si)(?&lt;=\(C\)\s)\d{4}\b" flags="g" byline="true"
-      replace="${now.year}"/>
-  </target>   
+        match="(?si)(?&lt;=\(C\)\s)\d{4}\b" flags="g" byline="true"
+        replace="${now.year}"/>
+
+    <replaceregexp file="../aspect-js-tutorial/README.md"
+        match="(\[Seanox aspect-js )\d\.[\.\d]+(\sTutorial\]\(https://github.com/seanox/aspect-js-tutorial/releases/download/)\d\.[\.\d]+(/aspect-js-tutorial-)\d\.[\.\d]+(\.zip\))" flags="g" byline="false"
+        replace="\1${release.version}\2${release.version}\3${release.version}\4"/>
+  </target>
 </project>
