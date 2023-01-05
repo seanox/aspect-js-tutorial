@@ -63,7 +63,7 @@ specific language governing permissions and limitations under the License.
 
 
 # Changes
-## 1.5.0 20221224  
+## 1.5.0 2023xxxx (upcoming version)  
 CR: Build: Releases are now only available on the release page  
 CR: Assets: Update of aspect-js.js  
 
