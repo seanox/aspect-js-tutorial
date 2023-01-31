@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<locales>
+  <en default="true">
+    <label key="page.headline" value="Product Information as a Service"/>
+    <label key="page.title" value="Retailer Newsletter"/>
+    <label key="page.version" value="Version"/>
+
+    <label key="error.headline" value="An unexpected error has occurred."/>
+    <label key="error.instruction">
+      <![CDATA[
+      Please reload the application.<br/>
+      If the problem persists, please contact support.
+      ]]>
+    </label>
+    <label key="error.reload" value="Reload application"/>
+
+    <label key="newsletter.market" value="Market"/>
+    <label key="newsletter.datatype" value="Datatype"/>
+    <label key="newsletter.select" value="Please select"/>
+    <label key="newsletter.search" value="Search"/>
+    <label key="newsletter.date" value="Date"/>
+    <label key="newsletter.id" value="ID"/>
+    <label key="newsletter.title" value="Title"/>
+    <label key="newsletter.description" value="Description"/>
+    <label key="newsletter.change" value="Change"/>
+
+    <label key="newsletter.function" value="Function"/>
+    <label key="newsletter.function.preview.you" value="Send preview to you"/>
+    <label key="newsletter.function.preview.email" value="Send preview to test email"/>
+    <label key="newsletter.function.recipients" value="Show recipient list (no sending)"/>
+    <label key="newsletter.function.publish" value="Publish to retailers"/>
+    <label key="newsletter.function.email"
+           value="Recipients of the test email (separation: space, comma, semicolon)"/>
+    <label key="newsletter.function.email.error"
+           value="Recipients must be valid email addresses"/>
+
+    <label key="newsletter.results.none" value="">
+      <![CDATA[
+      No changes found.<br/>
+      Unpublished changes older than 6 months were ignored in the search.
+      ]]>
+    </label>
+    <label key="newsletter.results" value="">
+      <![CDATA[
+      Results: 10x Technical Data for market North America<br/>
+      Unpublished changes older than 6 months were ignored in the search.
+      ]]>
+    </label>
+
+    <label key="newsletter.recipients.none" value="">
+      <![CDATA[
+      No recipients determined.<br/>
+      Only registered PIaaS subscriptions will be considered.
+      ]]>
+    </label>
+    <label key="newsletter.recipients" value="">
+      <![CDATA[
+      List of recipients: 10x recipients determined<br/>
+      Only registered PIaaS subscriptions will be considered.
+      ]]>
+    </label>
+  </en>
+
+  <dk>
+    <label key="page.headline" value="Product Information as a Service"/>
+    <label key="page.title" value="Nyhedsbrev til detailhandlere"/>
+    <label key="page.version" value="Version"/>
+
+    <label key="error.headline" value="En uventet fejl er opstået."/>
+    <label key="error.instruction">
+      <![CDATA[
+      Genindlæs venligst programmet igen.<br/>
+      Hvis problemet fortsætter, skal du kontakte support.
+      ]]>
+    </label>
+    <label key="error.reload" value="Reload-program"/>
+
+    <label key="newsletter.market" value="Marked"/>
+    <label key="newsletter.datatype" value="Datatype"/>
+    <label key="newsletter.select" value="Vælg venligst"/>
+    <label key="newsletter.search" value="Søg"/>
+    <label key="newsletter.date" value="Dato"/>
+    <label key="newsletter.id" value="ID"/>
+    <label key="newsletter.title" value="Titel"/>
+    <label key="newsletter.description" value="Beskrivelse"/>
+    <label key="newsletter.change" value="Ændringen"/>
+
+    <label key="newsletter.function" value="Funktion"/>
+    <label key="newsletter.function.preview.you" value="Send preview til dig"/>
+    <label key="newsletter.function.preview.email" value="Send forhåndsvisning til test-e-mail"/>
+    <label key="newsletter.function.recipients" value="Vis modtagerliste (ingen afsendelse)"/>
+    <label key="newsletter.function.publish" value="Offentliggøre til detailhandlere"/>
+    <label key="newsletter.function.email"
+           value="Modtagerne af test-e-mailen (adskillelse: mellemrum, komma, semikolon)"/>
+    <label key="newsletter.function.email.error"
+           value="Modtagerne skal være gyldige e-mail-adresser"/>
+
+    <label key="newsletter.results.none" value="">
+      <![CDATA[
+      Ingen ændringer fundet.<br/>
+      Upublicerede ændringer, der var ældre end 6 måneder, blev ignoreret i søgningen.
+      ]]>
+    </label>
+    <label key="newsletter.results" value="">
+      <![CDATA[
+      Resultater: 10x tekniske data for det nordamerikanske marked<br/>
+      Upublicerede ændringer, der var ældre end 6 måneder, blev ignoreret i søgningen
+      ]]>
+    </label>
+
+    <label key="newsletter.recipients.none" value="">
+      <![CDATA[
+      Der blev ikke identificeret nogen modtagere.<br/>
+      Kun registrerede PIaaS-abonnementer vil blive taget i betragtning.
+      ]]>
+    </label>
+    <label key="newsletter.recipients" value="">
+      <![CDATA[
+      Liste over modtagere: 10x modtagerne er fastlagt<br/>
+      Kun registrerede PIaaS-abonnementer vil blive taget i betragtning.
+      ]]>
+    </label>
+  </dk>
+</locales>
