@@ -9,17 +9,19 @@
   </head>
   <body>
     <div id="spinner"></div>
-    <header></header>
+
+    <header id="header"></header>
+
     <h1>Product Information as a Service</h1>
     <h1>Retailer Newsletter</h1>
         
-    <section id="search">
+    <section id="Newsletter">
       <form>
         <p>
-          <label for="marekt:select">Market</label>
-          <select id="marekt:select">
+          <label for="market:select">Market</label>
+          <select id="market:select">
             <option value="" selected="selected" disabled="disabled">
-              Please select</option>  
+              Please select</option>
             <option>Africa</option>
             <option>North America</option>
             <option>South America</option>
@@ -33,18 +35,15 @@
           <label for="datatype:select">Datatype</label>
           <select id="datatype:select">
             <option value="" selected="selected" disabled="disabled">
-              Please select</option>  
+              Please select</option>
             <option>Accessories</option>
             <option>Brands</option>
-            <option>Certificates</option>
             <option>Equipments</option>
-            <option>Events</option>
             <option>Images</option>
             <option>Marketing Texts</option>
             <option>Media</option>
             <option>Product Groups</option>
             <option>Products</option>
-            <option>Publications</option>
             <option>Services</option>
             <option>Technical Data</option>
           </select>    
@@ -56,9 +55,7 @@
           </button>    
         </p> 
       </form>
-    </section>
-   
-    <section id="changes">
+
       <h2>
         No changes found.<br/>
         Unpublished changes older than 6 months were ignored in the search.
@@ -67,7 +64,7 @@
         Results: 10x Technical Data for market North America<br/>
         Unpublished changes older than 6 months were ignored in the search.
       </h2>
-      <table>
+      <table id="changes">
         <tr>
           <th>
             <input type="checkbox" id="toggle"/>
@@ -239,7 +236,7 @@
           <td>xxxxxxxx xxxxxx xxx</td>
         </tr> 
       </table>
-      
+
       <form>
         <table>
           <tr>
@@ -276,9 +273,7 @@
           </button>
         </p>
       </form>
-    </section>
 
-    <section id="recipients">
       <h2>
         No recipients determined.<br/>
         Only registered PIaaS subscriptions will be considered.
@@ -287,7 +282,7 @@
         List of recipients: 10x recipients determined<br/>
         Only registered PIaaS subscriptions will be considered.
       </h2>
-      <table>
+      <table id="recipients">
         <tr>
           <th>Language</th>
           <th>Mail address (obfuscated)</th>
@@ -363,7 +358,7 @@
         Detailed error message
       </p>
       <p>
-        Please reload the application.<br>
+        Please reload the application.<br/>
         If the problem persists, please contact support.
       </p>
       <form>
@@ -372,10 +367,12 @@
           Reload application
         </button>
       </form>
-    </section>  
+    </section>
+
     <p>
       Version 0.0.0 00000000
     </p>
-    <footer></footer>
+
+    <footer id="footer"></footer>
   </body>
 </html>
