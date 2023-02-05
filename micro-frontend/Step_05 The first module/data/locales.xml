@@ -34,7 +34,7 @@
     <label key="newsletter.function.email.error"
            value="Recipients must be valid email addresses"/>
 
-    <label key="newsletter.results.none" value="">
+    <label key="newsletter.results.empty" value="">
       <![CDATA[
       No changes found.<br/>
       Unpublished changes older than 6 months were ignored in the search.
@@ -47,7 +47,7 @@
       ]]>
     </label>
 
-    <label key="newsletter.recipients.none" value="">
+    <label key="newsletter.recipients.empty" value="">
       <![CDATA[
       No recipients determined.<br/>
       Only registered PIaaS subscriptions will be considered.
@@ -95,7 +95,7 @@
     <label key="newsletter.function.email.error"
            value="Modtagerne skal være gyldige e-mail-adresser"/>
 
-    <label key="newsletter.results.none" value="">
+    <label key="newsletter.results.empty" value="">
       <![CDATA[
       Ingen ændringer fundet.<br/>
       Upublicerede ændringer, der var ældre end 6 måneder, blev ignoreret i søgningen.
@@ -108,7 +108,7 @@
       ]]>
     </label>
 
-    <label key="newsletter.recipients.none" value="">
+    <label key="newsletter.recipients.empty" value="">
       <![CDATA[
       Der blev ikke identificeret nogen modtagere.<br/>
       Kun registrerede PIaaS-abonnementer vil blive taget i betragtning.
