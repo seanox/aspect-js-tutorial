@@ -6,7 +6,7 @@ window.error = ({
     exists() {
         return !!(this.message || "").trim();
     }
-}).toReactProxy();
+}).reactive();
 
 Composite.listen(Composite.EVENT_ERROR, function(event, error) {
     window.error.message = error.message;

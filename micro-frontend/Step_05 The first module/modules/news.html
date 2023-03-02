@@ -1,9 +1,9 @@
 <form>
   <p>
-    <label for="market:select">{{messages.newsletter.market}}</label>
+    <label for="market:select">{{messages.news.market}}</label>
     <select id="market:select">
       <option value="" selected="selected" disabled="disabled">
-        {{messages.newsletter.select}}</option>
+        {{messages.news.select}}</option>
       <option>Africa</option>
       <option>North America</option>
       <option>South America</option>
@@ -14,10 +14,10 @@
     </select>
   </p>
   <p>
-    <label for="datatype:select">{{messages.newsletter.datatype}}</label>
+    <label for="datatype:select">{{messages.news.datatype}}</label>
     <select id="datatype:select">
       <option value="" selected="selected" disabled="disabled">
-        {{messages.newsletter.select}}</option>
+        {{messages.news.select}}</option>
       <option>Accessories</option>
       <option>Brands</option>
       <option>Equipments</option>
@@ -33,25 +33,25 @@
   <p>
     <button type="button" id="search">
       <span>&#10095;</span>
-      {{messages.newsletter.search}}
+      {{messages.news.search}}
     </button>
   </p>
 </form>
 
-<h2 output="{{messages.newsletter.results.empty}}"></h2>
-<h2 output="{{messages.newsletter.results}}"></h2>
-<table id="news">
+<h2 output="{{messages.news.results.empty}}"></h2>
+<h2 output="{{messages.news.results}}"></h2>
+<table id="news:list">
   <tr>
     <th>
       <input type="checkbox" id="toggle"/>
       <label for="toggle"></label>
     </th>
-    <th>{{messages.newsletter.date}}</th>
-    <th>{{messages.newsletter.market}}</th>
-    <th>{{messages.newsletter.id}}</th>
-    <th>{{messages.newsletter.title}}</th>
-    <th>{{messages.newsletter.description}}</th>
-    <th>{{messages.newsletter.change}}</th>
+    <th>{{messages.news.date}}</th>
+    <th>{{messages.news.market}}</th>
+    <th>{{messages.news.id}}</th>
+    <th>{{messages.news.title}}</th>
+    <th>{{messages.news.description}}</th>
+    <th>{{messages.news.change}}</th>
   </tr>
   <tr class="group">
     <td></td>
@@ -219,23 +219,23 @@
       <td>
         <p>
           <label for="functions">
-            {{messages.newsletter.function}}
+            {{messages.news.function}}
           </label>
           <select id="functions">
             <option value="" selected="selected" disabled="disabled">
-              {{messages.newsletter.select}}</option>
-            <option>{{messages.newsletter.function.preview.you}}</option>
-            <option>{{messages.newsletter.function.preview.email}}</option>
-            <option>{{messages.newsletter.function.recipients}}</option>
-            <option>{{messages.newsletter.function.publish}}</option>
+              {{messages.news.select}}</option>
+            <option>{{messages.news.function.preview.you}}</option>
+            <option>{{messages.news.function.preview.email}}</option>
+            <option>{{messages.news.function.recipients}}</option>
+            <option>{{messages.news.function.publish}}</option>
           </select>
         </p>
       </td>
       <td>
         <p>
           <label for="recipients">
-            {{newsletter.function.email.error}} /
-            {{messages.newsletter.function.email}}
+            {{news.function.email.error}} /
+            {{messages.news.function.email}}
           </label>
           <input type="text" id="recipients"/>
         </p>
@@ -250,14 +250,14 @@
   </p>
 </form>
 
-<h2 output="{{messages.newsletter.recipients.empty}}"></h2>
-<h2 output="{{messages.newsletter.recipients}}"></h2>
+<h2 output="{{messages.news.recipients.empty}}"></h2>
+<h2 output="{{messages.news.recipients}}"></h2>
 <table id="recipients">
   <tr>
-    <th>{{messages.newsletter.language}} Language</th>
-    <th>{{messages.newsletter.email}} Mail address (obfuscated)</th>
-    <th>{{messages.newsletter.permissions}} Permissions</th>
-    <th>{{messages.newsletter.markets}} Markets</th>
+    <th>{{messages.news.language}} Language</th>
+    <th>{{messages.news.email}} Mail address (obfuscated)</th>
+    <th>{{messages.news.permissions}} Permissions</th>
+    <th>{{messages.news.markets}} Markets</th>
   </tr>
   <tr>
     <td>xx</td>
