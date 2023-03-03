@@ -14,7 +14,6 @@
   "title":       "Xxxxxxxxxx Xxxxxx",
   "summary":     "xx xxx xxxxxxxx xxxxxxx xxx xxxxx xxxxx xxxxx xxx xxxx",
   "description": "xx xxxxx xxx xxxxxxx xx xx xxxxx",
-  "images":      ["placeholder.png", "placeholder.png", "placeholder.png", "placeholder.png"],
   "change":      "xxxxx xxxxx xxxxx xxx xxxx",
   "timestamp":   "0000-00-00 00:00:00"
 },
@@ -25,7 +24,6 @@
   "title":       "Xxxxx Xxxxx Xxxxx",
   "summary":     "xxxx xxxxxxxxxx xxxxxxxxxx xxxxx",
   "description": "xxxxxxxx xx xxxxxx xx xxxxxx xxxxx xxxxxxxx xxxx",
-  "images":      ["placeholder.png", "placeholder.png", "placeholder.png", "placeholder.png", "placeholder.png"],
   "change":      "xxx xxxx xxxxxx xxxxxx xxxxxx xxxxxxxx xx",
   "timestamp":   "0000-00-00 00:00:00"
 },
@@ -45,7 +43,6 @@
   "title":       "Xx Xxx Xxxxxxxx Xxxxxxx",
   "summary":     "xxx xxxx xxxxxx xxxxxx xxxxxx",
   "description": "xxxx xxxxx xxxxx xxx xxx",
-  "images":      ["placeholder.png", "placeholder.png"],
   "change":      "xxxxxxxx xxxx xxx xxxx xxxxxxxx",
   "timestamp":   "0000-00-00 00:00:00"
 },
@@ -56,7 +53,6 @@
   "title":       "Xxxxxx Xxxxxx Xxxxxxxx Xx",
   "summary":     "xxxxxxxx xxxx xxx xxxx xxxxxxxx",
   "description": "xx xxxxx xxx xxxxxxx xx xx xxxxx",
-  "images":      ["placeholder.png"],
   "change":      "xxxxxxxx xx xxxxxx xx xxxxxx xxxxx xxxxxxxx xxxx",
   "timestamp":   "0000-00-00 00:00:00"
 }]
