@@ -18,13 +18,13 @@
   "timestamp":   "0000-00-00 00:00:00"
 },
 {
-  "datatype":    3
-  "markets":     ["Europe", "North America"]
-  "id":          30002
-  "title":       "Xxxxxxxx Xxxx Xxx Xxxx"
-  "summary":     "xx xxxxxx xxxxx xxxxxxxx xxxx"
-  "description": "xxx xxxxxxx xx xx xxxxx"
-  "change":      "xxxxxxxx xxxx xxx xxxx xxxxxxxx"
+  "datatype":    3,
+  "markets":     ["Europe", "North America"],
+  "id":          30002,
+  "title":       "Xxxxxxxx Xxxx Xxx Xxxx",
+  "summary":     "xx xxxxxx xxxxx xxxxxxxx xxxx",
+  "description": "xxx xxxxxxx xx xx xxxxx",
+  "change":      "xxxxxxxx xxxx xxx xxxx xxxxxxxx",
   "timestamp":   "0000-00-00 00:00:00"
 },
 {
