@@ -34,26 +34,26 @@
     <label key="news.function.email.error"
            value="Recipients must be valid email addresses"/>
 
-    <label key="news.results.empty" value="">
+    <label key="news.list.empty">
       <![CDATA[
       No changes found.<br/>
       Unpublished changes older than 6 months were ignored in the search.
       ]]>
     </label>
-    <label key="news.results" value="">
+    <label key="news.list">
       <![CDATA[
       Results: 10x Technical Data for market North America<br/>
       Unpublished changes older than 6 months were ignored in the search.
       ]]>
     </label>
 
-    <label key="news.recipients.empty" value="">
+    <label key="news.recipients.empty">
       <![CDATA[
       No recipients determined.<br/>
       Only registered PIaaS subscriptions will be considered.
       ]]>
     </label>
-    <label key="news.recipients" value="">
+    <label key="news.recipients">
       <![CDATA[
       List of recipients: 10x recipients determined<br/>
       Only registered PIaaS subscriptions will be considered.
@@ -95,26 +95,26 @@
     <label key="news.function.email.error"
            value="Modtagerne skal være gyldige e-mail-adresser"/>
 
-    <label key="news.results.empty" value="">
+    <label key="news.list.empty">
       <![CDATA[
       Ingen ændringer fundet.<br/>
       Upublicerede ændringer, der var ældre end 6 måneder, blev ignoreret i søgningen.
       ]]>
     </label>
-    <label key="news.results" value="">
+    <label key="news.list">
       <![CDATA[
       Resultater: 10x tekniske data for det nordamerikanske marked<br/>
       Upublicerede ændringer, der var ældre end 6 måneder, blev ignoreret i søgningen
       ]]>
     </label>
 
-    <label key="news.recipients.empty" value="">
+    <label key="news.recipients.empty">
       <![CDATA[
       Der blev ikke identificeret nogen modtagere.<br/>
       Kun registrerede PIaaS-abonnementer vil blive taget i betragtning.
       ]]>
     </label>
-    <label key="news.recipients" value="">
+    <label key="news.recipients">
       <![CDATA[
       Liste over modtagere: 10x modtagerne er fastlagt<br/>
       Kun registrerede PIaaS-abonnementer vil blive taget i betragtning.
