@@ -40,7 +40,7 @@
       Unpublished changes older than 6 months were ignored in the search.
       ]]>
     </label>
-    <label key="news.list">
+    <label key="news.list.summary">
       <![CDATA[
       Results: 10x Technical Data for market North America<br/>
       Unpublished changes older than 6 months were ignored in the search.
@@ -101,7 +101,7 @@
       Upublicerede ændringer, der var ældre end 6 måneder, blev ignoreret i søgningen.
       ]]>
     </label>
-    <label key="news.list">
+    <label key="news.list.summary">
       <![CDATA[
       Resultater: 10x tekniske data for det nordamerikanske marked<br/>
       Upublicerede ændringer, der var ældre end 6 måneder, blev ignoreret i søgningen

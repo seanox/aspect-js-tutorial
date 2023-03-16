@@ -5,8 +5,9 @@ const API_LIST_MARKET_URL = API_HOST_URL + "/listMarket";
 const API_LIST_DATATYPES_URL = API_HOST_URL + "/listDatatype";
 const API_SEARCH_NEWS_URL = API_HOST_URL + "/searchNews";
 const API_SEND_NEWSLETTER_URL = API_HOST_URL + "/sendNewsletter";
+const API_MEDIA_IMAGES_URL = window.location.pathcontext + "/api/media/";
 
-window.news = Reactive({
+const news = Reactive({
     market: {
         list: null,
         value: "",
@@ -25,7 +26,7 @@ window.news = Reactive({
         list: null,
         value: ""
     },
-    news: {
+    list: {
     },
     function: {
     },
@@ -38,3 +39,5 @@ connector.call("GET", API_LIST_MARKET_URL, null, (status, json) => {
         throw status;
     window.news.market.list = json;
 });
+
+#export news;
