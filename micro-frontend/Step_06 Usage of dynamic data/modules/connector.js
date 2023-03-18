@@ -38,4 +38,11 @@ const connector = {
     }
 };
 
+// Object connector was declared as const in the current scope. To make it
+// globally usable, it is made public with the #export-macro.
 #export connector;
+
+// When it comes to macros in Composite JavaScript, it is important to know that
+// they are very weakly implemented. This means that they do not know literals
+// or comments. That's why the notation #export-macro here, so it won't be
+// executed even if it's in a comment.

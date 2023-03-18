@@ -32,7 +32,13 @@
         iterate="{{datatypes:news.datatype.list || [undefined]}}" events="change">
       <option value="" selected="selected" disabled condition="{{datatypes.index eq 0}}">
         {{messages.news.select}}</option>
-      <option value="{{datatypes.item.id}}" disabled="{{datatypes.item.news ? undefined : true}}">
+      <!--
+        An empty list is represented by one undefined. In that case the
+        following option should not be output, because datatypes.item fields
+        will be empty then.
+      -->
+      <option value="{{datatypes.item.id}}" disabled="{{datatypes.item.news ? undefined : true}}"
+          condition="{{datatypes.item ne undefined}}">
         {{datatypes.item.text}}</option>
     </select>
   </p>

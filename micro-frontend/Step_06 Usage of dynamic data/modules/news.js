@@ -1,3 +1,5 @@
+// Imports the connector with the #import-macro. Since the connector in turn
+// uses the #export-macro, it can then be used in the global scope.
 #import connector
 
 const API_HOST_URL = window.location.pathcontext + "/api/" + DataSource.locale;
@@ -40,4 +42,11 @@ connector.call("GET", API_LIST_MARKET_URL, null, (status, json) => {
     window.news.market.list = json;
 });
 
+// Object news was declared as const in the current scope. To make it globally
+// usable, it is made public with the #export-macro.
 #export news;
+
+// When it comes to macros in Composite JavaScript, it is important to know that
+// they are very weakly implemented. This means that they do not know literals
+// or comments. That's why the notation #export-macro here, so it won't be
+// executed even if it's in a comment.
