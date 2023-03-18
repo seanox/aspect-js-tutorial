@@ -49,4 +49,4 @@ connector.call("GET", API_LIST_MARKET_URL, null, (status, json) => {
 // When it comes to macros in Composite JavaScript, it is important to know that
 // they are very weakly implemented. This means that they do not know literals
 // or comments. That's why the notation #export-macro here, so it won't be
-// executed even if it's in a comment.
+// interpreted but not executed even if it's in a comment.
