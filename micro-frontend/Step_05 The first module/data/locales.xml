@@ -30,7 +30,7 @@
     <label key="news.function.recipients" value="Show recipient list (no sending)"/>
     <label key="news.function.publish" value="Publish to retailers"/>
     <label key="news.function.email"
-           value="Recipients of the test email (separation: space, comma, semicolon)"/>
+           value="Recipients of the test email, separated by spaces"/>
     <label key="news.function.email.error"
            value="Recipients must be valid email addresses"/>
 
@@ -91,7 +91,7 @@
     <label key="news.function.recipients" value="Vis modtagerliste (ingen afsendelse)"/>
     <label key="news.function.publish" value="Offentliggøre til detailhandlere"/>
     <label key="news.function.email"
-           value="Modtagerne af test-e-mailen (adskillelse: mellemrum, komma, semikolon)"/>
+           value="Modtagerne af test-e-mailen, adskilt med mellemrum"/>
     <label key="news.function.email.error"
            value="Modtagerne skal være gyldige e-mail-adresser"/>
 

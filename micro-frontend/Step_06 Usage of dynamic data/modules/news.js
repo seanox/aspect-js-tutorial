@@ -32,7 +32,7 @@ const news = Reactive({
     },
     function: {
     },
-    recipient: {
+    recipients: {
     }
 });
 
