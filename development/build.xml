@@ -1,33 +1,42 @@
 <?xml version="1.0" ?>
 <project name="aspect-js-tutorial" default="update" basedir="../../aspect-js">
   <target name="usage">
-    <echo>                                                    </echo>
-    <echo> the following targets are available ...            </echo>
-    <echo>                                                    </echo>
-    <echo>   release    release of aspect-js tutorial based   </echo>
-    <echo>              on the existing aspect-js version     </echo>
-    <echo>                                                    </echo>
-    <echo>   update     builds aspect-js in the main project  </echo>
-    <echo>              and updates aspect-js in all examples </echo>
-    <echo>                                                    </echo>
-    <echo>   changes    synchronizes README.md with CHANGES   </echo>
+    <echo>Following targets are available:                   </echo>
+    <echo>                                                   </echo>
+    <echo>  release    release of aspect-js tutorial based   </echo>
+    <echo>             on the existing aspect-js version     </echo>
+    <echo>                                                   </echo>
+    <echo>  update     builds aspect-js in the main project  </echo>
+    <echo>             and updates aspect-js in all examples </echo>
+    <echo>                                                   </echo>
+    <echo>  changes    synchronizes README.md with CHANGES   </echo>
   </target>
 
   <target name="update">
     <ant antfile="./development/build.xml" target="release"/>
     <property name="workspace" value="../aspect-js-tutorial"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_05 The first module/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_07 SiteMap - Controlling components and views/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_08 SiteMap - Variable paths/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_09 SiteMap - Functional paths/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_10 MVC - Synchronization/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_12 Test/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/Step_13 Components/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_05 The first module/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_07 SiteMap - Controlling components and views/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_08 SiteMap - Variable paths/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_09 SiteMap - Functional paths/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_10 MVC - Synchronization/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_12 Test/assets" overwrite="true"/>
+    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_13 Components/assets" overwrite="true"/>
+
+    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_01 Prototype as framework/assets" overwrite="true"/>
+    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
+    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
+    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
+    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_05 The first module/assets" overwrite="true"/>
+    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_06 Usage of dynamic data/assets" overwrite="true"/>
+    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_07 Business logic in detail/assets" overwrite="true"/>
+    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_08 Debugging/assets" overwrite="true"/>
+    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_09 Testing/assets" overwrite="true"/>
   </target>
   
   <macrodef name="release-locate">
