@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>EXAMPLE Architects</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./assets/styles/w3.css">
-    <link rel="stylesheet" href="./assets/styles/font-awesome.css">
+    <link rel="stylesheet" href="assets/styles/w3.css">
+    <link rel="stylesheet" href="assets/styles/font-awesome.css">
     <!--
     
       Integration of Seanox aspect-js
@@ -31,7 +31,7 @@
       The explanation will follow a later in step 03.
 
     -->
-    <script type="text/javascript" src="./assets/aspect-js.js"></script>
+    <script type="text/javascript" src="assets/aspect-js.js"></script>
     <!-- 
     
        The styles have been moved to the module files.
@@ -76,64 +76,37 @@
           see also https://github.com/seanox/aspect-js/blob/master/manual/en/expression.md#expression-language
       This has full JavaScript support and provides the additional object Messages for the resource bundle.
 
-
-
-      Using the DataSource is only one of many ways to use dynamic data.
-          see also https://github.com/seanox/aspect-js/blob/master/manual/en/datasource.md#datasource
-      However, the DataSource is more of an example for semi-dynamic data because it is based on static data in the web space.  
-
     -->
   
     <!-- Navbar (sit on top) -->
     <div id="menu" class="w3-top" composite static release>
     </div>
-
-    <!--
-        With the establishment and configuration of the SiteMap, it takes over the control of the composites.
-        The attribute 'static' is now only required if composites are to be shown permanently.
-    -->    
   
     <!-- Header -->
-    <header id="home" class="w3-display-container w3-content w3-wide" composite release>
+    <header id="home" class="w3-display-container w3-content w3-wide" composite static release>
     </header>
   
     <!-- Page content -->
     <main class="w3-content w3-padding">
-
-      <!-- 
-      
-        Example for the projection of data by XSL Transformation.
-        The transformation takes over the file portfolio.xslt, the data source is portfolio.
-
-        The data and templates are stored separately for each language.
-        However, the language is not specified during access, the framework and the browser take care of this.
-        
-        A separate HTML file is not required.
-        Module files for JavaScript and CSS can be used.
-        The Expression Lanuage can also be used in the XSL template.
-        The expressions are then executed after the final XSL transformation.
-        
-      -->
   
       <!-- Project Section -->
-      <section id="projects" composite release
-          output="{{DataSource.fetch('xml://portfolio', true)}}">
+      <section id="projects" composite static release>
       </section>
       
       <!-- Project Details Section -->
-      <section id="project" composite release>
+      <section id="project" composite static release>
       </section>
   
       <!-- About Section -->
-      <section id="about" composite release>
+      <section id="about" composite static release>
       </section>
       
       <!-- Team Details Section -->
-      <section id="person" composite release>
+      <section id="person" composite static release>
       </section>
 
       <!-- Contact Section -->
-      <section id="contact" composite release>
+      <section id="contact" composite static release>
       </section>
     </main>
   
