@@ -9,11 +9,11 @@ ui.io = {
      * @param filename
      */    
     save(blob, filename) {
-        var link = document.createElement("a");
+        let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = filename;
         window.setTimeout((link) => {
-            var event = document.createEvent("MouseEvents");
+            let event = document.createEvent("MouseEvents");
             event.initEvent("click", false, true);
             link.dispatchEvent(event);
         }, 0, link);

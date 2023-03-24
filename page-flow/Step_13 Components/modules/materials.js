@@ -4,7 +4,7 @@
 #import ui/xml/table
 
 /** Creation of the XML table for the selector #materials. */
-window["materials"] = new (class extends ui.xml.Table {
+const materials = new (class extends ui.xml.Table {
 
     /** Constants for the formatting of Density, PEI, TC, DRF */
     get FORMAT_DENSITY() {
@@ -45,3 +45,5 @@ window["materials"] = new (class extends ui.xml.Table {
         return DataSource.transform(io.material.list(), io.xml.fetch("modules/materials.xslt"), this.sorting);
     }
 })("#materials");
+
+#export materials;
