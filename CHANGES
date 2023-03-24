@@ -1,4 +1,10 @@
-1.5.0 2023xxxx
+1.6.0 2023xxxx
+BF: Build: Optimization
+CR: Build: Added server start/stop in build.xml
+CR: Assets: Update of aspect-js.js
+CR: Tutorial: Added tutorial for a micro frontend
+
+1.5.0 20230000
 CR: Build: Releases are now only available on the release page
 CR: Assets: Update of aspect-js.js
 
