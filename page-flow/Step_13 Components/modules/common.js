@@ -36,7 +36,7 @@ SiteMap.customize({
  * In our case, we use the x-src attribute and set the src attribute only with the final value.
  */
 Composite.customize("img[x-src]", (element) => {
-    var src = element.getAttribute("x-src") || "";
+    let src = element.getAttribute("x-src") || "";
     if (src.match(Composite.PATTERN_EXPRESSION_CONTAINS))
         src = String(Expression.eval(src));
     element.src = src;
@@ -52,7 +52,7 @@ Composite.customize("img[x-src]", (element) => {
 if (Object.parse === undefined) {
     Object.parse = function(data) {
 
-        var append = (name, value) => {
+        let append = (name, value) => {
             if (value === null)
                 return;
             if (object[name]) {
@@ -68,8 +68,8 @@ if (Object.parse === undefined) {
                 return Object.parse(data.documentElement);   
             if (data.nodeType != 1)
                 return null;
-            
-            var meta = {text:null, data:null};
+
+            let meta = {text:null, data:null};
             for (let node of data.childNodes) {
                 if (node.nodeType == 1) {
                     meta = false;
@@ -86,7 +86,7 @@ if (Object.parse === undefined) {
             if (meta && meta.text != null)
                 return meta.text;
 
-            var object = {};
+            let object = {};
             for (let attribute of data.attributes)
                 append(attribute.name, attribute.value);
             for (let child of data.childNodes)
