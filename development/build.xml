@@ -1,71 +1,86 @@
 <?xml version="1.0" ?>
-<project name="aspect-js-tutorial" default="update" basedir="../../aspect-js">
+<project name="aspect-js-tutorial" default="update" basedir="..">
   <target name="usage">
-    <echo>Following targets are available:                   </echo>
-    <echo>                                                   </echo>
-    <echo>  release    release of aspect-js tutorial based   </echo>
-    <echo>             on the existing aspect-js version     </echo>
-    <echo>                                                   </echo>
-    <echo>  update     builds aspect-js in the main project  </echo>
-    <echo>             and updates aspect-js in all examples </echo>
-    <echo>                                                   </echo>
-    <echo>  changes    synchronizes README.md with CHANGES   </echo>
+    <echo>Following targets are available:                               </echo>
+    <echo>                                                               </echo>
+    <echo>  release    release of aspect-js tutorial based on the        </echo>
+    <echo>             existing aspect-js version                        </echo>
+    <echo>                                                               </echo>
+    <echo>  update     builds aspect-js in the main project and updates  </echo>
+    <echo>             aspect-js in all examples                         </echo>
+    <echo>                                                               </echo>
+    <echo>  changes    synchronizes README.md with CHANGES               </echo>
+    <echo>                                                               </echo>
+    <echo>  start      Starts the included development server            </echo>
+    <echo>             Console output of the access log                  </echo>
+    <echo>                                                               </echo>
+    <echo>  stop       Stops the included development server             </echo>
   </target>
 
-  <target name="update">
-    <ant antfile="./development/build.xml" target="release"/>
-    <property name="workspace" value="../aspect-js-tutorial"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_05 The first module/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_07 SiteMap - Controlling components and views/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_08 SiteMap - Variable paths/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_09 SiteMap - Functional paths/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_10 MVC - Synchronization/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_12 Test/assets" overwrite="true"/>
-    <copy file="./release/aspect-js.js" todir="${workspace}/page-flow/Step_13 Components/assets" overwrite="true"/>
+  <property name="parent" value="../aspect-js"/>
+  <property name="workspace" value="${basedir}"/>
+  <property name="workspace.releases" value="${workspace}/release"/>
 
-    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_01 Prototype as framework/assets" overwrite="true"/>
-    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
-    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
-    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
-    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_05 The first module/assets" overwrite="true"/>
-    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_06 Usage of dynamic data/assets" overwrite="true"/>
-    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_07 Business logic in detail/assets" overwrite="true"/>
-    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_08 Debugging/assets" overwrite="true"/>
-    <copy file="./release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_09 Testing/assets" overwrite="true"/>
+  <macrodef name="ant-parent">
+    <attribute name="target"/>
+    <sequential>
+      <ant antfile="${parent}/development/build.xml" target="@{target}"
+          dir="${parent}" usenativebasedir="true" inheritAll="false"/>
+    </sequential>
+  </macrodef>
+
+  <target name="update">
+    <ant-parent target="release"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_05 The first module/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_07 SiteMap - Controlling components and views/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_08 SiteMap - Variable paths/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_09 SiteMap - Functional paths/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_10 MVC - Synchronization/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_12 Test/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_13 Components/assets" overwrite="true"/>
+
+    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_01 Prototype as framework/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_05 The first module/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_06 Usage of dynamic data/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_07 Business logic in detail/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_08 Debugging/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_09 Testing/assets" overwrite="true"/>
   </target>
   
   <macrodef name="release-locate">
     <sequential>
-      <copy file="../aspect-js-tutorial/CHANGES" tofile="../aspect-js-tutorial/CHANGES.tmp" overwrite="true"/>
-      <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp"
+      <copy file="${workspace}/CHANGES" tofile="${workspace}/CHANGES.tmp" overwrite="true"/>
+      <replaceregexp file="${workspace}/CHANGES.tmp"
           match="(?s)^\s*([\d\.x]+) (\d{4})([\dx]+).*$" flags="g" byline="false"
           replace="release.version=\1&#x000D;release.year=\2&#x000D;release.date=\2\3&#x000D;"/>
-      <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="x+" replace="0000" flags="g" byline="false"/>
+      <replaceregexp file="${workspace}/CHANGES.tmp" match="x+" replace="0000" flags="g" byline="false"/>
       <loadproperties>
-        <file file="../aspect-js-tutorial/CHANGES.tmp"/>
+        <file file="${workspace}/CHANGES.tmp"/>
       </loadproperties>
-      <delete file="../aspect-js-tutorial/CHANGES.tmp"/>
-      <echo file="../aspect-js-tutorial/CHANGES.tmp" message="release.major=${release.version}"/>
-      <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp"
+      <delete file="${workspace}/CHANGES.tmp"/>
+      <echo file="${workspace}/CHANGES.tmp" message="release.major=${release.version}"/>
+      <replaceregexp file="${workspace}/CHANGES.tmp"
           match="(?&lt;=\d+)\." byline="true" replace="&#x000D;release.minor="/>
-      <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp"
+      <replaceregexp file="${workspace}/CHANGES.tmp"
           match="(?&lt;=\d+)\." byline="true" replace="&#x000D;release.patch="/>
       <loadproperties>
-        <file file="../aspect-js-tutorial/CHANGES.tmp"/>
+        <file file="${workspace}/CHANGES.tmp"/>
       </loadproperties>
-      <delete file="../aspect-js-tutorial/CHANGES.tmp"/>
+      <delete file="${workspace}/CHANGES.tmp"/>
     </sequential>
   </macrodef> 
   
   <target name="release">
     <release-locate/>
-    <property name="workspace" value="../aspect-js-tutorial"/>
-    <property name="workspace.releases" value="${workspace}/release"/>
+
     <delete dir="${workspace.releases}/temp"/>
     <mkdir dir="${workspace.releases}/temp/${ant.project.name}-${release.version}/${ant.project.name}"/>
     <copy todir="${workspace.releases}/temp/${ant.project.name}-${release.version}/${ant.project.name}">
@@ -86,43 +101,51 @@
       <fileset dir="${workspace.releases}/temp/${ant.project.name}-${release.version}"/>
     </zip>   
     <delete dir="${workspace.releases}/temp"/>
-  </target> 
+  </target>
   
   <target name="changes">
     <release-locate/>
 
-    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00E4;" replace="ae" flags="g"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00C4;" replace="Ae" flags="g"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00F6;" replace="oe" flags="g"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00D6;" replace="Oe" flags="g"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00FC;" replace="ue" flags="g"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES" match="&#x00DC;" replace="Ue" flags="g"/>
+    <replaceregexp file="${workspace}/CHANGES" match="&#x00E4;" replace="ae" flags="g"/>
+    <replaceregexp file="${workspace}/CHANGES" match="&#x00C4;" replace="Ae" flags="g"/>
+    <replaceregexp file="${workspace}/CHANGES" match="&#x00F6;" replace="oe" flags="g"/>
+    <replaceregexp file="${workspace}/CHANGES" match="&#x00D6;" replace="Oe" flags="g"/>
+    <replaceregexp file="${workspace}/CHANGES" match="&#x00FC;" replace="ue" flags="g"/>
+    <replaceregexp file="${workspace}/CHANGES" match="&#x00DC;" replace="Ue" flags="g"/>
       
-    <copy file="../aspect-js-tutorial/CHANGES" tofile="../aspect-js-tutorial/CHANGES.tmp" overwrite="true"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^\s+" replace="" byline="false"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="(?s)^(.*?)[\r\n]+\d[\d\. x]+.*$" replace="\1" byline="false"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^(.*?)\s*$" replace="\1  " flags="g" byline="true"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^(\d[\.\d x]+)[^\r\n]*" replace="## \1" byline="false"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^ {0,4}([A-Z]+:.*)\s*$" replace="\1" byline="true"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="(?s)[\r\n]+ [^\r\n]+" replace="" flags="g" byline="false"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^(## \d[\.\d]+ \d+)(  )" replace="\1\2" flags="g" byline="true"/>
-    <replaceregexp file="../aspect-js-tutorial/CHANGES.tmp" match="^(## \d[\.\d]+ \d+x+)(  )" replace="\1 (upcoming version)\2" flags="g" byline="true"/>
+    <copy file="${workspace}/CHANGES" tofile="${workspace}/CHANGES.tmp" overwrite="true"/>
+    <replaceregexp file="${workspace}/CHANGES.tmp" match="^\s+" replace="" byline="false"/>
+    <replaceregexp file="${workspace}/CHANGES.tmp" match="(?s)^(.*?)[\r\n]+\d[\d\. x]+.*$" replace="\1" byline="false"/>
+    <replaceregexp file="${workspace}/CHANGES.tmp" match="^(.*?)\s*$" replace="\1  " flags="g" byline="true"/>
+    <replaceregexp file="${workspace}/CHANGES.tmp" match="^(\d[\.\d x]+)[^\r\n]*" replace="## \1" byline="false"/>
+    <replaceregexp file="${workspace}/CHANGES.tmp" match="^ {0,4}([A-Z]+:.*)\s*$" replace="\1" byline="true"/>
+    <replaceregexp file="${workspace}/CHANGES.tmp" match="(?s)[\r\n]+ [^\r\n]+" replace="" flags="g" byline="false"/>
+    <replaceregexp file="${workspace}/CHANGES.tmp" match="^(## \d[\.\d]+ \d+)(  )" replace="\1\2" flags="g" byline="true"/>
+    <replaceregexp file="${workspace}/CHANGES.tmp" match="^(## \d[\.\d]+ \d+x+)(  )" replace="\1 (upcoming version)\2" flags="g" byline="true"/>
     <loadresource property="changes">
-      <file file="../aspect-js-tutorial/CHANGES.tmp"/>
+      <file file="${workspace}/CHANGES.tmp"/>
     </loadresource>
-    <delete file="../aspect-js-tutorial/CHANGES.tmp"/>
-    <replaceregexp file="../aspect-js-tutorial/README.md"
+    <delete file="${workspace}/CHANGES.tmp"/>
+    <replaceregexp file="${workspace}/README.md"
         match="(?si)(# Changes\s+).*?(\[Read more\])" flags="g" byline="false"
         replace="\1${changes}${line.separator}${line.separator}\2"/>
     <tstamp>
       <format property="now.year" pattern="yyyy"/>
     </tstamp>    
-    <replaceregexp file="../aspect-js-tutorial/README.md"
+    <replaceregexp file="${workspace}/README.md"
         match="(?si)(?&lt;=\(C\)\s)\d{4}\b" flags="g" byline="true"
         replace="${now.year}"/>
 
-    <replaceregexp file="../aspect-js-tutorial/README.md"
+    <replaceregexp file="${workspace}/README.md"
         match="(\[Seanox aspect-js )\d\.[\.\d]+(\sTutorial\]\(https://github.com/seanox/aspect-js-tutorial/releases/download/)\d\.[\.\d]+(/aspect-js-tutorial-)\d\.[\.\d]+(\.zip\))" flags="g" byline="false"
         replace="\1${release.version}\2${release.version}\3${release.version}\4"/>
+  </target>
+
+  <target name="start">
+    <ant-parent target="start"/>
+  </target>
+
+  <target name="stop">
+    <ant-parent target="stop"/>
   </target>
 </project>
