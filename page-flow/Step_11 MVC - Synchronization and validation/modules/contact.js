@@ -1,4 +1,7 @@
-window["contact"] = {
+// Modules (Composite-JavaScript) use their own scope. Variables and constants
+// created and used here are not accessible outside and must be exported for use
+// in the global scope, for which the macro #export is used.
+const contact = {
     
     // Mandatory field with 1 to 48 characters without spaces at the beginning and end.
     // This rule does not require the requierd attribute.    
@@ -65,7 +68,7 @@ window["contact"] = {
         // or the complete form/model.
         //     The idea:
         // The element must have an ID and a corresponding property must exist in the model.
-        var field = null;
+        let field = null;
         if (element instanceof Element)
             field = element.getAttribute("id");
         if (element != document.querySelector("#contact #" + field))
@@ -96,7 +99,7 @@ window["contact"] = {
         // or the validate method was called with no other field.
         //    - custom validation, can incorporate the HTML5 validation
         if (field == "comment") {
-            var pattern = new RegExp(contact.COMMENT_PATTERN);
+            let pattern = new RegExp(contact.COMMENT_PATTERN);
             if ((value || "").match(pattern))
                 return true;
             return Messages["contact.subject.message"];
@@ -106,10 +109,10 @@ window["contact"] = {
         // The result is only true if no errors were detected.
         if (element == document.querySelector("#contact #submit")) {
             for (let field of ["name", "email", "subject", "comment"]) {
-                var element = document.querySelector("#contact #" + field);
+                let element = document.querySelector("#contact #" + field);
                 if (!Composite.validate(element))
                     return false;
-                var pattern = Messages["contact." + field + ".pattern"];
+                let pattern = Messages["contact." + field + ".pattern"];
                 if (!(this[field] || "").match(new RegExp(pattern)))
                     return false;
             }
@@ -122,7 +125,7 @@ window["contact"] = {
         onClick() {
             
             // In this example a mail is created.
-            var mail = "mailto:mail@example-architects.local"
+            let mail = "mailto:mail@example-architects.local"
                      + "?cc=" + contact.email
                      + "&subject=" + encodeURIComponent(contact.subject)
                      + "&body=" + encodeURIComponent("Dear Sir or Madam\r\n\r\n" + contact.comment.trim() + "\r\n\r\nBest regards,\r\n" + contact.name);
@@ -132,3 +135,5 @@ window["contact"] = {
         }    
     }
 }
+
+#export contact;
