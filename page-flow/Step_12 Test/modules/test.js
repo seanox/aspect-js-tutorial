@@ -4,7 +4,7 @@
 Test.activate();
 
 // Sequence of interactions in the UI.
-var sequence = {
+let sequence = {
     stack: [
         () => {
             window.location.href = "#" + new Date().getTime();
@@ -87,8 +87,8 @@ var sequence = {
 // The events from rendering set the pace.
 // If there is no new impulse from the rendering after about 250ms, the next step in the test sequence is triggered.
 // When the sequence is complete, the actual test is started.
-var ticks = 0;
-var timeout = null;
+let ticks = 0;
+let timeout = null;
 Composite.listen(Composite.EVENT_RENDER_END, () => {
     ticks++;
     if (timeout)
@@ -97,7 +97,7 @@ Composite.listen(Composite.EVENT_RENDER_END, () => {
         if (sequence.next())
             return;
         Test.listen(Test.EVENT_FINISH, () => {
-            var status = Test.status();
+            let status = Test.status();
             alert(new Date().toUTCString() + " Test is finished"
                     + "\n"
                     + "\n        " + status.queue.size + " task(s) were performed"
@@ -111,17 +111,17 @@ Composite.listen(Composite.EVENT_RENDER_END, () => {
 });
 
 // Logging object for collecting informations.
-var logging = {
+let logging = {
     stack: [],
     push(context, source, before, current) {
         
         //Internal method for creating simple string about a value or object.
-        var toPlainString = (value) => {
+        let toPlainString = (value) => {
             if (value == null
                     || String(value).trim() == "")
                 return "";
             if (value instanceof Element) {
-                var text = value.nodeName;
+                let text = value.nodeName;
                 if (toPlainString(value.id))
                     text += ":" + toPlainString(value.id);
                 else if (toPlainString(value.getAttribute("name")))
@@ -130,8 +130,8 @@ var logging = {
             }
             return String(value);
         };
-        
-        var message = context;
+
+        let message = context;
         source = toPlainString(source);
         before = toPlainString(before);
         current = toPlainString(current);
@@ -183,13 +183,13 @@ window.addEventListener("hashchange", (event) => {
 
 // Test whether the navigation matches the expected sequence.
 Test.create({test() {
-    var navigation = logging.stack.filter(line => line.startsWith("NAV"));
+    let navigation = logging.stack.filter(line => line.startsWith("NAV"));
     while (navigation.length) {
-        var line = navigation.shift();
+        let line = navigation.shift();
         if (line.match(/^NAV #\d+/))
             break;
     }
-    var pattern = [
+    let pattern = [
         "NAV #",
         "NAV #projects",
         "NAV #project#2",
@@ -208,7 +208,7 @@ Test.create({test() {
 
 // Spot test whether the language switch has worked.
 Test.create({test() {
-    var pattern = [
+    let pattern = [
         "TXT NACHRICHT SENDEN added",
         "TXT SEND MESSAGE added",
         "ATT INPUT:subject Betreff -> Subject",
@@ -221,8 +221,8 @@ Test.create({test() {
 
 // The function of the validation is tested by the changes of the attribute disabled.
 Test.create({test() {
-    var sequence = logging.stack.filter(line => line.startsWith("ATT BUTTON:submit disabled"));
-    var pattern = [
+    let sequence = logging.stack.filter(line => line.startsWith("ATT BUTTON:submit disabled"));
+    let pattern = [
         "ATT BUTTON:submit disabled removed",
         "ATT BUTTON:submit disabled added",
         "ATT BUTTON:submit disabled removed"

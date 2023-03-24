@@ -34,16 +34,16 @@ ui.Table = class {
              * @param event
              */
             onClick(event) {
-                
-                var element = document.querySelector(this.table.selector);
+
+                let element = document.querySelector(this.table.selector);
                 if (!element
                         || !element.hasAttribute("id")
                         || !element.getAttribute("id").trim())
-                    throw new Error("Invalid table selector" + (this.selector ? ": " + this.selector : ""));                
-                
-                var rows = Array.from(document.querySelectorAll(selector + " tr")).map(row => {
-                    var cells = Array.from(row.querySelectorAll(selector + " td, " + selector + " th")).map(cell => {
-                        var value = cell.textContent || "";
+                    throw new Error("Invalid table selector" + (this.selector ? ": " + this.selector : ""));
+
+                let rows = Array.from(document.querySelectorAll(selector + " tr")).map(row => {
+                    let cells = Array.from(row.querySelectorAll(selector + " td, " + selector + " th")).map(cell => {
+                        let value = cell.textContent || "";
                         value = value.trim();
                         value = value.replace(/\s*[\r\n\t]+\s*/g, " ");
                         value = value.replace(/\"/g, "\"\"");
@@ -51,15 +51,15 @@ ui.Table = class {
                             value = "\"" + value + "\"";
                         value = [value];
                         if (cell.hasAttribute("colspan")) {
-                            var size = parseInt(cell.getAttribute("colspan"))
+                            let size = parseInt(cell.getAttribute("colspan"))
                             if (!isNaN(size) && size > 1)
                                 for (; size > 1; size--)
                                     value.push("");
                         }
                         return value;
                     });
-                    
-                    var row = [];
+
+                    let row = [];
                     for (let cell of cells) 
                         row = row.concat(cell);
                     return row; 
@@ -72,12 +72,12 @@ ui.Table = class {
                 //     see also:
                 // https://en.wikipedia.org/wiki/Comma-separated_values
                 // https://en.wikipedia.org/wiki/Decimal_separator#Influence_of_calculators_and_computers
-                var delimiter = new Intl.NumberFormat(DataSource.locale,
+                let delimiter = new Intl.NumberFormat(DataSource.locale,
                         {style:"decimal", minimumFractionDigits:2, maximumFractionDigits:2}
                     ).format(0).charAt(1) == "," ? ";" : ",";
-                var csv = rows.map(row => row.join(delimiter)).join("\n");
+                let csv = rows.map(row => row.join(delimiter)).join("\n");
 
-                var blob = new Blob(["\ufeff", csv], {type:"text/csv;charset=utf-8"});
+                let blob = new Blob(["\ufeff", csv], {type:"text/csv;charset=utf-8"});
                 ui.io.save(blob, element.getAttribute("id").trim() + ".csv");        
             }            
         })(this);

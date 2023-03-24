@@ -9,8 +9,8 @@ io.xml = {
      * @return XMLDocument
      */    
     fetch(url) {
-        
-        var request = new XMLHttpRequest();
+
+        let request = new XMLHttpRequest();
         request.overrideMimeType("text/xml");
         request.open("GET", url, false);
         request.send();
@@ -25,8 +25,8 @@ io.xml = {
      * @return the create JavaScript data object
      */
     deserialize(data) {
-        
-        var append = (name, value) => {
+
+        let append = (name, value) => {
             if (value === null)
                 return;
             if (object[name]) {
@@ -42,8 +42,8 @@ io.xml = {
                 return deserialize(data.documentElement);   
             if (data.nodeType != 1)
                 return null;
-            
-            var meta = {text:null, data:null};
+
+            let meta = {text:null, data:null};
             for (let node of data.childNodes) {
                 if (node.nodeType == 1) {
                     meta = false;
@@ -60,7 +60,7 @@ io.xml = {
             if (meta && meta.text != null)
                 return meta.text;
 
-            var object = {};
+            let object = {};
             for (let attribute of data.attributes)
                 append(attribute.name, attribute.value);
             for (let child of data.childNodes)
