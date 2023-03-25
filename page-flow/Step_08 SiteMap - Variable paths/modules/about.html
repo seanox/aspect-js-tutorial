@@ -28,7 +28,7 @@
         As one solution among many, the x-src attribute and a corresponding custom
         selector are used to compute the final value and only then set the src attribute.
       -->
-      <img x-src="./assets/images/team{{person.id}}.jpg" alt="{{person.name}}">
+      <img @src="./assets/images/team{{person.id}}.jpg" alt="{{person.name}}">
     </a>
     <h3>{{person.name}}</h3>
     <p class="w3-opacity">{{person.role}}</p>
