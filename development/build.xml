@@ -31,28 +31,28 @@
 
   <target name="update">
     <ant-parent target="release"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_05 The first module/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_07 SiteMap - Controlling components and views/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_08 SiteMap - Variable paths/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_09 SiteMap - Functional paths/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_10 MVC - Synchronization/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_12 Test/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js.js" todir="${workspace}/page-flow/Step_13 Components/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_05 The first module/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_07 SiteMap - Controlling components and views/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_08 SiteMap - Variable paths/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_09 SiteMap - Functional paths/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_10 MVC - Synchronization/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_12 Test/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_13 Components/assets" overwrite="true"/>
 
-    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_01 Prototype as framework/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_05 The first module/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_06 Usage of dynamic data/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_07 Business logic in detail/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_08 Debugging/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro.js" todir="${workspace}/micro-frontend/Step_09 Testing/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_01 Prototype as framework/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_05 The first module/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_06 Usage of dynamic data/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_07 Business logic in detail/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_08 Debugging/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_09 Testing/assets" overwrite="true"/>
   </target>
   
   <macrodef name="release-locate">
