@@ -1,9 +1,10 @@
 #import ui/io
 
-Namespace.using("ui");
-
-/** Namespace ui.Table for a abstract Table for UI components */
-ui.Table = class {
+/**
+ * Abstract Table for UI components.
+ * The namespace ui.Table is created at the end with the macro #export.
+ */
+const Table = class {
     
     /**
      * Constructor for creating a table for a DOM element.
@@ -109,3 +110,5 @@ ui.Table = class {
         return;
     }
 }
+
+export Table@ui;

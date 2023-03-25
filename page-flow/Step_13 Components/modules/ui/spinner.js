@@ -1,7 +1,8 @@
-Namespace.using("ui");
-
-/** Namespace ui.spinner for spinner functions for UI components */
-ui.spinner = {
+/**
+ * Spinner functions for UI components.
+ * The namespace ui.spinner is created at the end with the macro #export.
+ */
+const spinner = {
 
     /**
      * Adds an animated spinner to the element.
@@ -20,3 +21,5 @@ ui.spinner = {
                 + "</div>";
     }
 }
+
+#export spinner@ui;

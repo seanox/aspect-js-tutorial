@@ -1,10 +1,11 @@
 #import ui/table
 #import ui/spinner
 
-Namespace.using("ui.xml");
-
-/** Namespace ui.xml.Table for a abstract Table base on XML for UI components */
-ui.xml.Table = class extends ui.Table {
+/**
+ * Abstract Table base on XML for UI components.
+ * The namespace ui.xml.Table is created at the end with the macro #export.
+ */
+const Table = class extends ui.Table {
     
     /**
      * Constructor for creating a table for a DOM element.
@@ -87,3 +88,5 @@ ui.xml.Table = class extends ui.Table {
         });
     }
 }
+
+#export Table@ui.xml;

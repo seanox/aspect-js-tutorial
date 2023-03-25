@@ -1,7 +1,8 @@
-Namespace.using("ui");
-
-/** Namespace ui.text for text functions for UI components */
-ui.text = {
+/**
+ * Text functions for UI components.
+ * The namespace ui.text is created at the end with the macro #export.
+ */
+const text = {
         
     /**
      * Formatted according to the data type and the currently used language
@@ -16,3 +17,5 @@ ui.text = {
         return String(value);
     }        
 }
+
+#export text@ui;

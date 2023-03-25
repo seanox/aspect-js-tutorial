@@ -1,7 +1,8 @@
-Namespace.using("ui");
-
-/** Namespace ui.io for in/out interfaces and functions for UI components */
-ui.io = {
+/**
+ * I/O interfaces and functions for UI components.
+ * The namespace ui.io is created at the end with the macro #export.
+ */
+const io = {
 
     /**
      * Creates a download for a BLOB that was created at runtime.
@@ -19,3 +20,5 @@ ui.io = {
         }, 0, link);
     }            
 }
+
+#export io@ui;

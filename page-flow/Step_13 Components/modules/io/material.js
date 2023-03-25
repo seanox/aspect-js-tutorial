@@ -1,9 +1,10 @@
 #import io/xml
 
-Namespace.using("io");
-
-/** Namespace io.material as interface for data access to the material data. */
-io.material = {
+/**
+ * Interface for data access to the material data.
+ * The namespace io.material is created at the end with the macro #export.
+ */
+const material = {
     
     /**
      * Loads the data and simulates a REST interface.
@@ -13,3 +14,5 @@ io.material = {
         return io.xml.fetch("data/materials.xml");
     }
 }
+
+#export material@io;

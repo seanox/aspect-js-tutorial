@@ -1,7 +1,8 @@
-Namespace.using("io");
-
-/** Namespace io.xml with utilities for XML interfaces. */
-io.xml = {
+/**
+ * Utilities for XML interfaces.
+ * The namespace io.xml is created at the end with the macro #export.
+ */
+const xml = {
         
     /**
      * Loads data from an XML interface.
@@ -71,3 +72,5 @@ io.xml = {
         throw new TypeError("Unsupported data type");            
     }
 }
+
+#export xml@io;
