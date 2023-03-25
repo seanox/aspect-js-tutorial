@@ -38,9 +38,9 @@ Composite.render.include("test");
  * @return the created object
  */
 if (Object.parse === undefined) {
-    Object.parse = function(data) {
+    Object.parse = (data) => {
 
-        let append = (name, value) => {
+        let append = (object, name, value) => {
             if (value === null)
                 return;
             if (object[name]) {
@@ -49,11 +49,11 @@ if (Object.parse === undefined) {
                 object[name][object[name].length] = value;
             } else object[name] = value;
         };
-        
+
         if (data instanceof Node) {
-            
+
             if (data.nodeType == 9)
-                return Object.parse(data.documentElement);   
+                return Object.parse(data.documentElement);
             if (data.nodeType != 1)
                 return null;
 
@@ -63,7 +63,7 @@ if (Object.parse === undefined) {
                     meta = false;
                     break;
                 } else if (node.nodeType == 3) {
-                    meta.text = (meta.text || "") + node.nodeValue; 
+                    meta.text = (meta.text || "") + node.nodeValue;
                 } else if (node.nodeType == 4) {
                     meta.data = (meta.data || "") + node.nodeValue;
                 }
@@ -76,12 +76,12 @@ if (Object.parse === undefined) {
 
             let object = {};
             for (let attribute of data.attributes)
-                append(attribute.name, attribute.value);
+                append(object, attribute.name, attribute.value);
             for (let child of data.childNodes)
-                append(child.nodeName, Object.parse(child));
+                append(object, child.nodeName, Object.parse(child));
             return object;
         }
-        
+
         throw new TypeError("Unsupported data type");
     }
 }
