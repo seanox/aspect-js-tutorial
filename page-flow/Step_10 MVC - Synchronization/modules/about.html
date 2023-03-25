@@ -23,10 +23,14 @@
     <!-- Link with path and ID to the person-face -->
     <a href="#person#{{person.id}}">
       <!--
-        Resources with expressions in the src-attribute are initially loaded by the browser.
-        A 404 error will always occur in the browser console.
-        As one solution among many, the x-src attribute and a corresponding custom
-        selector are used to compute the final value and only then set the src attribute.
+        Resources with expressions in the src attribute are loaded immediately
+        by the browser, which usually leads to an error output in the browser
+        console by the server status 404. It is similar with read-only
+        attributes in HTML elements (readonly, checked, disabled, ...). In these
+        cases @-attributes can be used. These are interpreted by the renderer as
+        attribute templates, from which the final attribute is created only
+        during rendering. This prevents the browser from misinterpreting the
+        expression in the attributes.
       -->
       <img @src="./assets/images/team{{person.id}}.jpg" alt="{{person.name}}">
     </a>
