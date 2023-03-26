@@ -28,7 +28,7 @@ SiteMap.customize({
 });
 
 // The implementation of the UI test is loaded as a module.
-Composite.render.include("test");
+Composite.include("test");
 
 /**
  * Creates a object based on data-structures.
