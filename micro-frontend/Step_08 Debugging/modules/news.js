@@ -244,27 +244,6 @@ connector.call("GET", API_LIST_MARKET_URL, null, (status, json) => {
     news.market.list = json;
 });
 
-window.addEventListener("hashchange", (event) => {
-
-});
-
-/*
-const parameters = (window.location.hash || "")
-        .split(/#+/)
-        .filter(parameter => parameter.trim());
-if (parameters.length > 0)
-    news.market.value = parameters[0].toUpperCase();
-if (parameters.length > 1) {
-    news.datatype.value = parameters[1].toUpperCase()
-}
-    ;
-if (parameters.length > 1)
-    news.search.onClick();
-*/
-
-//alert(parameters);
-//news.market.value = "EU";
-
 // Object news was declared as const in the current scope. To make it globally
 // usable, it is made public with the #export-macro.
 #export news;
