@@ -4,29 +4,36 @@
   <form action="###" autocomplete="off">
     <!--
       
-        A temporary output of the values in the JavaScript model was added below the input fields.
-        During the input you can see how the values are synchronized.
-        
-        The synchronization is based on the events defined with the event attribute.
-        Several events can be defined, separated by spaces.
-        
-        The render attribute uses a CSS selector that updates the corresponding elements after the recognized event.
-        
-            An effect you have to know:
-        If the input is deleted character by character, e.g. by using the backspace,
-        the variable in the model will always keep the last character.
-        This is not a bug, but an effect of HTML5 validation.
-        The attribute required has the effect that if the input field is empty, the events are blocked, therefore there is no synchronization.
-        If you remove the required attribute, the last character in the model will be removed as well.
-        
-            Don't panic :-)
-        The attribute required is actually not needed.
-        The explanation follows in the next example: Step_11 MVC - Synchronization and validation.    
+        A temporary output of the values in the JavaScript model was added below
+        the input fields. During the input you can see how the values are
+        synchronized.
 
-        The value is only synchronized if the validation is successful.   
-               
-    --> 
-    <!-- 
+        The synchronization is based on the events defined with the event
+        attribute. Several events can be defined, separated by spaces.
+
+        In combination, the attribute render can be used, which expects CSS
+        selectors separated by spaces. When the specified event occurs, the
+        elements addressed with the CSS selectors are then updated.
+
+        More convenient is the use of reactive rendering. To do this, a reactive
+        proxy is created to the models in the JavaScript code by calling the
+        method reactive, which all objects have. This proxy then knows the
+        consumers of the data in the view and will automatically update them in
+        case of changes in the model.
+
+        If validation has been declared, it is always applied. The default
+        behavior can be declared by combining it with the strict resoluter
+        attribute. With the default behavior, the data between the view and the
+        model is always synchronized and only the failed validation can be used
+        in the view and the business logic. In the strict behavior, data is
+        transferred from the view to the model only if the validation is
+        successful, which brings some peculiarities, for example, if mandatory
+        fields are deleted character by character by the back tab. Then the last
+        character will remain in model as valid input.
+
+    -->
+
+    <!--
         Validation:
         - via pattern
         - default browser error output
