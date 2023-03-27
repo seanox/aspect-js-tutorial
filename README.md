@@ -60,9 +60,12 @@ specific language governing permissions and limitations under the License.
 
 
 # Changes
-## 1.5.0 2023xxxx (upcoming version)  
-CR: Build: Releases are now only available on the release page  
-CR: Assets: Update of aspect-js.js  
+## 1.6.0 2023xxxx (upcoming version)  
+BF: Build: Optimization  
+CR: Build: Added server start/stop in build.xml  
+CR: Assets: Update of aspect-js-max.js  
+CR: Tutorial: Added tutorial for a micro frontend  
+CR: Tutorial: Update to use reactive rendering  
 
 [Read more](https://raw.githubusercontent.com/seanox/aspect-js-tutorial/master/CHANGES)
 
