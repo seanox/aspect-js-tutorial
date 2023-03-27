@@ -56,7 +56,7 @@ specific language governing permissions and limitations under the License.
 
 
 # Downloads
-[Seanox aspect-js 1.4.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/releases/download/1.4.0/aspect-js-tutorial-1.4.0.zip)
+[Seanox aspect-js 1.4.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/archive/refs/tags/1.4.0.zip)
 
 
 # Changes
