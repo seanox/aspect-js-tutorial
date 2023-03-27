@@ -60,7 +60,7 @@ const Table = class {
                         return value;
                     });
 
-                    let row = [];
+                    row = [];
                     for (let cell of cells) 
                         row = row.concat(cell);
                     return row; 
@@ -111,4 +111,4 @@ const Table = class {
     }
 }
 
-export Table@ui;
+#export Table@ui;
