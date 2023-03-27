@@ -1,26 +1,27 @@
 1.6.0 2023xxxx
 BF: Build: Optimization
 CR: Build: Added server start/stop in build.xml
-CR: Assets: Update of aspect-js.js
+CR: Assets: Update of aspect-js-max.js
 CR: Tutorial: Added tutorial for a micro frontend
+CR: Tutorial: Update to use reactive rendering
 
 1.5.0 20230000
 CR: Build: Releases are now only available on the release page
-CR: Assets: Update of aspect-js.js
+CR: Assets: Update of aspect-js-max.js
 
 1.4.0 20211210
 BF: Review: Correction/optimization
-CR: Assets: Update of aspect-js.js
+CR: Assets: Update of aspect-js-max.js
 CR: License: Changed to Apache License Version 2.0
 
 1.3.1 20200202
-CR: Assets: Update of aspect-js.js 
+CR: Assets: Update of aspect-js-max.js
 
 1.3.0 20200202
 CR: Markup: Optimization of img tags with dynamic URL
 CR: CSS: Added style for invalid input elements
 CR: Assets: Shrinking of images and fonts
-CR: Assets: Update of aspect-js.js 
+CR: Assets: Update of aspect-js-max.js
 CR: Tutorial: Added Step_13 Components
 CR: Documentation: Added CHANGES to README
 
