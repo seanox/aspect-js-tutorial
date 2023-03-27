@@ -33,6 +33,7 @@
            value="Recipients of the test email, separated by spaces"/>
     <label key="news.function.email.error"
            value="Recipients must be valid email addresses"/>
+    <label key="news.function.apply" value="Apply"/>
 
     <label key="news.list.empty">
       <![CDATA[
@@ -53,7 +54,7 @@
       Only registered PIaaS subscriptions will be considered.
       ]]>
     </label>
-    <label key="news.recipients">
+    <label key="news.recipients.summary">
       <![CDATA[
       List of recipients: 10x recipients determined<br/>
       Only registered PIaaS subscriptions will be considered.
@@ -94,6 +95,7 @@
            value="Modtagerne af test-e-mailen, adskilt med mellemrum"/>
     <label key="news.function.email.error"
            value="Modtagerne skal være gyldige e-mail-adresser"/>
+    <label key="news.function.apply" value="Anvende"/>
 
     <label key="news.list.empty">
       <![CDATA[
@@ -114,7 +116,7 @@
       Kun registrerede PIaaS-abonnementer vil blive taget i betragtning.
       ]]>
     </label>
-    <label key="news.recipients">
+    <label key="news.recipients.summary">
       <![CDATA[
       Liste over modtagere: 10x modtagerne er fastlagt<br/>
       Kun registrerede PIaaS-abonnementer vil blive taget i betragtning.
