@@ -14,20 +14,17 @@
 
 # Description
 The tutorial guides you through the creation of a SPA (Single-Page-Application)
-with [Seanox aspect-js](https://github.com/seanox/aspect-js).  
-Using a small example, the implementation is explained step by step from the
-prototype to the finished application.
+with [Seanox aspect-js](https://github.com/seanox/aspect-js). Small examples are
+used to explain the implementation step by step from prototype to finished
+application.
 
-The tutorial is based on understanding and visualizing the differences of the
-the several steps and therefore requires a program for comparison.
+The tutorial is based on understanding through visualization of the differences
+between the steps and therefore requires a program for comparison.
 
 After downloading and unpacking, all steps can be called as independent
-applications via a web server.  
-The changes in each step are documented and provided with references to the user
-manual.  
-This information becomes visible when the steps are compared.  
-In addition, there are ToDo' s with small instructions and tips to try for
-yourself.
+applications via a web server. The changes in each step are documented and
+provided with references to the user manual. This information becomes visible
+when the steps are compared.  
 
 
 # Licence Agreement
@@ -36,7 +33,7 @@ Seanox Software Solutions oder kurz Seanox genannt.
 
 Diese Software unterliegt der Version 2 der Apache License.
 
-Copyright (C) 2022 Seanox Software Solutions
+Copyright (C) 2023 Seanox Software Solutions
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
