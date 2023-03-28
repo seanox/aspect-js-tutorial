@@ -2,9 +2,6 @@
 // uses the #export-macro, it can then be used in the global scope.
 #import connector;
 
-// Imports the mock-up tools with which the application behaves more realistic
-#import mockup;
-
 const API_HOST_URL = window.location.pathcontext + "/api/" + DataSource.locale;
 const API_LIST_MARKET_URL = API_HOST_URL + "/listMarket";
 const API_LIST_DATATYPES_URL = API_HOST_URL + "/listDatatype";
@@ -31,6 +28,9 @@ const FUNCTION_RECIPIENTS = 3;
 const FUNCTION_PUBLISH = 4;
 
 #export FUNCTION_PREVIEW_YOU FUNCTION_PREVIEW_EMAIL FUNCTION_RECIPIENTS FUNCTION_PUBLISH;
+
+// Imports the mock-up tools with which the application behaves more realistic
+#import mockup;
 
 const news = Reactive({
     market: {

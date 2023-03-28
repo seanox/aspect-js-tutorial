@@ -1,6 +1,6 @@
 // Imports the connector with the #import-macro. Since the connector in turn
 // uses the #export-macro, it can then be used in the global scope.
-#import connector
+#import connector;
 
 const API_HOST_URL = window.location.pathcontext + "/api/" + DataSource.locale;
 const API_LIST_MARKET_URL = API_HOST_URL + "/listMarket";
@@ -18,8 +18,8 @@ const news = Reactive({
                 connector.call("GET", API_LIST_DATATYPES_URL + "/" + this.value, null, (status, json) => {
                     if (status instanceof Error)
                         throw status;
-                    window.news.datatype.list = json;
-                    window.news.datatype.value = "";
+                    news.datatype.list = json;
+                    news.datatype.value = "";
                 });
             }
         }
@@ -39,7 +39,7 @@ const news = Reactive({
 connector.call("GET", API_LIST_MARKET_URL, null, (status, json) => {
     if (status instanceof Error)
         throw status;
-    window.news.market.list = json;
+    news.market.list = json;
 });
 
 // Object news was declared as const in the current scope. To make it globally
