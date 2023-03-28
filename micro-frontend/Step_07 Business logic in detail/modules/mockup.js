@@ -32,7 +32,10 @@ const Mockup = {
     },
     sendNewsletter(mode, recipients, recordIds) {
 
-        storage.push(...(recordIds || []));
+        // With the macro #export FUNCTION_PUBLISH in news.js the constant(s)
+        // can be used here as well.
+        if (mode == FUNCTION_PUBLISH)
+            storage.push(...(recordIds || []));
 
         let size = 10;
         if (mode === 1)
