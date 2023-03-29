@@ -27,11 +27,8 @@ SiteMap.customize({
     "#person": ["..."],
 });
 
-// The implementation of the UI test is loaded as a module.
-Composite.include("test");
-
 /**
- * Creates a object based on data-structures.
+ * Creates an object based on data-structures.
  * The method is intended for deserialization.
  * Supported data types: XMLDocument / Node
  * @param  data
@@ -84,3 +81,6 @@ compliant(null, Object.parse = (data) => {
 
     throw new TypeError("Unsupported data type");
 });
+
+// UI test is loaded as a module
+#import test;

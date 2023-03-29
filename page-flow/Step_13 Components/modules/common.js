@@ -28,7 +28,7 @@ SiteMap.customize({
 });
 
 /**
- * Creates a object based on data-structures.
+ * Creates an object based on data-structures.
  * The method is intended for deserialization.
  * Supported data types: XMLDocument / Node
  * @param  data
