@@ -1,0 +1,63 @@
+body {
+}
+* {
+}
+*:disabled {
+}
+
+
+
+main {
+}
+main h1,
+main h2,
+main h3 {
+}
+main input[type='checkbox'] {
+}
+main input[type='checkbox'] ~ label {
+}
+main input[type='checkbox'] ~ label::before {
+}
+main input[type='checkbox']:checked ~ label::before {
+}
+main input[type='checkbox'][checked='partial'] ~ label::before {
+}
+main input[type='checkbox']:checked:hover ~ label::before {
+}
+main input[type='checkbox']:disabled ~ label::before {
+}
+
+
+
+main button {
+}
+main button:hover {
+}
+main button:disabled {
+}
+
+
+
+header {
+}
+
+
+
+footer {
+}
+
+
+
+#spinner {
+}
+#spinner[enabled] {
+}
+#spinner[enabled]:before {
+}
+#spinner[enabled]:after {
+}
+@keyframes spinner-rotation {
+}
+@keyframes spinner-fadeIn {
+}
