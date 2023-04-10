@@ -1001,6 +1001,295 @@ compliant("window.location.combine", (...paths) =>
 })();
 
 /**
+ * Expression language and composite JavaScript are two important components.
+ * Both are based on JavaScript enriched with macros. In addition, Composite
+ * JavaScript can be loaded at runtime and can itself load other Composite
+ * JavaScript scripts. Because in the end everything is based on a simple eval
+ * command, it was important to isolate the execution of the scripts so that
+ * internal methods and constants cannot be accessed unintentionally.
+ *
+ * @author  Seanox Software Solutions
+ * @version 1.6.0 20230408
+ */
+(() => {
+
+	compliant("Scripting", {
+
+		/**
+		 * As a special feature, Composite JavaScript supports macros.
+		 *
+		 * Macros are based on a keyword starting with a hash symbol followed by
+		 * arguments separated by spaces. Macros end with the next line break, a
+		 * semicolon or with the end of the file.
+		 *
+		 *
+		 *     #import
+		 *     ----
+		 * Expects a space-separated list of composite modules whose path must
+		 * be relative to the URL.
+		 *
+		 *     #import io/api/connector and/much more
+		 *
+		 * Composite modules consist of the optional resources CSS, JS and HTML.
+		 * The #import macro can only load CSS and JS. The behavior is the same
+		 * as when loading composites in the markup. The server status 404 does
+		 * not cause an error, because all resources of a composite are
+		 * optional, also JavaScript. Server states other than 200 and 404 cause
+		 * an error. CSS resources are added to the HEAD and lead to an error if
+		 * no HEAD element exists in the DOM. Markup (HTML) is not loaded
+		 * because no target can be set for the output. The macro can be used
+		 * multiple in the Composite JavaScript.
+		 *
+		 *
+		 *     #export
+		 *     ----
+		 * Expects a space-separated list of exports. Export are variables or
+		 * constants in a module that are made usable for the global scope.
+		 *
+		 *     #export connector and much more
+		 *
+		 * Primarily, an export argument is the name of the variable or constant
+		 * in the module. Optionally, the name can be extended by an @ symbol to
+		 * include the destination in the global scope.
+		 *
+		 *     #export connector@io.example
+		 *
+		 * The macro #module is intended for debugging. It writes the following
+		 * text as debug output to the console. The browser displays this output
+		 * with source, which can then be used as an entry point for debugging.
+		 *
+		 *
+		 *     #module
+		 *     ----
+		 * Expected a space-separated list of words to be output in the debug
+		 * level of the browser console. The output is a string expression and
+		 * supports the corresponding syntax.
+		 *
+		 *     #module console debug output
+		 *
+		 *
+		 *     #use
+		 *     ----
+		 * Expected to see a space-separated list of namespaces to create if
+		 * they don't already exist.
+		 *
+		 *     #use namespaces to be created
+		 *
+		 *
+		 *
+		 *     (?...)
+		 *
+		 * Tolerant expressions are also a macro, although with different
+		 * syntax. The logic enclosed in the parenthesis with question marks is
+		 * executed fault-tolerantly. In case of an error the logic corresponds
+		 * to the value false without causing an error itself, except for syntax
+		 * errors.
+		 *
+		 * @param  script
+		 * @return the return value from the script
+		 */
+		eval(script) {
+
+			// Performance is important here.
+			// The implementation parses and replaces macros in one pass.
+
+			// It was important to exclude literals and comments.
+			// - ignore: /*...*/
+			// - ignore: //...([\r\n]|$)
+			// - ignore: '...'
+			// - ignore: "..."
+			// - ignore: `...`
+			// - detect: (^|\W)#(import|export|module)\s+...(\W|$)
+			// - detect: \(\s*\?...\)
+
+			let pattern;
+			let brackets;
+			for (let cursor = 0; cursor < script.length; cursor++) {
+				let digit = script.charAt(cursor);
+				if (cursor >= script.length
+						&& !pattern)
+					continue;
+
+				// The macro for the tolerant logic is a bit more complicated,
+				// because round brackets have to be counted here. Therefore the
+				// parsing runs parallel to the other macros. In addition, the
+				// syntax is undefined by optional whitepsaces between ( and ?).
+
+				if (brackets < 0) {
+					if (digit === "?") {
+						brackets = 1;
+						let macro = "_tolerate(()=>";
+						script = script.substring(0, cursor) + macro + script.substring(cursor +1);
+						cursor += macro.length;
+						continue;
+					}
+					if (!digit.match(/\s/))
+						brackets = 0;
+				}
+
+				if (digit === "\\") {
+					cursor++
+					continue;
+				}
+
+				if (pattern) {
+					if (pattern === script.substring(cursor, cursor + pattern.length)
+							|| (pattern === "\n" && digit === "\r"))
+						pattern = null;
+					continue;
+				}
+
+				switch (digit) {
+					case "/":
+						digit = script.charAt(cursor +1);
+						if (digit === "/")
+							pattern = "\n";
+						if (digit === "*")
+							pattern = "*/";
+						continue;
+
+					case "(":
+						if (brackets > 0)
+							brackets++;
+						else brackets = -1;
+						continue;
+
+					case ")":
+						if (brackets <= 0)
+							continue;
+						if (--brackets > 0)
+							continue;
+						let macro = ")";
+						script = script.substring(0, cursor) + macro + script.substring(cursor);
+						cursor += macro.length;
+						continue;
+
+					case "\'":
+					case "\"":
+					case "\`":
+						pattern = digit;
+						continue;
+
+					case "#":
+						let string = script.substring(cursor -1, cursor +10);
+						let match = string.match(/(^|\W)(#(?:import|export|module|use))\s/);
+						if (match) {
+							let macro = match[2];
+							for (let offset = cursor +macro.length; offset <= script.length; offset++) {
+								string = script.charAt(offset);
+								if (!string.match(/[;\r\n]/)
+										&& offset < script.length)
+									continue;
+
+								let parameters = script.substring(cursor +macro.length, offset).trim();
+
+								switch (macro) {
+									case "#import":
+										if (!parameters.match(/^(\w+(\/\w+)*)(\s+(\w+(\/\w+)*))*$/))
+											throw new Error(("Invalid macro: #import " + parameters).trim());
+										const imports = parameters.split(/\s+/).map(entry => "\"" + entry + "\"");
+										macro = "_import(...[" + imports.join(",") + "])";
+										break;
+
+									case "#export":
+										const exports = [];
+										const pattern = /^([_a-z]\w*)(?:@((?:[_a-z]\w*)(?:\.[_a-z]\w*)*))?$/i;
+										parameters.split(/\s+/).forEach(entry => {
+											const match = entry.match(pattern);
+											if (!match)
+												throw new Error(("Invalid macro: #export " + parameters).trim());
+											parameters = [match[1], "\"" + match[1] + "\""];
+											if (match[2])
+												parameters.push("\"" + match[2] + "\"");
+											exports.push("[" + parameters.join(",") + "]");
+										});
+										macro = "_export(...[" + exports.join(",") + "])";
+										break;
+
+									case "#module":
+										macro = parameters.replace(/\\/g, "\\\\")
+											.replace(/`/g, "\\`").trim();
+										if (macro)
+											macro = "console.debug(`Module: " + macro + "`)";
+										break;
+
+									case "#use":
+										if (!parameters.match(/^([_a-z]\w*)(\.[_a-z]\w*)*(\s+([_a-z]\w*)(\.[_a-z]\w*)*)*$/i))
+											throw new Error(("Invalid macro: #use " + parameters).trim());
+										const uses = parameters.split(/\s+/).map(entry => "\"" + entry + "\"");
+										macro = "_use(...[" + uses.join(",") + "])";
+										break;
+								}
+
+								script = script.substring(0, cursor -1) + (match[1] || "")
+									+ macro + script.substring(offset);
+								cursor += macro.length;
+								break;
+							}
+						}
+						continue;
+
+					default:
+						continue;
+				}
+			}
+
+			return this.run(script);
+		},
+
+		/**
+		 * Executes a script isolated in this context, so that no unwanted
+		 * access to internals is possible.
+		 * @param  script
+		 * @return return value of the script, if available
+		 */
+		run(script) {
+			if (script.trim())
+				return eval(script);
+		}
+	});
+
+	const _import = (...imports) => {
+		// Because it is an internal method, an additional validation of the
+		// exports as data structure was omitted.
+		imports.forEach(include =>
+			Composite.load(Composite.MODULES + "/" + include + ".js", true));
+	};
+
+	const _export = (...exports) => {
+		// Because it is an internal method, an additional validation of the
+		// exports as data structure was omitted.
+		exports.forEach(parameters => {
+			let context = window;
+			(parameters[2] ? parameters[2].split(/\./) : []).forEach(parameter => {
+				if (typeof context[parameter] === "undefined")
+					context[parameter] = {};
+				context = context[parameter]
+			});
+
+			const lookup = context[parameters[1]];
+			if (typeof lookup !== "undefined"
+					&& !(lookup instanceof Element)
+					&& !(lookup instanceof HTMLCollection))
+				throw new Error("Context for export is already in use: "
+					+ parameters[1] + (parameters[2] ? "@" + parameters[2] : ""));
+			context[parameters[1]] = parameters[0];
+		});
+	}
+
+	const _use = (...uses) => {
+		uses.forEach(use => Namespace.use(use));
+	}
+
+	const _tolerate = (invocation) => {
+		try {return invocation.call(window);
+		} catch (error) {
+			return false;
+		}
+	};
+})();
+
+/**
  * Expressions or the Expression Language (EL) is a simple access to the
  * client-side JavaScript and thus to the models and components. In the
  * expressions the complete JavaScript API is supported, which is enhanced with
@@ -1013,7 +1302,7 @@ compliant("window.location.combine", (...paths) =>
  * expression language.
  *
  * @author  Seanox Software Solutions
- * @version 1.6.0 202300328
+ * @version 1.6.0 20230330
  */
 (() => {
 
@@ -1051,11 +1340,10 @@ compliant("window.location.combine", (...paths) =>
 			if (serial)
 				_cache.set(serial, script);
 
-			try {return eval(script);
+			try {return Scripting.run(script);
 			} catch (error) {
-				error.message += "\n\t" + script;
-				console.error(error);
-				return error.message;
+				console.error(error.message + "\n\t" + script);
+				return error.message + " in " + script;
 			}
 		}
 	});
@@ -1239,13 +1527,6 @@ compliant("window.location.combine", (...paths) =>
 				throw new Error("Unexpected script type");
 		}
 	};
-
-	const _tolerate = (invocation) => {
-		try {return invocation.call(window);
-		} catch (error) {
-			return false;
-		}
-	};
 })();
 
 /**
@@ -1350,7 +1631,7 @@ compliant("window.location.combine", (...paths) =>
  * nesting of the DOM must match.
  *
  * @author  Seanox Software Solutions
- * @version 1.6.0 20230328
+ * @version 1.6.0 20230402
  */
 (() => {
 
@@ -2799,7 +3080,7 @@ compliant("window.location.combine", (...paths) =>
 										word = Expression.eval(this.serial + ":" + Composite.ATTRIBUTE_VALUE, word);
 									}
 									this.value = word;
-									this.element.textContent = word;
+									this.element.textContent = word !== undefined ? word : "";
 								}};
 								const param = match.match(Composite.PATTERN_EXPRESSION_VARIABLE);
 								if (param) {
@@ -3168,7 +3449,7 @@ compliant("window.location.combine", (...paths) =>
 				if (selector.nodeName.match(Composite.PATTERN_SCRIPT)) {
 					const type = (selector.getAttribute(Composite.ATTRIBUTE_TYPE) || "").trim();
 					if (type.match(Composite.PATTERN_COMPOSITE_SCRIPT)) {
-						try {_render_macro_eval(selector.textContent);
+						try {Scripting.eval(selector.textContent);
 						} catch (error) {
 							throw new Error("Composite JavaScript", error);
 						}
@@ -3214,6 +3495,89 @@ compliant("window.location.combine", (...paths) =>
 
 				lock.release();
 			}
+		},
+
+		/**
+		 * Loads a resource (JS, CSS, HTML are supported).
+		 * @param  resource
+		 * @param  strict
+		 * @return the content when loading a HTML resource
+		 */
+		load(resource, strict) {
+
+			resource = (resource || "").trim();
+			if (!resource.match(/\.(js|css|html)(\?.*)?$/i))
+				throw new Error("Resource not supported" + (resource ? ": " + resource : ""))
+
+			const normalize = (path) => {
+				const anchor = document.createElement("a");
+				anchor.href = path;
+				return anchor.pathname.replaceAll(/\/{2,}/g, "/");
+			};
+
+			// JS and CSS are loaded only once
+			resource = normalize(resource);
+			if (!resource.startsWith(Composite.MODULES + "/"))
+				throw new Error("Resource not supported: " + resource);
+			if (resource in _render_cache
+					&& resource.match(/\.(js|css)(\?.*)?$/i))
+				return;
+
+			// Resource has already been requested, but with no useful
+			// response and unsuccessful requests will not be repeated
+			if (resource in _render_cache
+					&& _render_cache[resource] === undefined)
+				return;
+
+			if (!(resource in _render_cache)) {
+				_render_cache[resource] = undefined;
+				const request = new XMLHttpRequest();
+				request.overrideMimeType("text/plain");
+				request.open("GET", resource, false);
+				request.send();
+				// Only server states 200 and 404 (not in combination with the
+				// option strict) are supported, others will cause an error and
+				// the requests are not repeated later.
+				if (request.status === 404
+						&& !strict)
+					return;
+				if (request.status !== 200)
+					throw new Error(`HTTP status ${request.status} for ${request.responseURL}`);
+				_render_cache[resource] = request.responseText.trim();
+			}
+
+			// CSS is inserted into the HEAD element as a style element.
+			// Without a head element, the inserting causes an error.
+
+			// JavaScript is not inserted as an element, it is executed
+			// directly. For this purpose eval is used. Since the method may
+			// form its own scope for variables, it is important to use the
+			// macro #export to be able to use variables and/or constants in
+			// the global scope.
+
+			// HTML/Markup is preloaded into the render cache if available.
+			// If markup exists for the composite, ATTRIBUTE_IMPORT with the
+			// URL is added to the item. Inserting then takes over the
+			// import implementation, which then also accesses the render
+			// cache.
+
+			const content = _render_cache[resource];
+			if (resource.match(/\.js(\?.*)?$/i)) {
+				try {Scripting.eval(content);
+				} catch (error) {
+					console.error(resource, error.name + ": " + error.message);
+					throw error;
+				}
+			} else if (resource.match(/\.css(\?.*)?$/i)) {
+				const head = document.querySelector("html head");
+				if (!head)
+					throw new Error("No head element found");
+				const style = document.createElement("style");
+				style.setAttribute("type", "text/css");
+				style.textContent = content;
+				head.appendChild(style);
+			} else if (resource.match(/\.html(\?.*)?$/i))
+				return content;
 		},
 
 		/**
@@ -3286,19 +3650,6 @@ compliant("window.location.combine", (...paths) =>
 
 			const lookup = Object.lookup(resource);
 
-			const recursionDetection = (element) => {
-				const id = (element instanceof Element ? element.id || "" : "").trim();
-				const pattern = id.toLowerCase();
-				while (pattern && element instanceof Element) {
-					element = element.parentNode;
-					if (element instanceof Element
-							&& element.hasAttribute(Composite.ATTRIBUTE_COMPOSITE)
-							&& element.hasAttribute(Composite.ATTRIBUTE_ID)
-							&& (element.id || "").toLowerCase().trim() === pattern)
-						throw new Error("Recursion detected for composite: " + id);
-				}
-			}
-
 			// If the module has already been loaded, it is only necessary to
 			// check whether the markup must be inserted. CSS should already
 			// exist in the head and the JavaScript will only be executed once.
@@ -3307,7 +3658,7 @@ compliant("window.location.combine", (...paths) =>
 					if (object && !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
 							&& !object.attributes.hasOwnProperty(Composite.ATTRIBUTE_OUTPUT)
 							&& !composite.innerHTML.trim()) {
-						recursionDetection(composite);
+						_recursion_detection(composite);
 						if (composite instanceof Element)
 							composite.innerHTML = _render_cache[context + ".html"];
 					}
@@ -3317,80 +3668,6 @@ compliant("window.location.combine", (...paths) =>
 
 			_render_cache[context + ".composite"] = null;
 
-			// Internal method for loading a composite resource.
-			// Supports JS, CSS and HTML.
-			const loading = (resource) => {
-
-				const normalize = (path) => {
-					const anchor = document.createElement("a");
-					anchor.href = path;
-					return anchor.pathname;
-				};
-
-				// JS and CSS are loaded only once
-				resource = normalize(resource);
-				if (resource in _render_cache
-						&& resource.match(/\.(js|css)$/i))
-					return;
-
-				// Resource has already been requested, but with no useful
-				// response and unsuccessful requests will not be repeated
-				if (resource in _render_cache
-						&& _render_cache[resource] === undefined)
-					return;
-
-				if (!(resource in _render_cache)) {
-					_render_cache[resource] = undefined;
-					const request = new XMLHttpRequest();
-					request.overrideMimeType("text/plain");
-					request.open("GET", resource, false);
-					request.send();
-					// Only server states 200 and 404 are supported, others will
-					// cause an error and the requests are not repeated later
-					if (request.status === 404)
-						return;
-					if (request.status !== 200)
-						throw new Error(`HTTP status ${request.status} for ${request.responseURL}`);
-					_render_cache[resource] = request.responseText.trim();
-				}
-
-				// CSS is inserted into the HEAD element as a style element.
-				// Without a head element, the inserting causes an error.
-
-				// JavaScript is not inserted as an element, it is executed
-				// directly. For this purpose eval is used. Since the method may
-				// form its own scope for variables, it is important to use the
-				// macro #export to be able to use variables and/or constants in
-				// the global scope.
-
-				// HTML/Markup is preloaded into the render cache if available.
-				// If markup exists for the composite, ATTRIBUTE_IMPORT with the
-				// URL is added to the item. Inserting then takes over the
-				// import implementation, which then also accesses the render
-				// cache.
-
-				const content = _render_cache[resource];
-				if (resource.match(/\.js$/)) {
-					try {_render_macro_eval(content);
-					} catch (error) {
-						console.error(resource, error.name + ": " + error.message);
-						throw error;
-					}
-				} else if (resource.match(/\.css$/)) {
-					const head = document.querySelector("html head");
-					if (!head)
-						throw new Error("No head element found");
-					const style = document.createElement("style");
-					style.setAttribute("type", "text/css");
-					style.textContent = content;
-					head.appendChild(style);
-				} else if (resource.match(/\.html$/)) {
-					recursionDetection(composite);
-					if (composite instanceof Element)
-						composite.innerHTML = content;
-				}
-			}
-
 			// The sequence of loading is strictly defined: JS, CSS, HTML
 
 			// JavaScript is only loaded if no corresponding object exists for
@@ -3399,14 +3676,14 @@ compliant("window.location.combine", (...paths) =>
 					|| lookup instanceof Element
 					|| lookup instanceof HTMLCollection
 					|| resource === "common")
-				loading(context + ".js");
+				this.load(context + ".js");
 
 			// CSS and HTML are loaded only if they are resources to an element
 			// and the element is empty, excludes CSS for common. Since CSS
 			// resources are loaded only once, common.css can be requested again
 			// later.
 			if (resource === "common")
-				loading(context + ".css");
+				this.load(context + ".css");
 
 			// CSS and HTML/Markup is only loaded if it is a known composite
 			// object and the element does not contain a markup (inner HTML).
@@ -3416,11 +3693,16 @@ compliant("window.location.combine", (...paths) =>
 			if (!object
 					|| composite.innerHTML.trim())
 				return;
-			loading(context + ".css");
+			this.load(context + ".css");
 			if (object.attributes.hasOwnProperty(Composite.ATTRIBUTE_IMPORT)
 					|| object.attributes.hasOwnProperty(Composite.ATTRIBUTE_OUTPUT))
 				return;
-			loading(context + ".html");
+			const content = this.load(context + ".html");
+			if (content === undefined)
+				return;
+			_recursion_detection(composite);
+			if (composite instanceof Element)
+				composite.innerHTML = content;
 		}
 	});
 
@@ -3473,6 +3755,19 @@ compliant("window.location.combine", (...paths) =>
 	 * All docked models are included in the set.
 	 */
 	const _models = new Set();
+
+	const _recursion_detection = (element) => {
+		const id = (element instanceof Element ? element.id || "" : "").trim();
+		const pattern = id.toLowerCase();
+		while (pattern && element instanceof Element) {
+			element = element.parentNode;
+			if (element instanceof Element
+					&& element.hasAttribute(Composite.ATTRIBUTE_COMPOSITE)
+					&& element.hasAttribute(Composite.ATTRIBUTE_ID)
+					&& (element.id || "").toLowerCase().trim() === pattern)
+				throw new Error("Recursion detected for composite: " + id);
+		}
+	}
 
 	/**
 	 * Determines the meta data for an element based on its position in the DOM
@@ -3657,189 +3952,6 @@ compliant("window.location.combine", (...paths) =>
 	Object.defineProperty(Composite.render, "meta", {
 		value: _render_meta
 	});
-
-	/**
-	 * As a special feature, Composite JavaScript supports macros.
-	 *
-	 * Macros are based on a keyword starting with a hash symbol followed by
-	 * arguments separated by spaces. Macros end with the next line break, a
-	 * semicolon or with the end of the file.
-	 *
-	 *
-	 *     #import
-	 *     ----
-	 * Expects a space-separated list of composite modules whose path must be
-	 * relative to the URL.
-	 *
-	 *     #import io/api/connector and/much more
-	 *
-	 * Composite modules consist of the optional resources CSS, JS and HTML. The
-	 * #import macro can only load CSS and JS. The behavior is the same as when
-	 * loading composites in the markup. The server status 404 does not cause an
-	 * error, because all resources of a composite are optional, also
-	 * JavaScript. Server states other than 200 and 404 cause an error. CSS
-	 * resources are added to the HEAD and lead to an error if no HEAD element
-	 * exists in the DOM. Markup (HTML) is not loaded because no target can be
-	 * set for the output. The macro can be used multiple in the Composite
-	 * JavaScript.
-	 *
-	 *
-	 *     #export
-	 *     ----
-	 * Expects a space-separated list of exports. Export are variables or
-	 * constants in a module that are made usable for the global scope.
-	 *
-	 *     #export connector and much more
-	 *
-	 * Primarily, an export argument is the name of the variable or constant in
-	 * the module. Optionally, the name can be extended by an @ symbol to
-	 * include the destination in the global scope.
-	 *
-	 *     #export connector@io.example
-	 *
-	 * The macro #module is intended for debugging. It writes the following text
-	 * as debug output to the console. The browser displays this output with
-	 * source, which can then be used as an entry point for debugging.
-	 *
-	 *     #module console debug output
-	 *
-	 * The output is a string expression and supports the corresponding syntax.
-	 */
-	const _render_macro_eval = (script) => {
-
-		// Performance is important here.
-		// The implementation parses and replaces macros in one pass.
-
-		// It was important to exclude literals and comments.
-		// - ignore: /*...*/
-		// - ignore: //...([\r\n]|$)
-		// - ignore: '...'
-		// - ignore: "..."
-		// - ignore: `...`
-		// - detect: (^|\W)#(import|export)\s+...(\W|$)
-
-		let pattern;
-		for (let cursor = 0; cursor < script.length; cursor++) {
-			let digit = script.charAt(cursor);
-			if (cursor >= script.length
-					&& !pattern)
-				continue;
-
-			if (digit === "\\") {
-				cursor++
-				continue;
-			}
-
-			if (pattern) {
-				if (pattern === script.substring(cursor, cursor + pattern.length)
-						|| (pattern === "\n" && digit === "\r"))
-					pattern = null;
-				continue;
-			}
-
-			switch (digit) {
-				case "/":
-					digit = script.charAt(cursor +1);
-					if (digit === "/")
-						pattern = "\n";
-					if (digit === "*")
-						pattern = "*/";
-					continue;
-
-				case "\'":
-				case "\"":
-				case "\`":
-					pattern = digit;
-					continue;
-
-				case "#":
-					let string = script.substring(cursor -1, cursor +10);
-					let match = string.match(/(^|\W)(#(?:import|export|module))\s/);
-					if (match) {
-						let macro = match[2];
-						for (let offset = cursor +macro.length; offset <= script.length; offset++) {
-							string = script.charAt(offset);
-							if (!string.match(/[;\r\n]/)
-									&& offset < script.length)
-								continue;
-
-							let parameters = script.substring(cursor +macro.length, offset).trim();
-
-							switch (macro) {
-								case "#import":
-									if (!parameters.match(/^(\w+(\/\w+)*)(\s+(\w+(\/\w+)*))*$/))
-										throw new Error(("Invalid macro: #import " + parameters).trim());
-									const imports = [];
-									parameters.split(/\s+/).forEach(entry => imports.push("\"" + entry + "\""));
-									macro = "_import(...[" + imports.join(",") + "])";
-									break;
-
-								case "#export":
-									const exports = [];
-									const pattern = /^([_a-z]\w*)(?:@((?:[_a-z]\w*)(?:\.[_a-z]\w*)*))?$/i;
-									parameters.split(/\s+/).forEach(entry => {
-										const match = entry.match(pattern);
-										if (!match)
-											throw new Error(("Invalid macro: #export " + parameters).trim());
-										parameters = [match[1], "\"" + match[1] + "\""];
-										if (match[2])
-											parameters.push("\"" + match[2] + "\"");
-										exports.push("[" + parameters.join(",") + "]");
-									});
-									macro = "_export(...[" + exports.join(",") + "])";
-									break;
-
-								case "#module":
-									macro = parameters.replace(/\\/g, "\\\\")
-										.replace(/`/g, "\\`").trim();
-									if (macro)
-										macro = "console.debug(`Module: " + macro + "`)";
-									break;
-							}
-
-							script = script.substring(0, cursor -1) + (match[1] || "")
-								+ macro + script.substring(offset);
-							cursor += macro.length;
-							break;
-						}
-					}
-					continue;
-
-				default:
-					continue;
-			}
-		}
-
-		if (script.trim())
-			eval(script);
-	};
-
-	const _import = (...imports) => {
-		// Because it is an internal method, an additional validation of the
-		// exports as data structure was omitted.
-		imports.forEach(include => Composite.include(...include.split(/\/+/)));
-	};
-
-	const _export = (...exports) => {
-		// Because it is an internal method, an additional validation of the
-		// exports as data structure was omitted.
-		exports.forEach(parameters => {
-			let context = window;
-			(parameters[2] ? parameters[2].split(/\./) : []).forEach(parameter => {
-				if (typeof context[parameter] === "undefined")
-					context[parameter] = {};
-				context = context[parameter]
-			});
-
-			const lookup = context[parameters[1]];
-			if (typeof lookup !== "undefined"
-					&& !(lookup instanceof Element)
-					&& !(lookup instanceof HTMLCollection))
-				throw new Error("Context for export is already in use: "
-					+ parameters[1] + (parameters[2] ? "@" + parameters[2] : ""));
-			context[parameters[1]] = parameters[0];
-		});
-	}
 
 	let _serial = 0;
 
@@ -4030,9 +4142,11 @@ compliant("window.location.combine", (...paths) =>
 				// Manipulations are corrected/restored.
 				if (record.type === "characterData"
 						&& record.target.nodeType === Node.TEXT_NODE) {
-					if (object && object.hasOwnProperty(Composite.ATTRIBUTE_VALUE)
-							&& String(object.value || "") !== record.target.textContent)
-						record.target.textContent = object.value || "";
+					if (object && object.hasOwnProperty(Composite.ATTRIBUTE_VALUE)) {
+						const value = object.value === undefined ? "" : String(object.value);
+						if (value !== record.target.textContent)
+							record.target.textContent = value;
+					}
 					return;
 				}
 
@@ -4972,7 +5086,7 @@ compliant("window.location.combine", (...paths) =>
 				// In the next step, the facets for a path are determined.
 				// These are added to the path in the path map if these do not
 				// already exist there.
-				// Additional a facet map object will be created:
+				// Additionally, a facet map object will be created:
 				//     {#facet-path:{path:#path, facet:facet}, ...}
 				value = value || [];
 				value.forEach((facet) => {
@@ -4993,13 +5107,13 @@ compliant("window.location.combine", (...paths) =>
 					// normal paths.
 					if (facet.match(PATTERN_PATH_FACET_VARIABLE)) {
 						// If the facet is only ..., it is registered as
-						// avariable face, otherwise as a variable facet.
+						// available face, otherwise as a variable facet.
 						facet = facet.replace(/\.+$/, "");
 						const variable = facet ? key.replace(/#+$/, "") + "#" + facet : key;
 						if (!variables.has(variable))
 							variables.add(variable);
 						// If the face is only ..., it is registered as a face.
-						// Therefore nothing needs to be done now.
+						// Therefore, nothing needs to be done now.
 						if (!facet)
 							return;
 					}
