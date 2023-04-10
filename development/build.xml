@@ -44,7 +44,6 @@
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_12 Test/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_13 Components/assets" overwrite="true"/>
 
-    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_01 Prototype as framework/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
