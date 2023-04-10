@@ -60,7 +60,7 @@ specific language governing permissions and limitations under the License.
 
 
 # Changes
-## 1.6.0 2023xxxx (upcoming version)  
+## 1.6.1 2023xxxx (upcoming version)  
 BF: Build: Optimization  
 CR: Build: Added server start/stop in build.xml  
 CR: Assets: Update of aspect-js-max.js  
