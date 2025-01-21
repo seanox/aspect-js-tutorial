@@ -1,20 +1,12 @@
 <?xml version="1.0" ?>
-<project name="aspect-js-tutorial" default="update" basedir="..">
+<project name="aspect-js-tutorial" default="update" basedir="${ant.file}/../..">
   <target name="usage">
     <echo>Following targets are available:                               </echo>
-    <echo>                                                               </echo>
-    <echo>  release    release of aspect-js tutorial based on the        </echo>
-    <echo>             existing aspect-js version                        </echo>
     <echo>                                                               </echo>
     <echo>  update     builds aspect-js in the main project and updates  </echo>
     <echo>             aspect-js in all examples                         </echo>
     <echo>                                                               </echo>
     <echo>  changes    synchronizes README.md with CHANGES               </echo>
-    <echo>                                                               </echo>
-    <echo>  start      Starts the included development server            </echo>
-    <echo>             Console output of the access log                  </echo>
-    <echo>                                                               </echo>
-    <echo>  stop       Stops the included development server             </echo>
   </target>
 
   <property name="parent" value="../aspect-js"/>
@@ -44,14 +36,14 @@
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_12 Test/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/page-flow/Step_13 Components/assets" overwrite="true"/>
 
-    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_05 The first module/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_06 Usage of dynamic data/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_07 Business logic in detail/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_08 Debugging/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-micro-max.js" todir="${workspace}/micro-frontend/Step_09 Testing/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/micro-frontend/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/micro-frontend/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/micro-frontend/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/micro-frontend/Step_05 The first module/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/micro-frontend/Step_06 Usage of dynamic data/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/micro-frontend/Step_07 Business logic in detail/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/micro-frontend/Step_08 Debugging/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-testing-max.js" todir="${workspace}/micro-frontend/Step_09 Testing/assets" overwrite="true"/>
   </target>
   
   <macrodef name="release-locate">
@@ -76,32 +68,7 @@
       <delete file="${workspace}/CHANGES.tmp"/>
     </sequential>
   </macrodef> 
-  
-  <target name="release">
-    <release-locate/>
 
-    <delete dir="${workspace.releases}/temp"/>
-    <mkdir dir="${workspace.releases}/temp/${ant.project.name}-${release.version}/${ant.project.name}"/>
-    <copy todir="${workspace.releases}/temp/${ant.project.name}-${release.version}/${ant.project.name}">
-      <fileset dir="${workspace}" defaultexcludes="on">
-        <include name="**/**"/>
-        <exclude name="release/**"/>
-        <exclude name="development/**"/>
-        <exclude name=".**/**"/>
-        <exclude name=".*"/>
-        <exclude name="*.iml"/>
-      </fileset>
-    </copy>
-    <touch datetime="${release.date}" pattern="yyyyMMdd">
-      <fileset dir="${workspace.releases}/temp"/>
-    </touch>         
-    <delete file="${workspace.releases}/${ant.project.name}-${release.version}.zip"/>
-    <zip destfile="${workspace.releases}/${ant.project.name}-${release.version}.zip">
-      <fileset dir="${workspace.releases}/temp/${ant.project.name}-${release.version}"/>
-    </zip>   
-    <delete dir="${workspace.releases}/temp"/>
-  </target>
-  
   <target name="changes">
     <release-locate/>
 
@@ -138,13 +105,5 @@
     <replaceregexp file="${workspace}/README.md"
         match="(\[Seanox aspect-js )\d\.[\.\d]+(\sTutorial\]\(https://github.com/seanox/aspect-js-tutorial/archive/refs/tags/)\d\.[\.\d]+(\.zip\))" flags="g" byline="false"
         replace="\1${release.version}\2${release.version}\3"/>
-  </target>
-
-  <target name="start">
-    <ant-parent target="start"/>
-  </target>
-
-  <target name="stop">
-    <ant-parent target="stop"/>
   </target>
 </project>
