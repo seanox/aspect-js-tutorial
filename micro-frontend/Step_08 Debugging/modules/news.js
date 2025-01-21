@@ -3,7 +3,8 @@
 // debugging this is mandatory. The console output can also offer an entry
 // point. This also uses the macro #module and writes the following text to the
 // console. The source of the output can then become in the development tool and
-// supports debugging in the usual way.
+// supports debugging in the usual way. If necessary, the console output in the
+// browser must be set to the “Verbose” level so that console.debug is output.
 #module news;
 
 // Imports the connector with the #import-macro. Since the connector in turn
