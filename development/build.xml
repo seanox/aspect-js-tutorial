@@ -28,9 +28,9 @@
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_04 Internationalization (i18n)/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_05 The first module/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_07 SiteMap - Controlling components and views/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_08 SiteMap - Variable paths/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_09 SiteMap - Functional paths/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_07 Routing - Controlling components and views/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_08 Routing - Variable paths/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_09 Routing - Functional paths/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_10 MVC - Synchronization/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-testing-max.js" todir="${workspace}/view-flow/Step_12 Test/assets" overwrite="true"/>
