@@ -3159,7 +3159,7 @@ compliant("window.location.combine", function () {
 		 *   Tag, Selector, Interceptor
 		 *
 		 * Details are described in the documentation:
-		 * https://github.com/seanox/aspect-js/blob/master/manual/en/markup.md#contents-overview
+		 * https://github.com/seanox/aspect-js/blob/master/manual/markup.md#contents-overview
 		 *
 		 * @param {Element|string} selector DOM element or a string
 		 * @param {boolean} lock Unlocking of the model validation
