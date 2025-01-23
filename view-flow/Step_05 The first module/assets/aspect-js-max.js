@@ -3159,7 +3159,7 @@ compliant("window.location.combine", function () {
 		 *   Tag, Selector, Interceptor
 		 *
 		 * Details are described in the documentation:
-		 * https://github.com/seanox/aspect-js/blob/master/manual/markup.md#contents-overview
+		 * https://github.com/seanox/aspect-js/blob/master/manual/en/markup.md#contents-overview
 		 *
 		 * @param {Element|string} selector DOM element or a string
 		 * @param {boolean} lock Unlocking of the model validation
@@ -5615,6 +5615,18 @@ compliant("window.location.combine", function () {
 				return path !== undefined && Path.covers(path);
 			return approval === true;
 		},
+		/**
+		 * Add an interceptor. An interceptor consists of a path and an actor.
+		 * The path can be either a string or a regular expression (RegExp),
+		 * and the actor must be a function. Interceptors are useful for
+		 * reacting to paths and possibly influencing the routing in relation to
+		 * the paths.
+		 * @param {string|RegExp} path path or route that needs customization.
+		 *     It can be a string or a regular expression.
+		 * @param {function} actor function that acts as an interceptor for the
+		 *     specified path when the specified path is addressed.
+		 * @throws {TypeError} If the `path` is neither a string nor a RegExp
+		 */
 		customize: function customize(path, actor) {
 			if (typeof path !== "string" && !(path instanceof RegExp))
 				throw new TypeError("Invalid data type");
@@ -5624,6 +5636,20 @@ compliant("window.location.combine", function () {
 				path: path,
 				actor: actor,
 			});
+		},
+		/**
+		 * Determines the closest matching path in relation to the closest
+		 * composite to the path. If Routing is inactive, the method will be
+		 * returned undefined.
+		 * @param {string} path path string that needs to be located
+		 * @returns {string|undefined} the resolved path if routing is active;
+		 *     otherwise, returns undefined
+		 * @throws {TypeError} If the path is not a string
+		 */
+		locate: function locate(path) {
+			if (typeof path !== "string") throw new TypeError("Invalid data type");
+			if (!_routing_active) return undefined;
+			return _lookup(_lookup(path));
 		},
 	});
 
@@ -5658,7 +5684,7 @@ compliant("window.location.combine", function () {
 					);
 				_path = "#" + match[1] + _path;
 			}
-			return _path || undefined;
+			return _path || "#";
 		}
 		var marker = "["
 			.concat(Composite.ATTRIBUTE_COMPOSITE, "][")
@@ -5817,8 +5843,17 @@ compliant("window.location.combine", function () {
 			// interface can be called without a path if it wants to use the
 			// routing must be taken into account in the declaration of the
 			// markup and in the implementation. This logic is not included
-			// here!
-			if (!Browser.location) Routing.route("#");
+			// here! With path, the event must be triggered initially so that
+			// any custom interceptors are addressed with the initial path.
+			if (Browser.location) {
+				var event = new Event("hashchange", {
+					bubbles: false,
+					cancelable: true,
+				});
+				event.oldURL = "";
+				event.newURL = Browser.location;
+				window.dispatchEvent(event);
+			} else Routing.route("#");
 		}
 		if (
 			!_routing_active ||

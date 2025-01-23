@@ -4,7 +4,7 @@
  * Diese Software unterliegt der Version 2 der Apache License.
  *
  * Seanox aspect-js, fullstack for single page applications
- * Copyright (C) 2023 Seanox Software Solutions
+ * Copyright (C) 2025 Seanox Software Solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -3159,7 +3159,7 @@ compliant("window.location.combine", function () {
 		 *   Tag, Selector, Interceptor
 		 *
 		 * Details are described in the documentation:
-		 * https://github.com/seanox/aspect-js/blob/master/manual/en/markup.md#contents-overview
+		 * https://github.com/seanox/aspect-js/blob/master/manual/markup.md#contents-overview
 		 *
 		 * @param {Element|string} selector DOM element or a string
 		 * @param {boolean} lock Unlocking of the model validation

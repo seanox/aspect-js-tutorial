@@ -4,7 +4,7 @@
  * Diese Software unterliegt der Version 2 der Apache License.
  *
  * Seanox aspect-js, fullstack for single page applications
- * Copyright (C) 2023 Seanox Software Solutions
+ * Copyright (C) 2025 Seanox Software Solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -5452,14 +5452,9 @@ compliant("window.location.combine", function () {
  *         ----
  * A view is the primary projection of models/components/content. This
  * projection can contain additional substructures in the form of views and
- * sub-views. Views can be static, always shown, or path-controlled. Paths
- * address the complete chain of nested views and shows the parent views in
- * addition to the target view.
- *
- * Static views use the boolean attribute static. This means that these views
- * are always shown if their parent views are visible. The routing excludes all
- * elements with the attribute staticin the markup. These elements are therefore
- * independent of paths and the internal permission concept of Routing.
+ * sub-views. Views can be static, always shown, or controlled by path and
+ * permissions. Paths address the complete chain of nested views and shows the
+ * parent views in addition to the target view.
  *
  *         View Flow
  *         ----
@@ -5511,6 +5506,10 @@ compliant("window.location.combine", function () {
 		return match ? match[0] : null;
 	};
 	compliant("Routing", {
+		/** Constant for attribute route */
+		get ATTRIBUTE_ROUTE() {
+			return "route";
+		},
 		/**
 		 * Returns the current working path normalized. This assumes that the
 		 * URL contains at least one hash, otherwise the method returns null.
@@ -5616,6 +5615,18 @@ compliant("window.location.combine", function () {
 				return path !== undefined && Path.covers(path);
 			return approval === true;
 		},
+		/**
+		 * Add an interceptor. An interceptor consists of a path and an actor.
+		 * The path can be either a string or a regular expression (RegExp),
+		 * and the actor must be a function. Interceptors are useful for
+		 * reacting to paths and possibly influencing the routing in relation to
+		 * the paths.
+		 * @param {string|RegExp} path path or route that needs customization.
+		 *     It can be a string or a regular expression.
+		 * @param {function} actor function that acts as an interceptor for the
+		 *     specified path when the specified path is addressed.
+		 * @throws {TypeError} If the `path` is neither a string nor a RegExp
+		 */
 		customize: function customize(path, actor) {
 			if (typeof path !== "string" && !(path instanceof RegExp))
 				throw new TypeError("Invalid data type");
@@ -5626,13 +5637,21 @@ compliant("window.location.combine", function () {
 				actor: actor,
 			});
 		},
+		/**
+		 * Determines the closest matching path in relation to the closest
+		 * composite to the path. If Routing is inactive, the method will be
+		 * returned undefined.
+		 * @param {string} path path string that needs to be located
+		 * @returns {string|undefined} the resolved path if routing is active;
+		 *     otherwise, returns undefined
+		 * @throws {TypeError} If the path is not a string
+		 */
+		locate: function locate(path) {
+			if (typeof path !== "string") throw new TypeError("Invalid data type");
+			if (!_routing_active) return undefined;
+			return _lookup(_lookup(path));
+		},
 	});
-
-	/**
-	 * Registration of the attribute static for hardening. The attribute is
-	 * therefore more difficult to manipulate in markup.
-	 */
-	Composite.customize("@ATTRIBUTES-STATICS", "static");
 
 	/**
 	 * The method accepts a path as a string and determines the corresponding
@@ -5653,7 +5672,8 @@ compliant("window.location.combine", function () {
 			for (var element = lookup; element; element = element.parentElement) {
 				if (
 					!element.hasAttribute(Composite.ATTRIBUTE_COMPOSITE) ||
-					!element.hasAttribute(Composite.ATTRIBUTE_ID)
+					!element.hasAttribute(Composite.ATTRIBUTE_ID) ||
+					!element.hasAttribute(Routing.ATTRIBUTE_ROUTE)
 				)
 					continue;
 				var composite = element.getAttribute(Composite.ATTRIBUTE_ID);
@@ -5664,15 +5684,20 @@ compliant("window.location.combine", function () {
 					);
 				_path = "#" + match[1] + _path;
 			}
-			return _path || undefined;
+			return _path || "#";
 		}
+		var marker = "["
+			.concat(Composite.ATTRIBUTE_COMPOSITE, "][")
+			.concat(Routing.ATTRIBUTE_ROUTE, "]");
 		var path = lookup
 			.split("#")
 			.slice(1)
 			.map(function (entry) {
 				return '[id="'
-					.concat(entry, '"][composite],[id^="')
-					.concat(entry, '"][composite]');
+					.concat(entry, '"]')
+					.concat(marker, ',[id^="')
+					.concat(entry, '@"]')
+					.concat(marker);
 			});
 		while (path.length > 0) {
 			var _element = document.querySelector(path.join(">"));
@@ -5794,6 +5819,12 @@ compliant("window.location.combine", function () {
 	 * and removing. The elements are identified by the composite ID.
 	 */
 	Composite.customize(function (element) {
+		if (
+			element instanceof Element &&
+			element.hasAttribute("route") &&
+			element.getAttribute("route") !== ""
+		)
+			console.warn("Ignore value for attribute route");
 		if (_routing_active === undefined) {
 			// Activates routing during the initial rendering via the boolean
 			// attribute route. It must not have a value, otherwise it is
@@ -5812,20 +5843,25 @@ compliant("window.location.combine", function () {
 			// interface can be called without a path if it wants to use the
 			// routing must be taken into account in the declaration of the
 			// markup and in the implementation. This logic is not included
-			// here!
-			if (!Browser.location) Routing.route("#");
+			// here! With path, the event must be triggered initially so that
+			// any custom interceptors are addressed with the initial path.
+			if (Browser.location) {
+				var event = new Event("hashchange", {
+					bubbles: false,
+					cancelable: true,
+				});
+				event.oldURL = "";
+				event.newURL = Browser.location;
+				window.dispatchEvent(event);
+			} else Routing.route("#");
 		}
-		if (!_routing_active) return;
 		if (
+			!_routing_active ||
 			!(element instanceof Element) ||
-			!element.hasAttribute(Composite.ATTRIBUTE_COMPOSITE)
+			!element.hasAttribute(Composite.ATTRIBUTE_COMPOSITE) ||
+			!element.hasAttribute(Routing.ATTRIBUTE_ROUTE)
 		)
 			return;
-		if (element.hasAttribute("static")) {
-			if (element.getAttribute("static") !== "")
-				console.warn("Ignore value for attribute static");
-			return;
-		}
 		var composite = (element.getAttribute(Composite.ATTRIBUTE_ID) || "").trim();
 		var path = _lookup(element);
 		var script = null;

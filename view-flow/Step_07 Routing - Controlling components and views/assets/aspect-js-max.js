@@ -5615,7 +5615,18 @@ compliant("window.location.combine", function () {
 				return path !== undefined && Path.covers(path);
 			return approval === true;
 		},
-		// TODO:
+		/**
+		 * Add an interceptor. An interceptor consists of a path and an actor.
+		 * The path can be either a string or a regular expression (RegExp),
+		 * and the actor must be a function. Interceptors are useful for
+		 * reacting to paths and possibly influencing the routing in relation to
+		 * the paths.
+		 * @param {string|RegExp} path path or route that needs customization.
+		 *     It can be a string or a regular expression.
+		 * @param {function} actor function that acts as an interceptor for the
+		 *     specified path when the specified path is addressed.
+		 * @throws {TypeError} If the `path` is neither a string nor a RegExp
+		 */
 		customize: function customize(path, actor) {
 			if (typeof path !== "string" && !(path instanceof RegExp))
 				throw new TypeError("Invalid data type");
@@ -5626,7 +5637,15 @@ compliant("window.location.combine", function () {
 				actor: actor,
 			});
 		},
-		// TODO:
+		/**
+		 * Determines the closest matching path in relation to the closest
+		 * composite to the path. If Routing is inactive, the method will be
+		 * returned undefined.
+		 * @param {string} path path string that needs to be located
+		 * @returns {string|undefined} the resolved path if routing is active;
+		 *     otherwise, returns undefined
+		 * @throws {TypeError} If the path is not a string
+		 */
 		locate: function locate(path) {
 			if (typeof path !== "string") throw new TypeError("Invalid data type");
 			if (!_routing_active) return undefined;
