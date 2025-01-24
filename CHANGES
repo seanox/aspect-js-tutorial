@@ -3,6 +3,7 @@ BF: Build: Optimization
 CR: Assets: Update of aspect-js-max.js (1.8.0)
 CR: Tutorial: Added tutorial for a micro frontend
 CR: Tutorial: Update to use reactive rendering
+CR: Tutorial: Renaming page-flow to view-flow
 
 1.5.0 20230000
 CR: Build: Releases are now only available on the release page
