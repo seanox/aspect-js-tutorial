@@ -5638,18 +5638,32 @@ compliant("window.location.combine", function () {
 			});
 		},
 		/**
-		 * Determines the closest matching path in relation to the closest
-		 * composite to the path. If Routing is inactive, the method will be
-		 * returned undefined.
-		 * @param {string} path path string that needs to be located
-		 * @returns {string|undefined} the resolved path if routing is active;
-		 *     otherwise, returns undefined
-		 * @throws {TypeError} If the path is not a string
+		 * Determines the closest matching location in relation to the closest
+		 * composite to the current location. If Routing is inactive, the method
+		 * will be returned undefined.
+		 * @param {(boolean|Object)} [meta=false] optional true or a metadata
+		 *     object to be filled; in both cases, a meta-object with locate
+		 *     and, if available, an array with data is also returned
+		 * @returns {string|undefined|Object} the resolved location if Routing
+		 *     is active; otherwise, returns undefined
 		 */
-		locate: function locate(path) {
-			if (typeof path !== "string") throw new TypeError("Invalid data type");
+		locate: function locate() {
+			var meta =
+				arguments.length > 0 && arguments[0] !== undefined
+					? arguments[0]
+					: false;
 			if (!_routing_active) return undefined;
-			return _lookup(_lookup(path));
+			var location = Routing.location;
+			var locate = _lookup(_lookup(location));
+			if ((meta == null || _typeof(meta) !== "object") && meta !== true)
+				return locate;
+			if (_typeof(meta) !== "object") meta = {};
+			meta.locate = locate;
+			meta.data = location
+				.substring(locate.length)
+				.replace(/^#+/, "")
+				.split(/#+/);
+			return meta;
 		},
 	});
 
