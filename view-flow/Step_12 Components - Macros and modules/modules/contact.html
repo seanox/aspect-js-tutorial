@@ -40,9 +40,9 @@
     -->
     <input type="text" id="name" class="w3-input w3-border"
         placeholder="{{Messages['mail.form.name.title']}}"
-        pattern="{{mail.NAME_PATTERN}}"
+        pattern="{{contact.NAME_PATTERN}}"
         events="input">
-    Value of variable mail.name: {{mail.name}}
+    Value of variable contact.name: {{contact.name}}
     <!--
         Validation:
         - via pattern
@@ -51,9 +51,9 @@
     -->
     <input type="text" id="email" class="w3-input w3-section w3-border" 
         placeholder="{{Messages['mail.form.email.title']}}"
-        pattern="{{mail.EMAIL_PATTERN}}" message="{{Messages['mail.email.message']}}"
+        pattern="{{contact.EMAIL_PATTERN}}" message="{{Messages['mail.email.message']}}"
         events="input">
-    Value of variable mail.email: {{mail.email}}
+    Value of variable contact.email: {{contact.email}}
     <!--
         Validation:
         - via pattern
@@ -63,9 +63,9 @@
     -->
     <input type="text" id="subject" class="w3-input w3-section w3-border" 
         placeholder="{{Messages['mail.form.subject.title']}}"
-        pattern="{{mail.SUBJECT_PATTERN}}" message="{{Messages['mail.subject.message']}}" notification
+        pattern="{{contact.SUBJECT_PATTERN}}" message="{{Messages['mail.subject.message']}}" notification
         events="input">
-    Value of variable mail.subject: {{mail.subject}}
+    Value of variable contact.subject: {{contact.subject}}
     <!--
         Validation:
         - via model validate methode
@@ -77,7 +77,7 @@
         placeholder="{{Messages['mail.form.comment.title']}}"
         validate message="{{Messages['mail.subject.message']}}" notification
         events="input">
-    Value of variable mail.comment: {{mail.comment}}<br/>
+    Value of variable contact.comment: {{contact.comment}}<br/>
     <!--
         Validation:
         - is theoretically possible for all elements in the DOM

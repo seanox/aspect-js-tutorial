@@ -35,17 +35,17 @@
     <label key="company.name.1" value="EXAMPLE"/>
     <label key="company.name.2" value="Architects"/>
 
-    <label key="mail.title" value="Kontakt"/>
-    <label key="mail.text">
+    <label key="contact.title" value="Kontakt"/>
+    <label key="contact.text">
       Lassen Sie uns Kontakt aufnehmen und &uuml;ber Ihr n&auml;chstes Projekt sprechen.
     </label>
-    <label key="mail.office.hours.title" value="B&uuml;rozeiten"/>
-    <label key="mail.form.name.title" value="Name"/>
-    <label key="mail.form.email.title" value="E-Mail"/>
-    <label key="mail.form.subject.title" value="Betreff"/>
-    <label key="mail.form.comment.title" value="Nachricht"/>
-    <label key="mail.form.send.title" value="NACHRICHT SENDEN"/>
-    <label key="mail.map.title" value="Map"/>
+    <label key="contact.office.hours.title" value="B&uuml;rozeiten"/>
+    <label key="contact.form.name.title" value="Name"/>
+    <label key="contact.form.email.title" value="E-Mail"/>
+    <label key="contact.form.subject.title" value="Betreff"/>
+    <label key="contact.form.comment.title" value="Nachricht"/>
+    <label key="contact.form.send.title" value="NACHRICHT SENDEN"/>
+    <label key="contact.map.title" value="Map"/>
     <!--
     
         The use of regular or numerical expressions for validation and their outsourcing
@@ -53,14 +53,14 @@
         server and client side and the server can make this available to the client.  
     
     -->
-    <label key="mail.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
-    <label key="mail.name.message" value="Pflichteingabe mit maximal 50 Zeichen ohne Leerzeichen am Anfang und am Ende."/>
-    <label key="mail.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
-    <label key="mail.email.message" value="Pflichteingabe einer g&uuml;ltigen E-Mail-Adresse."/>
-    <label key="mail.subject.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
-    <label key="mail.subject.message" value="Pflichteingabe mit maximal 50 Zeichen ohne Leerzeichen am Anfang und am Ende."/>
-    <label key="mail.comment.pattern" value="^\\s*(\\S(.{0,96}\\S){0,1})\\s*$"/>
-    <label key="mail.comment.message" value="Pflichteingabe mit maximal 100 Zeichen."/>
+    <label key="contact.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.name.message" value="Pflichteingabe mit maximal 50 Zeichen ohne Leerzeichen am Anfang und am Ende."/>
+    <label key="contact.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
+    <label key="contact.email.message" value="Pflichteingabe einer g&uuml;ltigen E-Mail-Adresse."/>
+    <label key="contact.subject.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.subject.message" value="Pflichteingabe mit maximal 50 Zeichen ohne Leerzeichen am Anfang und am Ende."/>
+    <label key="contact.comment.pattern" value="^\\s*(\\S(.{0,96}\\S){0,1})\\s*$"/>
+    <label key="contact.comment.message" value="Pflichteingabe mit maximal 100 Zeichen."/>
     
     <label key="locale.de.title" value="Deutsch"/>
     <label key="locale.en.title" value="English"/>
@@ -106,17 +106,17 @@
     <label key="company.name.1" value="EXAMPLE"/>
     <label key="company.name.2" value="Architects"/>
 
-    <label key="mail.title" value="Contact"/>
-    <label key="mail.text">
+    <label key="contact.title" value="Contact"/>
+    <label key="contact.text">
       Lets get in touch and talk about your next project.
     </label>
-    <label key="mail.office.hours.title" value="Office Hours"/>
-    <label key="mail.form.name.title" value="Name"/>
-    <label key="mail.form.email.title" value="Email"/>
-    <label key="mail.form.subject.title" value="Subject"/>
-    <label key="mail.form.comment.title" value="Comment"/>
-    <label key="mail.form.send.title" value="SEND MESSAGE"/>
-    <label key="mail.map.title" value="Map"/>
+    <label key="contact.office.hours.title" value="Office Hours"/>
+    <label key="contact.form.name.title" value="Name"/>
+    <label key="contact.form.email.title" value="Email"/>
+    <label key="contact.form.subject.title" value="Subject"/>
+    <label key="contact.form.comment.title" value="Comment"/>
+    <label key="contact.form.send.title" value="SEND MESSAGE"/>
+    <label key="contact.map.title" value="Map"/>
     <!--
     
         The use of regular or numerical expressions for validation and their outsourcing
@@ -124,14 +124,14 @@
         server and client side and the server can make this available to the client.  
     
     -->
-    <label key="mail.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
-    <label key="mail.name.message" value="Mandatory input with a maximum of 50 characters without spaces at the beginning and end."/>
-    <label key="mail.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
-    <label key="mail.email.message" value="Mandatory input of a valid e-mail address."/>
-    <label key="mail.subject.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
-    <label key="mail.subject.message" value="Mandatory input with a maximum of 50 characters without spaces at the beginning and end."/>
-    <label key="mail.comment.pattern" value="^\\s*(\\S(.{0,96}\\S){0,1})\\s*$"/>
-    <label key="mail.comment.message" value="Mandatory input with maximum 100 characters."/>
+    <label key="contact.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.name.message" value="Mandatory input with a maximum of 50 characters without spaces at the beginning and end."/>
+    <label key="contact.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
+    <label key="contact.email.message" value="Mandatory input of a valid e-mail address."/>
+    <label key="contact.subject.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.subject.message" value="Mandatory input with a maximum of 50 characters without spaces at the beginning and end."/>
+    <label key="contact.comment.pattern" value="^\\s*(\\S(.{0,96}\\S){0,1})\\s*$"/>
+    <label key="contact.comment.message" value="Mandatory input with maximum 100 characters."/>
 
     <label key="locale.de.title" value="Deutsch"/>
     <label key="locale.en.title" value="English"/>
@@ -177,17 +177,17 @@
     <label key="company.name.1" value="EXAMPLE"/>
     <label key="company.name.2" value="Architects"/>
 
-    <label key="mail.title" value="Контакт"/>
-    <label key="mail.text">
+    <label key="contact.title" value="Контакт"/>
+    <label key="contact.text">
       Давайте свяжемся и поговорим о вашем следующем проекте.
     </label>
-    <label key="mail.office.hours.title" value="Часы работы"/>
-    <label key="mail.form.name.title" value="Наименование"/>
-    <label key="mail.form.email.title" value="Электронная почта"/>
-    <label key="mail.form.subject.title" value="Субъект"/>
-    <label key="mail.form.comment.title" value="Весть"/>
-    <label key="mail.form.send.title" value="ОТПРАВИТЬ СООБЩЕНИЕ"/>
-    <label key="mail.map.title" value="Карта"/>
+    <label key="contact.office.hours.title" value="Часы работы"/>
+    <label key="contact.form.name.title" value="Наименование"/>
+    <label key="contact.form.email.title" value="Электронная почта"/>
+    <label key="contact.form.subject.title" value="Субъект"/>
+    <label key="contact.form.comment.title" value="Весть"/>
+    <label key="contact.form.send.title" value="ОТПРАВИТЬ СООБЩЕНИЕ"/>
+    <label key="contact.map.title" value="Карта"/>
     <!--
     
         The use of regular or numerical expressions for validation and their outsourcing
@@ -195,14 +195,14 @@
         server and client side and the server can make this available to the client.  
     
     -->
-    <label key="mail.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
-    <label key="mail.name.message" value="Обязательный ввод максимум 50 символов без пробелов в начале и в конце."/>
-    <label key="mail.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
-    <label key="mail.email.message" value="Обязательный ввод действительного адреса электронной почты."/>
-    <label key="mail.subject.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
-    <label key="mail.subject.message" value="Обязательный ввод максимум 50 символов без пробелов в начале и в конце."/>
-    <label key="mail.comment.pattern" value="^\\s*(\\S(.{0,96}\\S){0,1})\\s*$"/>
-    <label key="mail.comment.message" value="Обязательный ввод максимум 100 символов."/>
+    <label key="contact.name.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.name.message" value="Обязательный ввод максимум 50 символов без пробелов в начале и в конце."/>
+    <label key="contact.email.pattern" value="^[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*@[a-z0-9]+([\\w\\.\\-]*[a-z0-9])*$"/>
+    <label key="contact.email.message" value="Обязательный ввод действительного адреса электронной почты."/>
+    <label key="contact.subject.pattern" value="^\\S((.){0,48}\\S){0,1}$"/>
+    <label key="contact.subject.message" value="Обязательный ввод максимум 50 символов без пробелов в начале и в конце."/>
+    <label key="contact.comment.pattern" value="^\\s*(\\S(.{0,96}\\S){0,1})\\s*$"/>
+    <label key="contact.comment.message" value="Обязательный ввод максимум 100 символов."/>
 
     <label key="locale.de.title" value="Deutsch"/>
     <label key="locale.en.title" value="English"/>

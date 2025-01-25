@@ -4992,13 +4992,13 @@ compliant("window.location.combine", function () {
  *     <?xml version="1.0"?>
  *     <locales>
  *       <de>
- *         <label key="mail.title" value="Kontakt"/>
- *         <label key="mail.development.title">Entwicklung</label>
+ *         <label key="contact.title" value="Kontakt"/>
+ *         <label key="contact.development.title">Entwicklung</label>
  *         ...
  *       </de>
  *       <en default="true">
- *         <label key="mail.title" value="Contact"/>
- *         <label key="mail.development.title">Development</label>
+ *         <label key="contact.title" value="Contact"/>
+ *         <label key="contact.development.title">Development</label>
  *         ...
  *       </en>
  *     </locales>
