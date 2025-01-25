@@ -30,10 +30,11 @@
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_06 DataSource - Usage of dynamic data/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_07 Routing - Controlling components and views/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_08 Routing - Variable paths/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_09 MVC - Synchronization/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_10 MVC - Synchronization and validation/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-testing-max.js" todir="${workspace}/view-flow/Step_11 Test/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-testing-max.js" todir="${workspace}/view-flow/Step_12 Components/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_09 Routing - Interceptors/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_10 MVC - Synchronization/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/view-flow/Step_11 MVC - Synchronization and validation/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-testing-max.js" todir="${workspace}/view-flow/Step_12 Test/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-testing-max.js" todir="${workspace}/view-flow/Step_13 Components/assets" overwrite="true"/>
 
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/micro-frontend/Step_02 Integration of Seanox aspect-js/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/micro-frontend/Step_03 Prototype - Splitting into components/assets" overwrite="true"/>
