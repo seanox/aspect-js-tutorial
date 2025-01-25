@@ -4,13 +4,33 @@
  * in the DOM do not yet exist, which means that Routing.locate(path) may not
  * yet be able to locate anything.
  */
-Routing.customize("#", (oldPath, newPath) => {
+Routing.customize("#", (oldHash, newHash) => {
     Composite.asynchron((path) => {
         const locate = Routing.locate(path);
         if (locate == null
                 || locate === "#")
             Routing.route("#home");
-    }, newPath);
+    }, newHash);
+});
+
+/**
+ * Without having mentioned it, we already use an interceptor for forwarding to
+ * #home for invalid paths/routes. There are various interceptors in composite
+ * and routing. In all cases, they are included in the processing operations and
+ * have the option of participating in the processes and manipulating the
+ * processes as they progress. Here is the example for routing. Interceptors are
+ * registered using the Routing.customize() method. Routing expects a path as a
+ * string or as a RegExp and a function as an actor if the current path
+ * corresponds to the passed pattern.
+ *     see also https://github.com/seanox/aspect-js/blob/master/manual/routing.md#interceptors
+ *     see also https://github.com/seanox/aspect-js/blob/master/manual/markup.md#interceptor
+ */
+Routing.customize("###", (oldHash, newHash) => {
+    console.log("The element is accessible via tab,"
+        + " the event can be used and the URL"
+        + " and page position remain unchanged.");
+    window.history.replaceState(null, null, oldHash);
+    return false;
 });
 
 /**

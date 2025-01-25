@@ -13,15 +13,14 @@
   data access layers there. 
 
 -->
-{{id:SiteMap.lookup(window.location.hash).data || '#'}}
-{{id:id.replace(/^#/, '') }}
+{{id:Routing.locate(true).data}}
 {{xml:DataSource.fetch('xml://team')}}
 {{xpath:'/team/person[id="' + id + '"]'}}
 {{person:xml.evaluate ? xml.evaluate(xpath, xml, null, XPathResult.ANY_TYPE, null) : xml.selectNodes(xpath)}}
 {{person:person.iterateNext()}}
 <!-- Automatic redirection to about if the requested person does not exist. -->
 <script type="composite/javascript" condition="{{person eq null}}">
-    SiteMap.navigate("#about");
+    Routing.route("#about");
 </script>
 <!-- The content is only displayed if the requested entity exists. -->
 <div class="w3-row w3-grayscale" condition="{{person ne null}}">

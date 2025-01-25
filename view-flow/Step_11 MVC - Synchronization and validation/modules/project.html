@@ -13,15 +13,14 @@
   data access layers there. 
 
 -->
-{{id:SiteMap.lookup(window.location.hash).data || '#'}}
-{{id:id.replace(/^#/, '') }}
+{{id:Routing.locate(true).data}}
 {{xml:DataSource.fetch('xml://portfolio')}}
 {{xpath:'/portfolio/project[id="' + id + '"]'}}
 {{project:xml.evaluate ? xml.evaluate(xpath, xml, null, XPathResult.ANY_TYPE, null) : xml.selectNodes(xpath)}}
 {{project:project.iterateNext()}}
 <!-- Automatic redirection to the projects if the requested project does not exist. -->
 <script type="composite/javascript" condition="{{project eq null}}">
-    SiteMap.navigate("#projects");
+    Routing.route("#projects");
 </script>
 <!-- The content is only displayed if the requested entity exists. -->
 <div class="w3-row w3-grayscale" condition="{{project ne null}}">

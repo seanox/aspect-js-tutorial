@@ -8,8 +8,8 @@ const menu = {
     language: {
         onClick(event) {
             DataSource.localize(event.target.id);
-        }    
-    }        
+        }
+    }
 }
 
 #export menu;

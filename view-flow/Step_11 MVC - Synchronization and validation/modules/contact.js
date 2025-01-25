@@ -66,7 +66,7 @@ const contact = ({
     // interface. In this case, a possible value is not synchronized with the
     // model.
     //
-    //    see https://github.com/seanox/aspect-js/blob/master/manual/en/markup.md#validate
+    //    see https://github.com/seanox/aspect-js/blob/master/manual/markup.md#validate
     validate(element, value) {
         
         // Determine whether a single field should be validated during input
@@ -128,17 +128,53 @@ const contact = ({
     
     submit: {
         onClick() {
-            
-            // In this example a mail is created.
-            let mail = "mailto:mail@example-architects.local"
-                     + "?cc=" + contact.email
-                     + "&subject=" + encodeURIComponent(contact.subject)
-                     + "&body=" + encodeURIComponent("Dear Sir or Madam\r\n\r\n" + contact.comment.trim() + "\r\n\r\nBest regards,\r\n" + contact.name);
-            window.location.href = mail;
-
+            Mail.send({
+                recipient: "mail@example-architects.local",
+                sender: contact.email,
+                subject: contact.subject,
+                content: `Dear Sir or Madam`
+                    + `\n\n${contact.comment.trim()}`
+                    + `\n\nBest regards,`
+                    + `\n${contact.name}`
+            });
             return false;
         }    
+    },
+
+    locationLink: {
+        onClick(event) {
+            alert(`click event on ${event.target.id}`);
+            return false;
+        }
+    },
+    phoneLink: {
+        onClick() {
+            alert(`click event on ${event.target.id}`);
+            return false;
+        }
+    },
+    mailLink: {
+        onClick() {
+            alert(`click event on ${event.target.id}`);
+            return false;
+        }
     }
 }).reactive();
+
+const Mail = {
+    send(meta) {
+        const mail = `mailto:${meta.recipient}`
+            + `?cc=${meta.sender}`
+            + `&subject=${encodeURIComponent((meta.subject || "").trim())}`
+            + `&body=${encodeURIComponent((meta.content || "").trim())}`;
+        const iframe = document.createElement("iframe");
+        iframe.src = mail;
+        const workspace = document.getElementById("workspace");
+        workspace.appendChild(iframe);
+        setTimeout(() => {
+            workspace.innerHTML = "";
+        }, 250);
+    }
+}
 
 #export contact;

@@ -6,7 +6,6 @@
   <!ENTITY Auml "&#196;">
   <!ENTITY Ouml "&#214;">
   <!ENTITY Uuml "&#220;">
-  <!ENTITY CRLF "">
 ]>
 <locales>
   <de>
@@ -47,12 +46,6 @@
     <label key="contact.form.comment.title" value="Nachricht"/>
     <label key="contact.form.send.title" value="NACHRICHT SENDEN"/>
     <label key="contact.map.title" value="Map"/>
-    <label key="contact.mail.title">{{Messages['company.name.1']}} {{Messages['company.name.2']}} - Bitte um Kontaktaufnahme</label>
-    <label key="contact.mail.message">
-      Hallo {1},&CRLF;
-      &CRLF;
-      bitte kontaktieren Sie mich wie folgt:
-    </label>
     <!--
     
         The use of regular or numerical expressions for validation and their outsourcing
@@ -124,12 +117,6 @@
     <label key="contact.form.comment.title" value="Comment"/>
     <label key="contact.form.send.title" value="SEND MESSAGE"/>
     <label key="contact.map.title" value="Map"/>
-    <label key="contact.mail.title">{{Messages['company.name.1']}} {{Messages['company.name.2']}} - Please contact me</label>
-    <label key="contact.mail.message">
-      Hello {1},&CRLF;
-      &CRLF;
-      please contact me as follows:
-    </label>
     <!--
     
         The use of regular or numerical expressions for validation and their outsourcing
@@ -201,12 +188,6 @@
     <label key="contact.form.comment.title" value="Весть"/>
     <label key="contact.form.send.title" value="ОТПРАВИТЬ СООБЩЕНИЕ"/>
     <label key="contact.map.title" value="Карта"/>
-    <label key="contact.mail.title">{{Messages['company.name.1']}} {{Messages['company.name.2']}} - Просим связаться</label>
-    <label key="contact.mail.message">
-      Здравствуй {1},&CRLF;
-      &CRLF;
-      пожалуйста, свяжитесь со мной следующим образом:
-    </label>
     <!--
     
         The use of regular or numerical expressions for validation and their outsourcing
