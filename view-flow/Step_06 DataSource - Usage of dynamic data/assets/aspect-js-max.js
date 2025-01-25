@@ -5738,11 +5738,6 @@ compliant("window.location.combine", function () {
 	 */
 	window.addEventListener("hashchange", function (event) {
 		if (!_routing_active) return;
-		var location = Routing.location || "#";
-		if (location !== Browser.location) {
-			window.location.replace(location);
-			return;
-		}
 
 		// Interceptors
 		// - order of execution corresponds to the order of registration
@@ -5751,6 +5746,8 @@ compliant("window.location.combine", function () {
 		// - can change the new hash/path, but please use replace
 		// - following interceptors use the possibly changed hash/path
 		// - on the first explicit false, terminates the logic in hashchange
+		var oldHash = _locate(event.oldURL);
+		var newHash = _locate(event.newURL);
 		for (
 			var _i = 0, _interceptors2 = _interceptors;
 			_i < _interceptors2.length;
@@ -5758,15 +5755,29 @@ compliant("window.location.combine", function () {
 		) {
 			var interceptor = _interceptors2[_i];
 			if (typeof interceptor.path === "string") {
-				if (!Path.covers(interceptor.path)) continue;
+				if (!Path.PATTERN_PATH.test(interceptor.path)) continue;
+				if (interceptor.path.endsWith("#")) {
+					if (!newHash.startsWith(interceptor.path)) continue;
+				} else {
+					if (
+						newHash !== interceptor.path &&
+						!newHash.startsWith(interceptor.path + "#")
+					)
+						continue;
+				}
 			} else if (interceptor.path instanceof RegExp) {
-				if (!interceptor.path.test(Routing.location)) continue;
+				if (!interceptor.path.test(newHash)) continue;
 			} else continue;
 			if (
 				typeof interceptor.actor === "function" &&
-				interceptor.actor(_locate(event.oldURL), Browser.location) === false
+				interceptor.actor(oldHash, newHash) === false
 			)
 				return;
+		}
+		var location = Routing.location || "#";
+		if (location !== Browser.location) {
+			window.location.replace(location);
+			return;
 		}
 
 		// Maintaining the history.

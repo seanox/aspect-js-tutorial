@@ -4,13 +4,13 @@
  * in the DOM do not yet exist, which means that Routing.locate(path) may not
  * yet be able to locate anything.
  */
-Routing.customize("#", (oldPath, newPath) => {
+Routing.customize("#", (oldHash, newHash) => {
     Composite.asynchron((path) => {
         const locate = Routing.locate(path);
         if (locate == null
                 || locate === "#")
             Routing.route("#home");
-    }, newPath);
+    }, newHash);
 });
 
 /**
