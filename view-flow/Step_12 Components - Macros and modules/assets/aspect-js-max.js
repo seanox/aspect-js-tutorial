@@ -5017,7 +5017,7 @@ compliant("window.location.combine", function () {
  *
  *     Messages["mail.title"];
  *
- *     <h1 output="{{Messages['mail.title']}}"/>
+ *     <h1 output="{{Messages['contact.title']}}"/>
  *
  * In addition, the object message is also provided. Unlike Messages, message is
  * an object tree analogous to the keys from Messages. The dot in the keys is

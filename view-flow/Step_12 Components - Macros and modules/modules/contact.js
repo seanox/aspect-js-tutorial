@@ -9,8 +9,8 @@
 // created and used here are not accessible outside and must be exported for use
 // in the global scope, for which the macro #export is used.
 //
-// The model mail is used reactively. Thus, elements consuming in the view
-// are automatically updated with changes to the values of the mail model and
+// The model contact is used reactively. Thus, elements consuming in the view
+// are automatically updated with changes to the values of the contact model and
 // the deliberate call from the renderer, e.g. with the attribute render is not
 // necessary.
 const contact = ({
@@ -18,19 +18,19 @@ const contact = ({
     // Mandatory field with 1 to 48 characters without spaces at the beginning and end.
     // This rule does not require the requierd attribute.    
     get NAME_PATTERN() {
-        return Messages["mail.name.pattern"];
+        return Messages["contact.name.pattern"];
     },
     
     get EMAIL_PATTERN() {
-        return Messages["mail.email.pattern"];
+        return Messages["contact.email.pattern"];
     },
     
     get SUBJECT_PATTERN() {
-        return Messages["mail.subject.pattern"];
+        return Messages["contact.subject.pattern"];
     },
 
     get COMMENT_PATTERN() {
-        return Messages["mail.comment.pattern"];
+        return Messages["contact.comment.pattern"];
     },
 
     name: null,
@@ -83,7 +83,7 @@ const contact = ({
         let field = null;
         if (element instanceof Element)
             field = element.getAttribute("id");
-        if (element != document.querySelector("#mail #" + field))
+        if (element != document.querySelector("#contact #" + field))
             field = null;
         if (!contact.hasOwnProperty(field)
                 || typeof contact[field] === "function")
@@ -114,14 +114,14 @@ const contact = ({
             let pattern = new RegExp(contact.COMMENT_PATTERN);
             if ((value || "").match(pattern))
                 return true;
-            return Messages["mail.subject.message"];
+            return Messages["contact.subject.message"];
         }
         
         // Validation of the x-button, here all input fields are validated.
         // The result is only true if no errors were detected.
-        if (element == document.querySelector("#mail #submit")) {
+        if (element == document.querySelector("#contact #submit")) {
             for (let field of ["name", "email", "subject", "comment"]) {
-                let element = document.querySelector("#mail #" + field);
+                let element = document.querySelector("#contact #" + field);
                 if (!Composite.validate(element))
                     return false;
                 let pattern = Messages["mail." + field + ".pattern"];
