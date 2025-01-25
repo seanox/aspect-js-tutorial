@@ -7,10 +7,30 @@
 // the deliberate call from the renderer, e.g. with the attribute render is not
 // necessary.
 const contact = ({
+
     name: null,
     email: null,
     subject: null,
-    comment: null
+    comment: null,
+
+    locationLink: {
+        onClick(event) {
+            alert(`click event on ${event.target.id}`);
+            return false;
+        }
+    },
+    phoneLink: {
+        onClick() {
+            alert(`click event on ${event.target.id}`);
+            return false;
+        }
+    },
+    mailLink: {
+        onClick() {
+            alert(`click event on ${event.target.id}`);
+            return false;
+        }
+    }
 }).reactive();
 
 #export contact;
