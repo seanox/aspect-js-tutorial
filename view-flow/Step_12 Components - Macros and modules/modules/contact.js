@@ -124,7 +124,7 @@ const contact = ({
                 let element = document.querySelector("#contact #" + field);
                 if (!Composite.validate(element))
                     return false;
-                let pattern = Messages["mail." + field + ".pattern"];
+                let pattern = Messages["contact." + field + ".pattern"];
                 if (!(this[field] || "").match(new RegExp(pattern)))
                     return false;
             }
