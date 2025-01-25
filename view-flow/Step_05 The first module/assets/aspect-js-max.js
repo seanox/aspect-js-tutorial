@@ -5015,7 +5015,7 @@ compliant("window.location.combine", function () {
  * array and can be used directly in JavaScript and Markup via Expression
  * Language.
  *
- *     Messages["mail.title"];
+ *     Messages["contact.title"];
  *
  *     <h1 output="{{Messages['contact.title']}}"/>
  *
@@ -5023,9 +5023,9 @@ compliant("window.location.combine", function () {
  * an object tree analogous to the keys from Messages. The dot in the keys is
  * the indicator of the levels in the tree.
  *
- *     messages.mail.title;
+ *     messages.contact.title;
  *
- *     <h1 output="{{messages.mail.title}}"/>
+ *     <h1 output="{{messages.contact.title}}"/>
  *
  * Both objects are only available if there are also labels.
  *
