@@ -1,3 +1,5 @@
+#module ui/spinner;
+
 /**
  * Spinner functions for UI components.
  * The namespace ui.spinner is created at the end with the macro #export.

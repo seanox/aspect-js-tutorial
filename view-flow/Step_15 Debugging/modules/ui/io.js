@@ -1,3 +1,5 @@
+#module ui/io;
+
 /**
  * I/O interfaces and functions for UI components.
  * The namespace ui.io is created at the end with the macro #export.
