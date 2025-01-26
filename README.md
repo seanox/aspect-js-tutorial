@@ -82,7 +82,7 @@ specific language governing permissions and limitations under the License.
 - [Step_13 Components - Example for a spinner](single-page-application%2FStep_13%20Components%20-%20Example%20for%20a%20spinner)
 - [Step_14 Components - Example for dynamic table with CSV download](single-page-application%2FStep_14%20Components%20-%20Example%20for%20dynamic%20table%20with%20CSV%20download)
 - [Step_15 Debugging](single-page-application%2FStep_15%20Debugging)
--  [Step_16 Test](single-page-application%2FStep_16%20Test)
+-  [Step_16 Testing](single-page-application%2FStep_16%20Testing)
 
 
 # Downloads
