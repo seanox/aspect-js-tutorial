@@ -53,9 +53,9 @@ specific language governing permissions and limitations under the License.
 - Program for comparing code
 
 
-# Content
+# Tutorials
 
-## Tutorial for a Micro Frontend
+## Micro Frontend
 - [Step_01 Prototype as framework](micro-frontend%2FStep_01%20Prototype%20as%20framework)
 - [Step_02 Integration of Seanox aspect-js](micro-frontend%2FStep_02%20Integration%20of%20Seanox%20aspect-js)
 - [Step_03 Prototype - Splitting into components](micro-frontend%2FStep_03%20Prototype%20-%20Splitting%20into%20components)
@@ -66,7 +66,7 @@ specific language governing permissions and limitations under the License.
 - [Step_08 Debugging](micro-frontend%2FStep_08%20Debugging)
 - [Step_09 Testing](micro-frontend%2FStep_09%20Testing)
 
-## Tutorial for an SPA (Single Page Application)
+## SPA (Single Page Application)
 - [Step_01 Prototype as framework](single-page-application%2FStep_01%20Prototype%20as%20framework)
 - [Step_02 Integration of Seanox aspect-js](single-page-application%2FStep_02%20Integration%20of%20Seanox%20aspect-js)
 - [Step_03 Prototype - Splitting into components](single-page-application%2FStep_03%20Prototype%20-%20Splitting%20into%20components)
