@@ -82,7 +82,8 @@ specific language governing permissions and limitations under the License.
 - [Step_13 Components - Example for a spinner](single-page-application%2FStep_13%20Components%20-%20Example%20for%20a%20spinner)
 - [Step_14 Components - Example for dynamic table with CSV download](single-page-application%2FStep_14%20Components%20-%20Example%20for%20dynamic%20table%20with%20CSV%20download)
 - [Step_15 Debugging](single-page-application%2FStep_15%20Debugging)
--  [Step_16 Testing](single-page-application%2FStep_16%20Testing)
+- [Step_16 Unit Testing - Activation](single-page-application%2FStep_16%20Unit%20Testing%20-%20Activation)
+- [Step_17 Unit Testing - UI Test](single-page-application%2FStep_17%20Unit%20Testing%20-%20UI%20Test)
 
 
 # Downloads
