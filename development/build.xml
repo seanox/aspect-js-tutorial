@@ -46,7 +46,8 @@
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/single-page-application/Step_13 Components - Example for a spinner/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/single-page-application/Step_14 Components - Example for dynamic table with CSV download/assets" overwrite="true"/>
     <copy file="${parent}/release/aspect-js-max.js" todir="${workspace}/single-page-application/Step_15 Debugging/assets" overwrite="true"/>
-    <copy file="${parent}/release/aspect-js-testing-max.js" todir="${workspace}/single-page-application/Step_16 Testing/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-testing-max.js" todir="${workspace}/single-page-application/Step_16 Unit Testing - Activation/assets" overwrite="true"/>
+    <copy file="${parent}/release/aspect-js-testing-max.js" todir="${workspace}/single-page-application/Step_17 Unit Testing - UI Test/assets" overwrite="true"/>
   </target>
   
   <macrodef name="release-locate">
