@@ -7067,7 +7067,7 @@ compliant("Test", {
 			 * @param {number} size
 			 */
 			create: function create(parameters, size) {
-				if (typeof size !== "number") throw new TypeError("nvalid data type");
+				if (typeof size !== "number") throw new TypeError("Invalid data type");
 				var assert = {
 					message: null,
 					values: [],
@@ -7244,7 +7244,7 @@ compliant("Test", {
 				) {
 					variants[_key30] = arguments[_key30];
 				}
-				var assert = Assert.create([], variants, 2);
+				var assert = Assert.create(variants, 2);
 				if (assert.values[0] === assert.values[1]) return;
 				throw assert.error("Assert.assertSame", "{0}", "{1}");
 			},
