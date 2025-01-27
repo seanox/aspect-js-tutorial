@@ -96,3 +96,6 @@ compliant(null, Object.parse = (data) => {
 
     throw new TypeError("Unsupported data type");
 });
+
+// UI test is loaded as a module
+#import test;

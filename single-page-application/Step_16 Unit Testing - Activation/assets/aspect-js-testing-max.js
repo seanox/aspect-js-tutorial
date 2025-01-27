@@ -5518,9 +5518,9 @@ compliant("window.location.combine", function () {
 		get location() {
 			var location = Browser.location;
 			if (location != null && /^(#{2,}|[^#])/.test(location)) {
-				var parent = "#";
-				if (_history.length > 0) parent = _history[_history.length - 1];
-				return Path.normalize(parent, location);
+				var _parent = "#";
+				if (_history.length > 0) _parent = _history[_history.length - 1];
+				return Path.normalize(_parent, location);
 			}
 			return Path.normalize(location);
 		},
@@ -6067,3 +6067,1333 @@ compliant("window.location.combine", function () {
 		},
 	});
 })();
+
+/**
+ * Test is a simple API and module to implement and execute integration tests.
+ * The tests can be implemented as suites, scenarios and test cases.
+ *
+ *
+ *     Case
+ *     ----
+ * The smallest and simplest element in an integration test, used here as task,
+ * because case is a keyword. It can be implemented alone, but is always used in
+ * a scenario.
+ *
+ *     Test.create({test() {
+ *         Assert.assertTrue(true);
+ *     }});
+ *
+ *     Test.start();
+ *
+ *
+ *     Scenario
+ *     ----
+ * A scenario is a sequence of a lot of test cases usually in one file.
+ *
+ *     Test.create({test() {
+ *         Assert.assertTrue(true);
+ *     }});
+ *
+ *     Test.create({name:"example", timeout:1000, test() {
+ *         Assert.assertTrue(true);
+ *     }});
+ *
+ *     Test.create({error:Error test() {
+ *         throw new Error();
+ *     }});
+ *
+ *     Test.create({error:/^My Error/i, test() {
+ *         throw new Error("My Error");
+ *     }});
+ *
+ *     Test.create({ignore:true, test() {
+ *         Assert.assertTrue(true);
+ *     }});
+ *
+ *     Test.start();
+ *
+ *
+ *     Suite
+ *     ----
+ * A suite is a complex bundle of different test cases, scenarios and other
+ * suites. Usually a suite consists of different files, which then represent a
+ * complex test. In an ideal case, a suite is a cascade of different files where
+ * the test can be started in any file and at any place. This makes it possible
+ * to perform the integration test on different levels and with different
+ * complexity.
+ *
+ *
+ *     Assert
+ *     ----
+ * The test cases are implemented with assertions. The test module provides
+ * elementary assertions, you can implement more. The function is simple. If an
+ * assertion was not true, an error is thrown -- see as an example the
+ * implementation here.
+ *
+ * The Test API is part of aspect-js but has to be activated deliberately,
+ * otherwise it is not available.
+ *
+ *     Test.activate();
+ *
+ * This is necessary so that some enhancements to the JavaScript API that
+ * are helpful for implementing test are not used productively. For example,
+ * the redirection and caching of console output.
+ */
+("use strict");
+compliant("Test", {
+	/**
+	 * Activates the test API. The method can be called multiple times, but is
+	 * ignored after the first call. A later deactivation of the test API is not
+	 * possible.
+	 */
+	activate: function activate() {
+		window["Test"] = {
+			/** Pattern for all accepted events */
+			get PATTERN_EVENT() {
+				return /^[a-z]+$/;
+			},
+			/** Constants of events */
+			get EVENT_FINISH() {
+				return "finish";
+			},
+			get EVENT_INTERRUPT() {
+				return "interrupt";
+			},
+			get EVENT_PERFORM() {
+				return "perform";
+			},
+			get EVENT_RESPONSE() {
+				return "response";
+			},
+			get EVENT_RESUME() {
+				return "resume";
+			},
+			get EVENT_START() {
+				return "start";
+			},
+			get EVENT_SUSPEND() {
+				return "suspend";
+			},
+			/** Constants for a current timestamp */
+			get TIMESTAMP() {
+				return new Date().toUTCString();
+			},
+			/**
+			 * Activates the test API. The method can be called multiple times,
+			 * but is ignored after the first call. A later deactivation of the
+			 * test API is not possible.
+			 */
+			activate: function activate() {},
+			/**
+			 * Registers a callback function for test events.
+			 * @param {string} event see Test.EVENT_***
+			 * @param {function} callback callback function
+			 * @throws {Error} An error occurs in the following cases:
+			 *     - event is not valid or is not supported
+			 *     - callback function is not implemented correctly
+			 *       or does not exist
+			 */
+			listen: function listen(event, callback) {
+				if (typeof event !== "string" || typeof callback !== "function")
+					throw new TypeError("Invalid data type");
+				if (!event.match(Test.PATTERN_EVENT)) throw new Error("Invalid event");
+				event = event.toLowerCase();
+				if (!_listeners.has(event) && !Array.isArray(_listeners.get(event)))
+					_listeners.set(event, []);
+				_listeners.get(event).push(callback);
+			},
+			/**
+			 * Internal method to trigger an event. All callback functions for
+			 * this event are called. If the script is in a frame, at the parent
+			 * object it will also try to trigger this method. The parent object
+			 * is always triggered after the current object. If an error occurs
+			 * when calling the current object, the parent object is not
+			 * triggered.
+			 * @param {string} event  see Test.EVENT_***
+			 * @param {Object} status meta-object with information about the
+			 *     test execution
+			 */
+			fire: function fire(event, status) {
+				if (_typeof(Test.worker) === "object") Test.worker.status = event;
+				if (
+					_typeof(Test.worker) === "object" &&
+					_typeof(Test.worker.monitor) === "object" &&
+					typeof Test.worker.monitor[event] === "function"
+				)
+					try {
+						Test.worker.monitor[event](status);
+					} catch (error) {
+						console.error(error);
+					}
+				event = (event || "").trim();
+				if (!event) return;
+				var listeners = _listeners.get(event.toLowerCase());
+				if (Array.isArray(listeners))
+					listeners.forEach(function (callback) {
+						return callback(event, status);
+					});
+				if (parent && parent !== window)
+					try {
+						parent.Test.fire(event, status);
+					} catch (error) {}
+			},
+			/**
+			 * Creates and registers a test task. A test task is a function or
+			 * object with the required meta information for performing and a
+			 * test method to be executed.
+			 *
+			 *     structure of meta: {name:..., test:..., timeout:..., expected:..., ignore:...}
+			 *
+			 * name       optional name of the test task
+			 * test       an implemented method to be executed as a test
+			 * timeout    maximum runtime of the test task in milliseconds
+			 *            Exceeding this limit will cause the test to fail.
+			 *            A value greater than 0 is expected, otherwise the
+			 *            timeout is ignored.
+			 * expected   if you want to test for the occurrence of an error
+			 *            The error must occur if the test is successful.
+			 *            An error object or a RegExp is expected as value.
+			 * ignore     true, if the test is to be ignored
+			 *
+			 * Implementation of test:
+			 *
+			 *     Test.create({test() {
+			 *         Assert.assertTrue(true);
+			 *     }});
+			 *
+			 *     Test.create({name:"example", timeout:1000, test() {
+			 *         Assert.assertTrue(true);
+			 *     }});
+			 *
+			 *     Test.create({error:Error test() {
+			 *         throw new Error();
+			 *     }});
+			 *
+			 *     Test.create({error:/^My Error/i, test() {
+			 *         throw new Error("My Error");
+			 *     }});
+			 *
+			 *     Test.create({ignore:true, test() {
+			 *         Assert.assertTrue(true);
+			 *     }});
+			 *
+			 * @param {Object} meta
+			 */
+			create: function create(meta) {
+				if (_typeof(meta) == null || _typeof(meta) !== "object")
+					throw new TypeError("Invalid object type");
+				if (typeof meta.test !== "function") return;
+				if (meta.ignore !== undefined && meta.ignore === true) return;
+				if (_stack.has(meta)) return;
+				_stack.add(meta);
+				var stack = Array.from(_stack);
+				Object.defineProperty(meta, "serial", {
+					value: Math.max(
+						stack.length,
+						stack.length > 1 ? stack[stack.length - 2].serial + 1 : 1,
+					),
+				});
+			},
+			/**
+			 * Starts the test run. The execution of the tests can optionally be
+			 * configured with the start by passing a meta-object. The
+			 * parameters in the meta-object are optional and cannot be changed
+			 * when the test are running. Only with the next start can new
+			 * parameters be passed as meta-objects.
+			 *
+			 *     Test.start({auto: boolean, output: {...}, monitor: {...}});
+			 *
+			 *     auto
+			 *     ----
+			 * true, the start is triggered when the page is loaded
+			 * If the page is already loaded, the parameter auto is ignored and
+			 * the start is executed immediately.
+			 *
+			 *     output
+			 *     ----
+			 * Simple function or object for outputting messages and errors.
+			 * If not specified, console object is used.
+			 *
+			 * Implementation of an output (as function or object):
+			 *
+			 *     var output = {
+			 *
+			 *         log(message) {
+			 *             ...
+			 *         },
+			 *
+			 *         error(message) {
+			 *             ...
+			 *         }
+			 *     };
+			 *
+			 *     monitor
+			 *     ----
+			 * Monitors the test procedure and is informed about the various
+			 * cycles during execution. The monitor also controls the data
+			 * output. For example, the output can be redirected to DOM
+			 * elements. Without a monitor the tests will also be performed, but
+			 * there will be an output about success and failure. If no monitor
+			 * is specified, the internal monitor is used with a simple console
+			 * output.
+			 *
+			 * Implementation of a monitor (as function or object):
+			 *
+			 *     var monitor = {
+			 *
+			 *         start(status) {
+			 *             The method is called with the start.
+			 *         },
+			 *
+			 *         suspend(status) {
+			 *             The method is called with suspension.
+			 *         },
+			 *
+			 *         resume(status) {
+			 *             The method is called if the test run is stopped and
+			 *             is to be continued later.
+			 *         },
+			 *
+			 *         interrupt(status) {
+			 *             The method is called if you want to abort the test
+			 *             run. The test run cannot then be resumed.
+			 *         },
+			 *
+			 *         perform(status) {
+			 *             The method is called before a test task is performed.
+			 *         },
+			 *
+			 *         response(status) {
+			 *             The method is called when a test task has been
+			 *             performed. Here you can find the result of the test
+			 *             task.
+			 *         },
+			 *
+			 *         finish(status) {
+			 *             The method is called when all test tasks have been
+			 *             completed.
+			 *         }
+			 *     };
+			 *
+			 * The current status is passed to all monitor methods as an object.
+			 * The status is a snapshot of the current test run with details of
+			 * the current task and the queue. The details are read-only and
+			 * cannot be changed.
+			 *
+			 *     structure of status: {task:..., queue:...}
+			 *
+			 * task.title      title of the test task
+			 * task.meta       meta information about the test itself name,
+			 *                 test, timeout, expected, serial
+			 * task.running    indicator when the test task is in progress
+			 * task.timing     start time from the test task in milliseconds
+			 * task.timeout    optional, the time in milliseconds when a timeout
+			 *                 is expected
+			 * task.duration   total execution time of the test task in
+			 *                 milliseconds, is set with the end of the test
+			 *                 task
+			 * task.error      optional, if an unexpected error (also assert
+			 *                 error) has occurred, which terminated the test
+			 *                 task
+			 *
+			 * queue.timing    start time in milliseconds
+			 * queue.size      original queue length
+			 * queue.length    number of outstanding tests
+			 * queue.progress  number of tests performed
+			 * queue.lock      indicator when a test is performed and the queue
+			 *                 is waiting
+			 * queue.faults    number of detected faults
+			 *
+			 * @param {Object} [meta]
+			 */
+			start: function start(meta) {
+				if (Test.worker !== undefined) return;
+				if (
+					meta &&
+					meta.auto &&
+					(document.readyState === "loading" ||
+						document.readyState === "interactive")
+				) {
+					if (Test.start.auto === undefined) {
+						Object.defineProperty(Test.start, "auto", {
+							value: true,
+						});
+						window.addEventListener("load", function () {
+							return Test.start(meta);
+						});
+					}
+					return;
+				}
+				var numerical = function numerical(number, text) {
+					return ""
+						.concat(number, " ")
+						.concat(text)
+						.concat(number !== 1 ? "s" : "");
+				};
+				Test.worker = {};
+
+				// Test.worker.output
+				// Output to be used for all messages and errors
+				Test.worker.output = (meta && meta.output) || console;
+
+				// Test.worker.monitor
+				// Monitoring of test processing
+				Test.worker.monitor = (meta && meta.monitor) || {
+					start: function start(status) {
+						Test.worker.output.log(
+							"".concat(Test.TIMESTAMP, " Test is started") +
+								", ".concat(
+									numerical(status.queue.size, "task"),
+									" in the queue",
+								),
+						);
+					},
+					suspend: function suspend(status) {
+						Test.worker.output.log(
+							"".concat(Test.TIMESTAMP, " Test is suspended") +
+								", ".concat(
+									numerical(status.queue.length, "task"),
+									" still outstanding",
+								),
+						);
+					},
+					resume: function resume(status) {
+						Test.worker.output.log(
+							"".concat(Test.TIMESTAMP, " Test is continued") +
+								", ".concat(
+									numerical(status.queue.size, "task"),
+									" in the queue",
+								),
+						);
+					},
+					interrupt: function interrupt(status) {
+						Test.worker.output.log(
+							"".concat(Test.TIMESTAMP, " Test is interrupted") +
+								"\n\t".concat(
+									numerical(status.queue.size - status.queue.progress, "task"),
+									" still outstanding",
+								) +
+								"\n\t".concat(
+									numerical(status.queue.faults, "fault"),
+									" were detected",
+								) +
+								"\n\ttotal time ".concat(
+									new Date().getTime() - status.queue.timing,
+									" ms",
+								),
+						);
+					},
+					perform: function perform(status) {},
+					response: function response(status) {
+						var timing = new Date().getTime() - status.task.timing;
+						if (status.task.error)
+							Test.worker.output.error(
+								""
+									.concat(Test.TIMESTAMP, " Test task ")
+									.concat(status.task.title, " ")
+									.concat(status.task.error.message),
+							);
+						else
+							Test.worker.output.log(
+								""
+									.concat(Test.TIMESTAMP, " Test task ")
+									.concat(status.task.title, " was successful (")
+									.concat(timing, " ms)"),
+							);
+					},
+					finish: function finish(status) {
+						Test.worker.output.log(
+							"".concat(Test.TIMESTAMP, " Test is finished") +
+								"\n\t".concat(
+									numerical(status.queue.size, "task"),
+									" were performed",
+								) +
+								"\n\t".concat(
+									numerical(status.queue.faults, "fault"),
+									" were detected",
+								) +
+								"\n\ttotal time ".concat(
+									new Date().getTime() - status.queue.timing,
+									" ms",
+								),
+						);
+					},
+				};
+
+				// Test.worker.queue
+				// Queue of currently running test tasks
+				Test.worker.queue = Test.worker.queue || {
+					timing: false,
+					stack: [],
+					size: 0,
+					lock: false,
+					progress: 0,
+					faults: 0,
+				};
+				if (Test.worker.queue.stack.length <= 0) {
+					Test.worker.queue.stack = Array.from(_stack);
+					Test.worker.queue.size = Test.worker.queue.stack.length;
+					Test.worker.queue.timing = new Date().getTime();
+				}
+
+				// Test.worker.timeout
+				// Timer for controlling test tasks with timeout
+				Test.worker.timeout = window.setInterval(function () {
+					if (Test.worker.status === Test.EVENT_SUSPEND) return;
+					if (
+						Test.worker.task === undefined ||
+						!Test.worker.task.running ||
+						!Test.worker.queue.lock
+					)
+						return;
+					var task = Test.worker.task;
+					if (!task.timeout || task.timeout > new Date().getTime()) return;
+					task.duration = new Date().getTime() - task.timing;
+					task.error = new Error(
+						"Timeout occurred, expected "
+							.concat(task.timeout, " ms but was ")
+							.concat(task.duration, " ms"),
+					);
+					Test.fire(Test.EVENT_RESPONSE, Test.status());
+					Test.worker.queue.faults++;
+					Test.worker.queue.lock = false;
+				}, 25);
+
+				// Test.worker.interval
+				// Timer for processing the queue
+				Test.worker.interval = window.setInterval(function () {
+					if (Test.worker.status === Test.EVENT_SUSPEND) return;
+					if (!Test.worker.queue.lock && Test.worker.queue.progress <= 0)
+						Test.fire(Test.EVENT_START, Test.status());
+					if (Test.worker.queue.lock) return;
+					if (Test.worker.queue.stack.length > 0) {
+						Test.worker.queue.lock = true;
+						Test.worker.queue.progress++;
+						var _meta2 = Test.worker.queue.stack.shift();
+						var timeout = false;
+						if ((_meta2.timeout || 0) > 0)
+							timeout = new Date().getTime() + _meta2.timeout;
+						Test.worker.task = {
+							title: null,
+							meta: _meta2,
+							running: true,
+							timing: new Date().getTime(),
+							timeout: timeout,
+							duration: false,
+							error: null,
+						};
+						Test.worker.task.title = "#" + _meta2.serial;
+						if (
+							typeof _meta2.name === "string" &&
+							_meta2.name.trim().length > 0
+						)
+							Test.worker.task.title +=
+								" " + _meta2.name.replace(/[\x00-\x20]+/g, " ").trim();
+						Test.fire(Test.EVENT_PERFORM, Test.status());
+						Composite.asynchron(function () {
+							var task = Test.worker.task;
+							try {
+								task.meta.test();
+							} catch (error) {
+								task.error = error;
+								if (!task.error.message || !task.error.message.trim())
+									task.error.message = "failed";
+							} finally {
+								if (task.meta.expected) {
+									if (task.error) {
+										if (
+											typeof task.meta.expected === "function" &&
+											task.error instanceof task.meta.expected
+										)
+											task.error = null;
+										if (
+											_typeof(task.meta.expected) === "object" &&
+											task.meta.expected instanceof RegExp &&
+											String(task.error).match(task.meta.expected)
+										)
+											task.error = null;
+									} else task.error = Error("Assert error expected failed");
+								}
+								task.running = false;
+								task.duration = new Date().getTime() - task.timing;
+								if (
+									task.timeout &&
+									task.timeout < new Date().getTime() &&
+									!task.error
+								) {
+									task.error = new Error(
+										"Timeout occurred, expected "
+											.concat(task.meta.timeout, " ms but was ")
+											.concat(task.duration, " ms"),
+									);
+									Test.fire(Test.EVENT_RESPONSE, Test.status());
+									Test.worker.queue.faults++;
+								}
+								if (
+									!task.error ||
+									!String(task.error.message).match(/^Timeout occurred/)
+								) {
+									if (task.error) Test.worker.queue.faults++;
+									Test.fire(Test.EVENT_RESPONSE, Test.status());
+								}
+								Test.worker.queue.lock = false;
+							}
+						});
+						return;
+					}
+					window.clearTimeout(Test.worker.interval);
+					window.clearTimeout(Test.worker.timeout);
+					Test.fire(Test.EVENT_FINISH, Test.status());
+					delete Test.worker;
+				}, 25);
+			},
+			/**
+			 * Suspends the current test run, which can be continued from the
+			 * current test with Test.resume().
+			 * @throws {Error} An error occurs in the following cases:
+			 *     - No worker is present or cannot be suspended
+			 */
+			suspend: function suspend() {
+				if (Test.worker === undefined)
+					throw new Error("Suspend is not available");
+				Test.fire(Test.EVENT_SUSPEND, Test.status());
+			},
+			/**
+			 * Continues the test run if it was previously suspended.
+			 * @throws {Error} An error occurs in the following cases:
+			 *     - No worker is present or cannot be resumed
+			 */
+			resume: function resume() {
+				if (
+					Test.worker === undefined ||
+					Test.worker.status !== Test.EVENT_SUSPEND
+				)
+					throw new Error("Resume is not available");
+				Test.fire(Test.EVENT_RESUME, Test.status());
+			},
+			/**
+			 * Interrupts the current test run and discards all outstanding
+			 * tests. The test run can be restarted with Test.start().
+			 * @throws {Error} An error occurs in the following cases:
+			 *     - No worker is present or cannot be interrupted
+			 */
+			interrupt: function interrupt() {
+				if (Test.worker === undefined)
+					throw new Error("Interrupt is not available");
+				window.clearTimeout(Test.worker.interval);
+				window.clearTimeout(Test.worker.timeout);
+				Test.fire(Test.EVENT_INTERRUPT, Test.status());
+				delete Test.worker;
+			},
+			/**
+			 * Makes a snapshot of the status of the current test. The status
+			 * contains details of the current task and the queue. The details
+			 * are read-only and cannot be changed. If no test is executed,
+			 * false is returned.
+			 *
+			 *     structure of details: {task:..., queue:...}
+			 *
+			 * task.title      title of the test task
+			 * task.meta       meta information about the test itself name,
+			 *                 test, timeout, expected, serial
+			 * task.running    indicator when the test task is in progress
+			 * task.timing     start time from the test task in milliseconds
+			 * task.timeout    optional, the time in milliseconds when a timeout
+			 *                 is expected
+			 * task.duration   total execution time of the test task in
+			 *                 milliseconds, is set with the end of the test
+			 *                 task
+			 * task.error      optional, if an unexpected error (also assert
+			 *                 error) has occurred, which terminated the test
+			 *                 task
+			 *
+			 * queue.timing    start time in milliseconds
+			 * queue.size      original queue length
+			 * queue.length    number of outstanding tests
+			 * queue.progress  number of tests performed
+			 * queue.lock      indicator when a test is performed and the queue
+			 *                 is waiting
+			 * queue.faults    number of detected faults
+			 *
+			 * @returns {object} an object with status information, otherwise false
+			 */
+			status: function status() {
+				var status = {};
+				if (
+					_typeof(Test.worker) === "object" &&
+					_typeof(Test.worker.task) === "object"
+				) {
+					status.task = {};
+					Object.defineProperty(status.task, "title", {
+						value: Test.worker.task.title,
+						enumerable: true,
+					});
+					Object.defineProperty(status.task, "meta", {
+						value: Test.worker.task.meta,
+						enumerable: true,
+					});
+					Object.defineProperty(status.task, "running", {
+						value: Test.worker.task.running,
+						enumerable: true,
+					});
+					Object.defineProperty(status.task, "timing", {
+						value: Test.worker.task.timing,
+						enumerable: true,
+					});
+					Object.defineProperty(status.task, "timeout", {
+						value: Test.worker.task.timeout,
+						enumerable: true,
+					});
+					Object.defineProperty(status.task, "duration", {
+						value: Test.worker.task.duration,
+						enumerable: true,
+					});
+					Object.defineProperty(status.task, "error", {
+						value: Test.worker.task.error,
+						enumerable: true,
+					});
+				}
+				if (
+					_typeof(Test.worker) === "object" &&
+					_typeof(Test.worker.queue) === "object"
+				) {
+					status.queue = {};
+					Object.defineProperty(status.queue, "timing", {
+						value: Test.worker.queue.timing,
+						enumerable: true,
+					});
+					Object.defineProperty(status.queue, "size", {
+						value: Test.worker.queue.size,
+						enumerable: true,
+					});
+					Object.defineProperty(status.queue, "length", {
+						value: Test.worker.queue.stack.length,
+						enumerable: true,
+					});
+					Object.defineProperty(status.queue, "progress", {
+						value: Test.worker.queue.progress,
+						enumerable: true,
+					});
+					Object.defineProperty(status.queue, "lock", {
+						value: Test.worker.queue.lock,
+						enumerable: true,
+					});
+					Object.defineProperty(status.queue, "faults", {
+						value: Test.worker.queue.faults,
+						enumerable: true,
+					});
+				}
+				if (status.task === undefined && status.queue === undefined)
+					return false;
+				return status;
+			},
+		};
+
+		/** Backlog of created/registered test tasks */
+		var _stack = new Set();
+
+		/** Map with events and their registered listeners */
+		var _listeners = new Map();
+		(function () {
+			// Redirection of the console level INFO, ERROR, WARN, LOG when
+			// using tests. The outputs are buffered for analysis and listeners
+			// can be implemented whose callback method is called at console
+			// outputs.
+
+			/** Cache for analyzing console output */
+			var _output = {
+				log: "",
+				warn: "",
+				error: "",
+				info: "",
+			};
+			console.output = {
+				get log() {
+					return _output.log;
+				},
+				get warn() {
+					return _output.warn;
+				},
+				get error() {
+					return _output.error;
+				},
+				get info() {
+					return _output.info;
+				},
+			};
+
+			/** Clears the cache from the console output. */
+			console.output.clear = function () {
+				_output.log = "";
+				_output.warn = "";
+				_output.error = "";
+				_output.info = "";
+			};
+
+			/** Set of registered listeners for occurring console outputs. */
+			var _listeners = new Set();
+
+			/**
+			 * Registers a callback function for console output.
+			 * @param {function} callback callback function
+			 */
+			console.listen = function (callback) {
+				if (typeof callback !== "function")
+					throw new TypeError("Invalid data type");
+				_listeners.add(callback);
+			};
+
+			/**
+			 * General method for redirecting console levels. If the script is
+			 * in a frame, at the parent object it will also try to trigger this
+			 * method. The parent object is always triggered after the current
+			 * object. If an error occurs when calling the current object, the
+			 * parent object is not triggered.
+			 * @param {string} level
+			 * @param {Array} variants
+			 * @param {Object} [output]
+			 */
+			console.forward = function (level, variants) {
+				var _parent$console;
+				var output =
+					arguments.length > 2 && arguments[2] !== undefined
+						? arguments[2]
+						: null;
+				if (typeof level !== "string") throw new TypeError("Invalid data type");
+				if (output != null && typeof output !== "function")
+					throw new TypeError("Invalid data type");
+				_output[level] += Array.from(variants).join(", ");
+				if (output) output.apply(void 0, _toConsumableArray(variants));
+				_listeners.forEach(function (callback) {
+					return callback.apply(
+						void 0,
+						[level].concat(_toConsumableArray(variants)),
+					);
+				});
+				if (
+					!parent ||
+					parent === window ||
+					!parent.console ||
+					typeof parent.console.forward !== "function"
+				)
+					return;
+				(_parent$console = parent.console).forward.apply(
+					_parent$console,
+					_toConsumableArray(Array.from(arguments).slice(0, 2)),
+				);
+			};
+
+			/** Redirect for the level: LOG */
+			var _log = console.log;
+			console.log = function () {
+				for (
+					var _len19 = arguments.length,
+						variants = new Array(_len19),
+						_key20 = 0;
+					_key20 < _len19;
+					_key20++
+				) {
+					variants[_key20] = arguments[_key20];
+				}
+				console.forward("log", variants, _log);
+			};
+
+			/** Redirect for the level: WARN */
+			var _warn = console.warn;
+			console.warn = function () {
+				for (
+					var _len20 = arguments.length,
+						variants = new Array(_len20),
+						_key21 = 0;
+					_key21 < _len20;
+					_key21++
+				) {
+					variants[_key21] = arguments[_key21];
+				}
+				console.forward("warn", variants, _warn);
+			};
+
+			/** Redirect for the level: ERROR */
+			var _error = console.error;
+			console.error = function () {
+				for (
+					var _len21 = arguments.length,
+						variants = new Array(_len21),
+						_key22 = 0;
+					_key22 < _len21;
+					_key22++
+				) {
+					variants[_key22] = arguments[_key22];
+				}
+				console.forward("error", variants, _error);
+			};
+
+			/** Redirect for the level: INFO */
+			var _info = console.info;
+			console.info = function () {
+				for (
+					var _len22 = arguments.length,
+						variants = new Array(_len22),
+						_key23 = 0;
+					_key23 < _len22;
+					_key23++
+				) {
+					variants[_key23] = arguments[_key23];
+				}
+				console.forward("info", variants, _info);
+			};
+
+			/** In case of an error, it is forwarded to the console. */
+			window.addEventListener("error", function (event) {
+				if (parent && parent !== window)
+					console.forward(
+						"error",
+						(function () {
+							for (
+								var _len23 = arguments.length,
+									variants = new Array(_len23),
+									_key24 = 0;
+								_key24 < _len23;
+								_key24++
+							) {
+								variants[_key24] = arguments[_key24];
+							}
+							return variants;
+						})(event.message),
+						null,
+					);
+			});
+		})();
+
+		/**
+		 * Enhancement of the JavaScript API
+		 * The following events are triggered during simulation:
+		 *     focus, keydown, keyup, change
+		 * @param {string} value simulated input value
+		 * @param {boolean} [clear] false suppresses emptying before input
+		 */
+		compliant("Element.prototype.typeValue", function (value) {
+			var clear =
+				arguments.length > 1 && arguments[1] !== undefined
+					? arguments[1]
+					: true;
+			if (value != null && typeof value !== "string")
+				throw new TypeError("Invalid data type");
+			if (typeof clear !== "boolean") throw new TypeError("Invalid data type");
+			this.focus();
+			if (clear !== false) this.value = "";
+			var element = this;
+			value = (value || "").split("");
+			value.forEach(function (digit) {
+				element.trigger("keydown");
+				element.value = (element.value || "") + digit;
+				element.trigger("keyup");
+			});
+			this.trigger("input");
+		});
+
+		/**
+		 * Enhancement of the JavaScript API
+		 * Adds a method that creates a plain string for an element.
+		 * @returns {string} plain string for an element
+		 */
+		compliant("Element.prototype.toPlainString", function () {
+			return this.outerHTML;
+		});
+
+		/**
+		 * Enhancement of the JavaScript API
+		 * Adds a method that creates a plain string for a node.
+		 * @returns {string} plain string for a node
+		 */
+		compliant("Node.prototype.toPlainString", function () {
+			return new XMLSerializer().serializeToString(this);
+		});
+
+		/**
+		 * Enhancement of the JavaScript API
+		 * Adds a method that creates a plain string for an object.
+		 * @returns {string} plain string for an object
+		 */
+		compliant("Object.prototype.toPlainString", function () {
+			if (this != null && typeof this[Symbol.iterator] === "function")
+				return JSON.stringify(_toConsumableArray(this));
+			return JSON.stringify(this);
+		});
+
+		/**
+		 * Enhancement of the JavaScript API
+		 * Adds a method to trigger an event for elements.
+		 * @param {string} event type of event
+		 * @param {boolean} [bubbles] deciding whether the event should bubble
+		 *     up through the event chain or not
+		 * @param {boolean} [cancel] defining whether the event can be canceled
+		 */
+		compliant("Element.prototype.trigger", function (event) {
+			var bubbles =
+				arguments.length > 1 && arguments[1] !== undefined
+					? arguments[1]
+					: false;
+			var cancel =
+				arguments.length > 2 && arguments[2] !== undefined
+					? arguments[2]
+					: true;
+			if (
+				typeof event !== "string" ||
+				typeof bubbles !== "boolean" ||
+				typeof cancel !== "boolean"
+			)
+				throw new TypeError("Invalid data type");
+			this.dispatchEvent(
+				new Event(event, {
+					bubbles: bubbles,
+					cancelable: cancel,
+				}),
+			);
+		});
+
+		/**
+		 * A set of assertion methods useful for writing tests.
+		 * Only failed assertions are recorded.
+		 * These methods can be used directly:
+		 *     Assert.assertEquals(...);
+		 */
+		compliant("Assert", {
+			/**
+			 * Creates a new assertion based on an array of variant parameters.
+			 * Size defines the number of test values. If more parameters are
+			 * passed, the first must be the message.
+			 * @param {*} parameters
+			 * @param {number} size
+			 */
+			create: function create(parameters, size) {
+				if (typeof size !== "number") throw new TypeError("Invalid data type");
+				var assert = {
+					message: null,
+					values: [],
+					error: function error() {
+						for (
+							var _len24 = arguments.length,
+								variants = new Array(_len24),
+								_key25 = 0;
+							_key25 < _len24;
+							_key25++
+						) {
+							variants[_key25] = arguments[_key25];
+						}
+						variants.forEach(function (parameter, index, array) {
+							array[index] = String(parameter).replace(
+								/\{(\d+)\}/g,
+								function (match, index) {
+									if (index > assert.values.length) return "[null]";
+									match = String(assert.values[index]);
+									match = match.replace(/\s*[\r\n]+\s*/g, " ");
+									return match;
+								},
+							);
+						});
+						var message = "expected {1} but was {2}";
+						if (assert.message !== null) {
+							assert.message = assert.message.trim();
+							if (assert.message) message = assert.message;
+						}
+						message = "{0} failed, " + message;
+						message = message.replace(/\{(\d+)\}/g, function (match, index) {
+							if (index > variants.length) return "[null]";
+							match = String(variants[index]);
+							match = match.replace(/\s*[\r\n]+\s*/g, " ");
+							return match;
+						});
+						return new Error(message);
+					},
+				};
+				parameters = Array.from(parameters || []);
+				if (parameters.length > size) assert.message = parameters.shift();
+				while (parameters.length > 0) assert.values.push(parameters.shift());
+				return assert;
+			},
+			/**
+			 * Asserts that a value is true.
+			 * If the assertion is false, an error with message is thrown.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message, value)
+			 *     function(value)
+			 *
+			 * @param {string} [message] message
+			 * @param {*} value assertion value
+			 * @throws {Error} If the assertion failed
+			 */
+			assertTrue: function assertTrue() {
+				for (
+					var _len25 = arguments.length,
+						variants = new Array(_len25),
+						_key26 = 0;
+					_key26 < _len25;
+					_key26++
+				) {
+					variants[_key26] = arguments[_key26];
+				}
+				var assert = Assert.create(variants, 1);
+				if (assert.values[0] === true) return;
+				throw assert.error("Assert.assertTrue", "true", "{0}");
+			},
+			/**
+			 * Asserts that a value is false.
+			 * If the assertion is false, an error with message is thrown.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message, value)
+			 *     function(value)
+			 *
+			 * @param {string} [message] message
+			 * @param {*} value assertion value
+			 * @throws {Error} If the assertion failed
+			 */
+			assertFalse: function assertFalse() {
+				for (
+					var _len26 = arguments.length,
+						variants = new Array(_len26),
+						_key27 = 0;
+					_key27 < _len26;
+					_key27++
+				) {
+					variants[_key27] = arguments[_key27];
+				}
+				var assert = Assert.create(variants, 1);
+				if (assert.values[0] === false) return;
+				throw assert.error("Assert.assertFalse", "false", "{0}");
+			},
+			/**
+			 * Asserts that two values are equals.
+			 * Difference between equals and same: === / == or !== / !=
+			 * If the assertion is false, an error with message is thrown.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message, compare, actual)
+			 *     function(compare, actual)
+			 *
+			 * @param {string} [message] message
+			 * @param {*} compare unexpected assertion value
+			 * @param {*} value unexpected assertion value
+			 * @throws {Error} If the assertion failed
+			 */
+			assertEquals: function assertEquals() {
+				for (
+					var _len27 = arguments.length,
+						variants = new Array(_len27),
+						_key28 = 0;
+					_key28 < _len27;
+					_key28++
+				) {
+					variants[_key28] = arguments[_key28];
+				}
+				var assert = Assert.create(variants, 2);
+				if (assert.values[0] === assert.values[1]) return;
+				throw assert.error("Assert.assertEquals", "{0}", "{1}");
+			},
+			/**
+			 * Asserts that two values are not equals.
+			 * Difference between equals and same: === / == or !== / !=
+			 * If the assertion is false, an error with message is thrown.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message, compare, actual)
+			 *     function(compare, actual)
+			 *
+			 * @param {string} [message] message
+			 * @param {*} compare unexpected assertion value
+			 * @param {*} value unexpected assertion value
+			 * @throws {Error} If the assertion failed
+			 */
+			assertNotEquals: function assertNotEquals() {
+				for (
+					var _len28 = arguments.length,
+						variants = new Array(_len28),
+						_key29 = 0;
+					_key29 < _len28;
+					_key29++
+				) {
+					variants[_key29] = arguments[_key29];
+				}
+				var assert = Assert.create(variants, 2);
+				if (assert.values[0] !== assert.values[1]) return;
+				throw assert.error("Assert.assertNotEquals", "not {0}", "{1}");
+			},
+			/**
+			 * Asserts that two values are the same.
+			 * Difference between equals and same: === / == or !== / !=
+			 * If the assertion is false, an error with message is thrown.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message, compare, actual)
+			 *     function(compare, actual)
+			 *
+			 * @param {string} [message] message
+			 * @param {*} compare unexpected assertion value
+			 * @param {*} value unexpected assertion value
+			 * @throws {Error} If the assertion failed
+			 */
+			assertSame: function assertSame() {
+				for (
+					var _len29 = arguments.length,
+						variants = new Array(_len29),
+						_key30 = 0;
+					_key30 < _len29;
+					_key30++
+				) {
+					variants[_key30] = arguments[_key30];
+				}
+				var assert = Assert.create(variants, 2);
+				if (assert.values[0] === assert.values[1]) return;
+				throw assert.error("Assert.assertSame", "{0}", "{1}");
+			},
+			/**
+			 * Asserts two values are not the same.
+			 * Difference between equals and same: === / == or !== / !=
+			 * If the assertion is false, an error with message is thrown.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message, compare, actual)
+			 *     function(compare, actual)
+			 *
+			 * @param {string} [message] message
+			 * @param {*} compare unexpected assertion value
+			 * @param {*} value unexpected assertion value
+			 * @throws {Error} If the assertion failed
+			 */
+			assertNotSame: function assertNotSame() {
+				for (
+					var _len30 = arguments.length,
+						variants = new Array(_len30),
+						_key31 = 0;
+					_key31 < _len30;
+					_key31++
+				) {
+					variants[_key31] = arguments[_key31];
+				}
+				var assert = Assert.create(variants, 2);
+				if (assert.values[0] !== assert.values[1]) return;
+				throw assert.error("Assert.assertNotSame", "not {0}", "{1}");
+			},
+			/**
+			 * Asserts that a value is undefined.
+			 * If the assertion is false, an error with message is thrown.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message, value)
+			 *     function(value)
+			 *
+			 * @param {string} [message] message
+			 * @param {*} value assertion value
+			 * @throws {Error} If the assertion failed
+			 */
+			assertUndefined: function assertUndefined() {
+				for (
+					var _len31 = arguments.length,
+						variants = new Array(_len31),
+						_key32 = 0;
+					_key32 < _len31;
+					_key32++
+				) {
+					variants[_key32] = arguments[_key32];
+				}
+				var assert = Assert.create(variants, 1);
+				if (assert.values[0] === undefined) return;
+				throw assert.error("Assert.assertUndefined", "undefined", "{0}");
+			},
+			/**
+			 * Asserts that a value is not undefined.
+			 * If the assertion is false, an error with message is thrown.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message, value)
+			 *     function(value)
+			 *
+			 * @param {string} [message] message
+			 * @param {*} value assertion value
+			 * @throws {Error} If the assertion failed
+			 */
+			assertNotUndefined: function assertNotUndefined() {
+				for (
+					var _len32 = arguments.length,
+						variants = new Array(_len32),
+						_key33 = 0;
+					_key33 < _len32;
+					_key33++
+				) {
+					variants[_key33] = arguments[_key33];
+				}
+				var assert = Assert.create(variants, 1);
+				if (assert.values[0] !== undefined) return;
+				throw assert.error("Assert.assertNotUndefined", "not undefined", "{0}");
+			},
+			/**
+			 * Asserts that a value is null.
+			 * If the assertion is false, an error with message is thrown.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message, value)
+			 *     function(value)
+			 *
+			 * @param {string} [message] message
+			 * @param {*} value assertion value
+			 * @throws {Error} If the assertion failed
+			 */
+			assertNull: function assertNull() {
+				for (
+					var _len33 = arguments.length,
+						variants = new Array(_len33),
+						_key34 = 0;
+					_key34 < _len33;
+					_key34++
+				) {
+					variants[_key34] = arguments[_key34];
+				}
+				var assert = Assert.create(variants, 1);
+				if (assert.values[0] === null) return;
+				throw assert.error("Assert.assertNull", "null", "{0}");
+			},
+			/**
+			 * Asserts that a value is not null.
+			 * If the assertion is false, an error with message is thrown.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message, value)
+			 *     function(value)
+			 *
+			 * @param {string} [message] message
+			 * @param {*} value assertion value
+			 * @throws {Error} If the assertion failed
+			 */
+			assertNotNull: function assertNotNull() {
+				for (
+					var _len34 = arguments.length,
+						variants = new Array(_len34),
+						_key35 = 0;
+					_key35 < _len34;
+					_key35++
+				) {
+					variants[_key35] = arguments[_key35];
+				}
+				var assert = Assert.create(variants, 1);
+				if (assert.values[0] !== null) return;
+				throw assert.error("Assert.assertNotNull", "not null", "{0}");
+			},
+			/**
+			 * Fails a test with an optional message.
+			 *
+			 * The method has the following various signatures:
+			 *     function(message)
+			 *     function()
+			 *
+			 * @param {*} [message] error message
+			 * @throws {Error} Assertion failed
+			 */
+			fail: function fail(message) {
+				if (message != null) message = String(message).trim();
+				throw new Error("Assert.fail".concat(message ? ", " + message : ""));
+			},
+		});
+	},
+});

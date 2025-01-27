@@ -1,4 +1,5 @@
-null -> #home
+null -> #
+# -> #home
 #home -> #projects
 #projects -> #project#2
 #project#2 -> #project#2xx
@@ -11,7 +12,8 @@ null -> #home
 #person#2xx -> #about
 #about -> #contact
 #contact -> #nix
-#nix -> #nix#nix
+#nix -> #home
+#home -> #nix#nix
 #nix#nix -> #home
 #home -> #nix#nix#nix
 #nix#nix#nix -> #home
