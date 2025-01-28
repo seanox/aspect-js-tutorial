@@ -3,7 +3,14 @@
 // The Test API is intended for unit testing, but it can also be used for UI
 // testing. By default, the Test API is included in all distributions, including
 // the productive one, and therefore the API must be consciously activated.
+//   see also https://github.com/seanox/aspect-js/blob/master/manual/test.md
 Test.activate();
+
+// Important: In this example, we deviate slightly from the concept with the
+// test queue and use our own sequence. The test queue is good for unit testing
+// in relation to methods and components. For the sequence with interactions on
+// the concurrent user interface, the approach with the interval-based sequence
+// is simpler.
 
 // First, we build a sequence/queue in which we describe all interactions as
 // tasks and which are then processed one by one sequentially. The possibly
