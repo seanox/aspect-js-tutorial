@@ -81,15 +81,6 @@
         <input type="checkbox" id="selection#toggle"
             checked="{{news.selection.status}}" events="click"/>
         <label for="selection#toggle"></label>
-        {{(()=>{#[selection#toggle].checked = not not news.selection.status;})()}}
-        <!--
-          For the checkbox, in some cases it is not enough to set the checked
-          attribute, but also requires the JavaScript attribute to be set. Since
-          the model should not access the view directly, this problem is solved
-          with an anonymous method that is called as a reactive consumer of the
-          selection status. Since this has no return value, it remains invisible
-          in the view.
-        -->
       </th>
       <th>{{messages.news.date}}</th>
       <th>{{messages.news.market}}</th>

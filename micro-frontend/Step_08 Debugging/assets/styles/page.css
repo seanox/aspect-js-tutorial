@@ -231,6 +231,11 @@ main input[type='checkbox'] ~ label::before {
   text-align: center;
   width: 21px;
 }
+main input[type='checkbox'][checked='partial'] ~ label::before {
+  content: '+'!important;;
+  font-family: sans-serif!important;
+  font-weight: bolder!important;
+}
 main input[type='checkbox']:checked ~ label::before {
   background-color: orange;
   border-color: orange;
