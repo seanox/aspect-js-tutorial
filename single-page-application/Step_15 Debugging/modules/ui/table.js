@@ -1,5 +1,7 @@
 #module ui/table;
 
+#import ui/io
+
 /**
  * Abstract Table for UI components.
  * The namespace ui.Table is created at the end with the macro #export.
