@@ -63,7 +63,7 @@
     -->
     <input type="text" id="subject" class="w3-input w3-section w3-border" 
         placeholder="{{Messages['contact.form.subject.title']}}"
-        pattern="{{contact.SUBJECT_PATTERN}}" message="{{Messages['contact.subject.message']}}" notification
+        pattern="{{contact.SUBJECT_PATTERN}}" message="{{Messages['contact.subject.message']}}"
         events="input">
     Value of variable contact.subject: {{contact.subject}}
     <!--
@@ -75,7 +75,7 @@
     -->
     <input type="text" id="comment" class="w3-input w3-section w3-border" 
         placeholder="{{Messages['contact.form.comment.title']}}" 
-        validate message="{{Messages['contact.subject.message']}}" notification
+        validate message="{{Messages['contact.subject.message']}}"
         events="input">
     Value of variable contact.comment: {{contact.comment}}<br/>
     <!--
@@ -91,7 +91,7 @@
     -->
     <button id="submit" class="w3-button w3-black w3-section"
         disabled="{{contact.validate(#submit) ? undefined : 'disabled'}}"
-        validate message="{{Messages['contact.submit.message']}}" notification
+        validate message="{{Messages['contact.submit.message']}}"
         events="click">
       <i class="fa fa-paper-plane"></i> {{Messages['contact.form.send.title']}}
     </button>
