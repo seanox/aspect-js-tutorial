@@ -1,6 +1,7 @@
 <p>
   <a href="https://github.com/seanox/aspect-js-tutorial/pulls"
-    ><img src="https://img.shields.io/badge/development-active-green?style=for-the-badge"
+      title="Development is waiting for new issues / requests / ideas"
+    ><img src="https://img.shields.io/badge/development-passive-blue?style=for-the-badge"
   ></a>
   <a href="https://github.com/seanox/aspect-js-tutorial/issues"
     ><img src="https://img.shields.io/badge/maintenance-active-green?style=for-the-badge"
@@ -9,7 +10,6 @@
     ><img src="https://img.shields.io/badge/support-active-green?style=for-the-badge"
   ></a>
 </p>
-
 
 # Description
 The tutorial guides you through the creation of a SPA (Single-Page-Application)
@@ -24,7 +24,6 @@ After downloading and unpacking, all steps can be called as independent
 applications via a web server. The changes in each step are documented and
 provided with references to the user manual. This information becomes visible
 when the steps are compared.  
-
 
 # Licence Agreement
 Seanox Software Solutions ist ein Open-Source-Projekt, im Folgenden
@@ -45,13 +44,11 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 
-
 # System Requirement
 - Web server for hosting
 - Web browser  
   tested engines: Blink, Gecko, Goanna, WebKit
 - Program for comparing code
-
 
 # Tutorials
 
@@ -85,10 +82,8 @@ specific language governing permissions and limitations under the License.
 - [Step_16 Unit Testing - Activation](single-page-application%2FStep_16%20Unit%20Testing%20-%20Activation)
 - [Step_17 Unit Testing - UI Test](single-page-application%2FStep_17%20Unit%20Testing%20-%20UI%20Test)
 
-
 # Downloads
 [Seanox aspect-js 1.8.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/archive/refs/tags/1.8.0.zip)
-
 
 # Changes
 ## 1.8.0 20250207  
@@ -99,7 +94,6 @@ CR: Tutorial: Update to use reactive rendering
 CR: Tutorial: Renaming page-flow to view-flow  
 
 [Read more](https://raw.githubusercontent.com/seanox/aspect-js-tutorial/master/CHANGES)
-
 
 # Contact
 [Issues](https://github.com/seanox/aspect-js-tutorial/issues)  
