@@ -32,7 +32,7 @@ Seanox Software Solutions oder kurz Seanox genannt.
 
 Diese Software unterliegt der Version 2 der Apache License.
 
-Copyright (C) 2023 Seanox Software Solutions
+Copyright (C) 2025 Seanox Software Solutions
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
@@ -87,16 +87,16 @@ specific language governing permissions and limitations under the License.
 
 
 # Downloads
-[Seanox aspect-js 1.4.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/archive/refs/tags/1.4.0.zip)
+[Seanox aspect-js 1.8.0 Tutorial](https://github.com/seanox/aspect-js-tutorial/archive/refs/tags/1.8.0.zip)
 
 
 # Changes
-## 1.6.1 2023xxxx (upcoming version)  
+## 1.8.0 20250207  
 BF: Build: Optimization  
-CR: Build: Added server start/stop in build.xml  
-CR: Assets: Update of aspect-js-max.js  
+CR: Assets: Update of aspect-js-max.js (1.8.0)  
 CR: Tutorial: Added tutorial for a micro frontend  
 CR: Tutorial: Update to use reactive rendering  
+CR: Tutorial: Renaming page-flow to view-flow  
 
 [Read more](https://raw.githubusercontent.com/seanox/aspect-js-tutorial/master/CHANGES)
 
