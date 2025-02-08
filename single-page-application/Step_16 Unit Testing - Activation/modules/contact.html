@@ -51,7 +51,7 @@
     -->
     <input type="text" id="email" class="w3-input w3-section w3-border" 
         placeholder="{{Messages['contact.form.email.title']}}"
-        pattern="{{contact.EMAIL_PATTERN}}" message="{{Messages['contact.email.message']}}"
+        validate pattern="{{contact.EMAIL_PATTERN}}" message="{{Messages['contact.email.message']}}"
         events="input">
     Value of variable contact.email: {{contact.email}}
     <!--
@@ -63,7 +63,7 @@
     -->
     <input type="text" id="subject" class="w3-input w3-section w3-border" 
         placeholder="{{Messages['contact.form.subject.title']}}"
-        pattern="{{contact.SUBJECT_PATTERN}}" message="{{Messages['contact.subject.message']}}"
+        validate pattern="{{contact.SUBJECT_PATTERN}}" message="{{Messages['contact.subject.message']}}"
         events="input">
     Value of variable contact.subject: {{contact.subject}}
     <!--
