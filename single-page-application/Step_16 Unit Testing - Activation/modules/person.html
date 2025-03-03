@@ -14,10 +14,8 @@
 
 -->
 {{id:Routing.locate(true).data}}
-{{xml:DataSource.fetch('xml://team')}}
-{{xpath:'/team/person[id="' + id + '"]'}}
-{{person:xml.evaluate ? xml.evaluate(xpath, xml, null, XPathResult.ANY_TYPE, null) : xml.selectNodes(xpath)}}
-{{person:person.iterateNext()}}
+{{person:DataSource.fetch("xml://team?/team/person[id='" + id + "']")}}
+{{person:person ne null ? person[0] : null}}
 <!-- Automatic redirection to about if the requested person does not exist. -->
 <script type="composite/javascript" condition="{{person eq null}}">
     Routing.route("#about");

@@ -13,10 +13,8 @@
   data access layers there. 
 
 -->
-{{xml:DataSource.fetch('xml://team')}}
-{{xpath:'/team/person[email="john.doe@example-architects.local"]'}}
-{{person:xml.evaluate ? xml.evaluate(xpath, xml, null, XPathResult.ANY_TYPE, null) : xml.selectNodes(xpath)}}
-{{person:person.iterateNext()}}
+{{person:DataSource.fetch("xml://team?/team/person[email='john.doe@example-architects.local']")}}
+{{person:person ne null ? person[0] : null}}
 {{person:Object.parse(person)}}
 <div class="w3-row w3-grayscale">
   <div class="w3-twothird w3-container">
