@@ -7,22 +7,6 @@
 const xml = {
         
     /**
-     * Loads data from an XML interface.
-     * @param  url
-     * @return XMLDocument
-     */    
-    fetch(url) {
-
-        let request = new XMLHttpRequest();
-        request.overrideMimeType("text/xml");
-        request.open("GET", url, false);
-        request.send();
-        if (request.status != 200)
-            throw new Error("HTTP status " + request.status + " for " + request.responseURL);
-        return request.responseXML;
-    },
-    
-    /**
      * Creates a JavaScript data object based on an XMLDocument or Node.
      * @param  data
      * @return the create JavaScript data object

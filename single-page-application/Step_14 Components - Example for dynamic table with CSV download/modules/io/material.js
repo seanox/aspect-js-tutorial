@@ -11,7 +11,7 @@ const material = {
      * @return XMLDocument
      */
     list() {
-        return io.xml.fetch("data/materials.xml");
+        return DataSource.fetch("xml://data/materials.xml");
     }
 }
 

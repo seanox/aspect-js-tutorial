@@ -44,7 +44,7 @@ const materials = new (class extends ui.xml.Table {
      * @return DocumentFragment
      */
     render() {
-        return DataSource.transform(io.material.list(), io.xml.fetch("modules/materials.xslt"), this.sorting);
+        return DataSource.transform(io.material.list(), "xslt://modules/materials.xslt", this.sorting || {});
     }
 })("#materials");
 
