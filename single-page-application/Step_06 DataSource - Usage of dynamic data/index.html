@@ -75,11 +75,11 @@
       However, the DataSource is more of an example for semi-dynamic data because it is based on static data in the web space.  
 
     -->
-  
+
     <!-- Navbar (sit on top) -->
     <div id="menu" class="w3-top" composite release>
     </div>
-  
+
     <!-- Header -->
     <header id="home" class="w3-display-container w3-content w3-wide" composite release>
     </header>
@@ -101,10 +101,10 @@
         The expressions are then executed after the final XSL transformation.
         
       -->
-  
+
       <!-- Project Section -->
-      <section id="projects" composite release
-          output="{{DataSource.fetch('xml://portfolio', true)}}">
+      <section id="projects" composite route release
+          output="xml://portfolio + xslt">
       </section>
       
       <!-- Project Details Section -->
