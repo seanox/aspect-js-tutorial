@@ -13,10 +13,8 @@
   data access layers there. 
 
 -->
-{{xml:DataSource.fetch('xml://portfolio')}}
-{{xpath:'/portfolio/project[id=5]'}}
-{{project:xml.evaluate ? xml.evaluate(xpath, xml, null, XPathResult.ANY_TYPE, null) : xml.selectNodes(xpath)}}
-{{project:project.iterateNext()}}
+{{project:DataSource.fetch("xml://portfolio?/portfolio/project[id='" + id + "']")}}
+{{project:project ne null ? project[0] : null}}
 {{project:Object.parse(project)}}
 <div class="w3-row w3-grayscale">
   <div class="w3-third w3-container">

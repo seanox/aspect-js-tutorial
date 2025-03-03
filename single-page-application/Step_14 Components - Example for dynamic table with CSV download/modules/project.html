@@ -14,10 +14,8 @@
 
 -->
 {{id:Routing.locate(true).data}}
-{{xml:DataSource.fetch('xml://portfolio')}}
-{{xpath:'/portfolio/project[id="' + id + '"]'}}
-{{project:xml.evaluate ? xml.evaluate(xpath, xml, null, XPathResult.ANY_TYPE, null) : xml.selectNodes(xpath)}}
-{{project:project.iterateNext()}}
+{{project:DataSource.fetch("xml://portfolio?/portfolio/project[id='" + id + "']")}}
+{{project:project ne null ? project[0] : null}}
 <!-- Automatic redirection to the projects if the requested project does not exist. -->
 <script type="composite/javascript" condition="{{project eq null}}">
     Routing.route("#projects");
