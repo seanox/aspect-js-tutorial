@@ -542,13 +542,15 @@
 	 * Enhancement of the JavaScript API
 	 * Adds a property to get the context path. The context path is a part of
 	 * the request URI and can be compared with the current working directory.
+	 * The context path does not end with a slash and can be empty if the
+	 * application is located directly under the main domain of the server.
 	 * @returns {string} The context path of the request URI.
 	 */
 	compliant("window.location.contextPath");
 	Object.defineProperty(window.location, "contextPath", {
 		value: ((location) =>
-			location.substring(0, location.lastIndexOf("/")) + "/"
-		)(window.location.pathname || "/")
+			location.substring(0, location.lastIndexOf("/"))
+		)(window.location.pathname)
 	});
 
 	/**
@@ -565,19 +567,21 @@
 })();
 /**
  * DataSource is a NoSQL approach to data storage based on XML data in
- * combination with multilingual data separation, optional aggregation and
- * transformation.
- * A combination of the approaches of a read only DBS and a CMS.
+ * combination with multilingual data separation, optional aggregation, and
+ * transformation. It is a combination of the approaches of a read-only database
+ * system (DBS) and a content management system (CMS)."
  *
- * Files are defined by locator.
- * A locator is a URL (xml://... or xslt://...) that is used absolute and
- * relative to the DataSource directory, but does not contain a locale
- * (language specification) in the path. The locale is determined automatically
- * for the language setting of the browser, or if this is not supported, the
- * standard from the locales.xml in the DataSource directory is used.
+ * Data are addressed via a locator, which is a URL (xml://... or xslt://...),
+ * where both single and double slashes are supported. It is used as an absolute
+ * path without a file extension relative to the DataSource directory and does
+ * not contain a locale (language specification) in the path. The locale would
+ * be the first element in the path that the locator addresses. However, a
+ * locator can also be a fully qualified URL, which typically ends with a file
+ * extension (xml://....xml or xslt://....xslt). This kind of locator addresses
+ * an absolute path based on the current URL and does not include a locale.
  *
- * DataSource is based on static data.
- * Therefore, the implementation uses a cache to minimize network access.
+ * DataSource is based on static data. Therefore, the implementation uses a
+ * cache to minimize network access.
  *
  * The data is queried with XPath, the result can be concatenated and
  * aggregated and the result can be transformed with XSLT.
@@ -590,19 +594,24 @@
 	const DATA = window.location.combine(window.location.contextPath, "/data");
 
 	/**
-	 * Pattern for a DataSource locator, based on the URL syntax but only
-	 * the parts schema and path are used. A path segment begins with a word
-	 * character _ a-z 0-9, optionally more word characters and additionally
-	 * - can follow, but can not end with the - character. Paths are
-	 * separated by the / character.
+	 * Pattern for a DataSource locator, based on the URL syntax but only the
+	 * schema, path, file and query are used. A path segment begins with a word
+	 * character _ a-z 0-9, optionally more word characters and additionally -
+	 * can follow, but can not end with the - character. Paths are separated by
+	 * the / character.
+	 * - group 1: Locator without optional XPath
+	 * - group 2: Protocol
+	 * - group 3: Path complete incl. file and file extension
+	 * - group 4: file extension (optional)
+	 * - group 5: XPath without question mark (optional)
 	 */
-	const PATTERN_LOCATOR = /^(?:([a-z]+):\/+)(\/((\w+)|(\w+(\-+\w+)+)))+$/;
+	const PATTERN_LOCATOR = /^((xml|xslt):(?:\/)?((?:\/\w+(?:[\w-]*\w)?)+(?:\.(\2))?))(?:\?(\S*))?$/;
 
 	/** Pattern to detect JavaScript elements */
 	const PATTERN_JAVASCRIPT = /^\s*text\s*\/\s*javascript\s*$/i;
 
 	/** Pattern to detect a word (_ 0-9 a-z A-Z -) */
-	const PATTERN_WORD = /(^\w+$)|(^((\w+\-+(?=\w))+)\w*$)/;
+	const PATTERN_WORD = /^\w+([\w-]*\w)?$/;
 
 	/** Constant for attribute type */
 	const ATTRIBUTE_TYPE = "type";
@@ -639,32 +648,87 @@
 		},
 
 		/**
-		 * Transforms an XMLDocument based on a passed stylesheet.
-		 * The data and the stylesheet can be passed as Locator, XMLDocument an
-		 * in mix. The result as a DocumentFragment. Optionally, a meta-object
-		 * or a map with parameters for the XSLTProcessor can be passed.
-		 * @param {string|XMLDocument} xml Locator or XMLDocument to be
+		 * Transforms an XMLDocument based on a passed or derived stylesheet.
+		 * The data and the stylesheet can be passed as Locator, XMLDocument as
+		 * a mix. The result as a DocumentFragment. Optionally, a meta-object
+		 * as map with parameters for the XSLTProcessor can be passed.
+		 *
+		 * The XML locator also supports XPath. In this case, the XPathResult
+		 * for the transformation is embedded in an artificial XML document with
+		 * a data root element.
+		 *
+		 * The method has the following various signatures:
+		 *     DataSource.transform(xml);
+		 *     DataSource.transform(xml, meta);
+		 *     DataSource.transform(xml, style, meta);
+		 *
+		 * @param {string|XMLDocument} xml Locator or XML document to be
 		 *     transformed
-		 * @param {string|XMLDocument} style Locator or XMLDocument stylesheet
-		 * @param {Object} [meta] Optional parameters for the XSLTProcessor
+		 * @param {string|XMLDocument} [style] Optional locator or XMLDocument
+		 *     that is used as a stylesheet for transformation
+		 * @param {Object} [meta] Optional  parameters for the XSLT processor
 		 * @returns {DocumentFragment} The transformation result as a
 		 *     DocumentFragment
-		 @throws {TypeError} In case of invalid xml document and/or stylesheet
+		 * @throws {Error} In case of invalid arguments
 		 */
-		transform(xml, style, meta) {
+		transform(...variants) {
 
-			if (typeof xml === "string"
-					&& xml.match(PATTERN_LOCATOR))
+			let xml = undefined;
+			let style = undefined;
+			let meta = undefined;
+			if (!["string"].includes(typeof variants[0])
+					&& !(variants[0] instanceof XMLDocument))
+				throw new TypeError(`Invalid xml locator: ${typeof variants[0]}`);
+			xml = variants[0];
+			if (variants.length >= 3) {
+				if (!["string"].includes(typeof variants[1])
+						&& !(variants[1] instanceof XMLDocument))
+					throw new TypeError(`Invalid xslt locator: ${typeof variants[1]}`);
+				style = variants[1];
+				if (!["object"].includes(typeof variants[2]))
+					throw new TypeError(`Invalid meta object: ${typeof variants[2]}`);
+				meta = variants[2];
+			} else if (variants.length >= 2) {
+				if (!["string", "object"].includes(typeof variants[1])
+						&& !(variants[1] instanceof XMLDocument))
+					throw new TypeError(`Invalid xslt locator or meta object: ${typeof variants[1]}`);
+				if (!["string"].includes(typeof variants[1])
+						&& !(variants[1] instanceof XMLDocument))
+					meta = variants[1];
+				else style = variants[1];
+			} else if (variants.length >= 1) {
+				style = variants[0].replaceAll(/(^xml(:))|((\.)xml$)/g, "$4xslt$2");
+			}
+
+			if (typeof xml === "string") {
+				if (!xml.match(PATTERN_LOCATOR)
+						|| xml.match(PATTERN_LOCATOR)[2] !== "xml")
+					throw new Error("Invalid xml locator: " + String(xml));
 				xml = DataSource.fetch(xml);
+				if (!(xml instanceof XMLDocument)) {
+					const document = window.document.implementation.createDocument(null, "data", null);
+					if (xml instanceof NodeList) {
+						document.documentElement.appendChild(xml);
+					} else {
+						const node = document.createTextNode(String(xml));
+						document.documentElement.appendChild(node);
+					}
+					xml = document;
+				}
+			}
 
-			if (typeof style === "string"
-					&& style.match(PATTERN_LOCATOR))
+			if (typeof style === "string") {
+				if (!style.match(PATTERN_LOCATOR)
+						|| style.match(PATTERN_LOCATOR)[2] !== "xslt"
+						|| style.match(PATTERN_LOCATOR)[5] !== undefined)
+					throw new Error("Invalid xslt locator: " + String(style));
 				style = DataSource.fetch(style);
+			}
 
 			if (!(xml instanceof XMLDocument))
 				throw new TypeError("Invalid xml document");
 			if (!(style instanceof XMLDocument))
-				throw new TypeError("Invalid xml stylesheet");
+				throw new TypeError("Invalid xslt stylesheet");
 
 			const processor = new XSLTProcessor();
 			processor.importStylesheet(style);
@@ -720,116 +784,169 @@
 		},
 
 		/**
-		 * Fetch the data to a locator as XMLDocument. Optionally the data can
-		 * be transformed via XSLT, for which a meta-object or map with
-		 * parameters for the XSLTProcessor can be passed. When using the
-		 * transformation, the return type changes to a DocumentFragment.
-		 * @param {string} locator Locator to fetch data for.
-		 * @param {string|boolean} transform Locator of the transformation
-		 *     style. If boolean true, the style is derived from the locator
-		 *     using the file extension xslt.
-		 * @param {Object} [meta] Optional parameters for the XSLTProcessor.
-		 * @returns {XMLDocument|DocumentFragment} The fetched data as an
-		 *     XMLDocument or a DocumentFragment if transformation is used
+		 * Fetches data for a locator as XMLDocument or as boolean, number,
+		 * string, NodeList or null when using XPath.
+		 *
+		 * When querying nodes using XPath, nodes are always returned. This also
+		 * includes attributes and text nodes. Attributes are returned as nodes
+		 * with the name attribute. The name and value of the addressed
+		 * attribute are represented in the node as attributes name and value.
+		 * Text nodes are also returned as nodes, but then with the name text.
+		 * The content of the addressed text node is then the content of the
+		 * node.
+		 *
+		 * @param {string} locator Locator to fetch data for as XMLDocument.
+		 *     Optionally, an XPath query is also supported. The XPath is
+		 *     appended to the locator separated by a question mark.
+		 *
+		 *
+		 * @returns {XMLDocument|string|boolean|number|NodeList|null}
+		 *     The fetched data as an XMLDocument. When using XPath, it can be
+		 *     boolean, number, string, NodeList or null.
 		 * @throws {Error} In case of invalid arguments
 		 */
-		fetch(locator, transform, meta) {
+		fetch(locator) {
 
-			if (typeof locator !== "string"
-					|| !locator.match(PATTERN_LOCATOR))
+			if (typeof locator !== "string")
+				throw new Error("Invalid locator: " + String(locator));
+			if (!locator.match(PATTERN_LOCATOR))
 				throw new Error("Invalid locator: " + String(locator));
 
-			const type = locator.match(PATTERN_LOCATOR)[1];
-			const path = locator.match(PATTERN_LOCATOR)[2];
+			locator = ((locator) => {
+				const matches = locator.match(PATTERN_LOCATOR);
+				const absolute = matches[4] !== undefined;
+				const location = absolute
+					? `${window.location.contextPath}${matches[3]}`
+					: `${DATA}/${DataSource.locale}${matches[3]}.${matches[2]}`;
+				return {
+					source:   locator,
+					location: location,
+					type:     matches[2],
+					xpath:    matches[5]
+				};
+			})(locator);
 
-			if (arguments.length === 1) {
+			if (locator.type === "xslt"
+					&& locator.xpath !== undefined)
+				throw new Error("Invalid xslt locator: " + locator.source);
 
-				let data = DATA + "/" + DataSource.locale + "/" + path + "." + type;
-				data = data.replace(/\/+/g, "/");
-				const hash = data.hashCode();
+			const data = ((locator) => {
+				const hash = locator.hashCode();
 				if (_cache.hasOwnProperty(hash))
-					return _cache[hash];
-
+					return _cache[hash].clone();;
 				const request = new XMLHttpRequest();
 				request.overrideMimeType("application/xslt+xml");
-				request.open("GET", data, false);
+				request.open("GET", locator, false);
 				request.send();
 				if (request.status !== 200)
 					throw new Error(`HTTP status ${request.status} for ${request.responseURL}`);
-				data = request.responseXML;
+				const data = request.responseXML;
 				_cache[hash] = data;
-
 				return data.clone();
+			})(locator.location);
+
+			if (locator.xpath === undefined
+					|| locator.xpath === "")
+				return data;
+
+			const result = data.evaluate(locator.xpath, data, null, XPathResult.ANY_TYPE, null);
+			switch (result.resultType) {
+				case XPathResult.BOOLEAN_TYPE:
+					return result.booleanValue;
+				case XPathResult.NUMBER_TYPE:
+					return result.numberValue;
+				case XPathResult.STRING_TYPE:
+					return result.stringValue;
 			}
 
-			if (!type.match(/^xml$/)
-					&& transform)
-				throw new Error("Transformation is not supported for this locator");
+			const xml = window.document.implementation.createDocument(null, "collection", null);
 
-			const data = DataSource.fetch(locator);
-			if (!transform)
-				return data.clone();
+			let nodes = [];
+			if (result.resultType !== XPathResult.FIRST_ORDERED_NODE_TYPE
+					&& result.resultType !== XPathResult.ANY_UNORDERED_NODE_TYPE)
+				for (let node; node = result.iterateNext();)
+					nodes.push(node);
+			else nodes.push(result.singleNodeValue);
+			nodes = nodes.map(node => {
+				switch (node.nodeType) {
+					case Node.ATTRIBUTE_NODE:
+						const attribute = xml.createElement("attribute");
+						attribute.setAttributeNode(node.cloneNode(true));
+						return attribute;
+					case Node.TEXT_NODE:
+						const text = xml.createElement("text");
+						text.textContent = text.textContent;
+						return text;
+					default:
+						return node;
+				}
+			});
 
-			let style = locator.replace(/(^((\w+\-+(?=\w))+)\w*)|(^\w+)/, "xslt");
-			if (typeof transform !== "boolean") {
-				style = transform;
-				if (typeof style !== "string"
-						|| !style.match(PATTERN_LOCATOR))
-					throw new Error("Invalid style: " + String(style));
-			}
+			if (nodes.length <= 0)
+				return null;
 
-			return DataSource.transform(data, DataSource.fetch(style), meta);
+			xml.documentElement.appendChild(nodes);
+			return xml.documentElement.childNodes;
 		},
 
 		/**
 		 * Collects and concatenates multiple XML files in a new XMLDocument.
 		 *
+		 * When querying nodes using XPath, nodes are always returned. This also
+		 * includes attributes and text nodes. Attributes are returned as nodes
+		 * with the name attribute. The name and value of the addressed
+		 * attribute are represented in the node as attributes name and value.
+		 * Text nodes are also returned as nodes, but then with the name text.
+		 * The content of the addressed text node is then the content of the
+		 * node.
+		 *
 		 * The method has the following various signatures:
 		 *     DataSource.collect(locator, ...);
-		 *     DataSource.collect(collector, [locators]);
+		 *     DataSource.collect(collector, locator, ...);
 		 *
-		 * @param {string} collector Name of the collector element in the
-		 *     XMLDocument
-		 * @param {Array|string} locators Array or VarArg with locators
+		 * @param {...string} locators or collector, the name of the root
+		 *     element in the artificial XML document, followed by the locators
 		 * @returns {XMLDocument|null} The created XMLDocument, otherwise null
-		 * @throws {TypeError} In case of invalid arguments, collector,
-		 *     collection entry
+		 * @throws {Error} In case of invalid arguments, collector or collection
 		 */
 		collect(...variants) {
 
 			if (variants.length <= 0)
 				return null;
 
-			let collection = [];
-
 			let collector = "collection";
-			if (variants.length === 2
-					&& typeof variants[0] === "string"
-					&& Array.isArray(variants[1])) {
-				if (!variants[0].match(PATTERN_WORD))
-					throw new TypeError("Invalid collector");
-				collector = variants[0];
-				collection = Array.from(variants[1]);
-			} else if (variants.length === 1
-					&& Array.isArray(variants[0])) {
-				collection = collection.concat(variants[0]);
-			} else collection = Array.from(variants);
+			if (variants.length > 1
+					&& variants[0].match(PATTERN_WORD))
+				collector = variants.shift();
+			variants.forEach(entry => {
+				if (typeof entry !== "string")
+					throw new TypeError(`Invalid xml locator: ${typeof entry}`);
+				if (!entry.match(PATTERN_LOCATOR))
+					throw new TypeError(`Invalid xml locator: ${entry}`);
+			});
 
-			let hash = collector.hashCode() + ":" + collection.join().hashCode();
-			collection.forEach((entry) =>
+			let hash = collector.hashCode() + ":" + variants.join().hashCode();
+			variants.forEach(entry =>
 				hash += ":" + String(entry).hashCode());
 			if (_cache.hasOwnProperty(hash))
 				return _cache[hash].clone();
 
-			const root = document.implementation.createDocument(null, collector, null);
-			collection.forEach((entry) => {
-				if (typeof entry !== "string")
-					throw new TypeError("Invalid collection entry");
-				root.documentElement.appendChild(DataSource.fetch(entry).documentElement.cloneNode(true));
+			const data = window.document.implementation.createDocument(null, collector, null);
+			variants.forEach(entry => {
+				const result = DataSource.fetch(entry);
+				if (result instanceof XMLDocument) {
+					data.documentElement.appendChild(result.documentElement.cloneNode(true));
+				} else if (result instanceof NodeList) {
+					data.documentElement.appendChild(result);
+				} else {
+					const text = data.createElement("text");
+					text.textContent = String(result);
+					data.documentElement.appendChild(text);
+				}
 			});
 
-			_cache[hash] = root;
-			return root.clone();
+			_cache[hash] = data;
+			return data.clone();
 		}
 	});
 
@@ -887,13 +1004,13 @@
 
 	let xml = DataSource.data;
 	let nodes = xml.evaluate("/locales/*[@default]", xml, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
-	for (let node = nodes.iterateNext(); node; node = nodes.iterateNext()) {
+	for (let node; node = nodes.iterateNext();) {
 		let name = node.nodeName.toLowerCase();
 		if (!DataSource.locales.includes(name))
 			DataSource.locales.push(name);
 	}
 	nodes = xml.evaluate("/locales/*", xml, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
-	for (let node = nodes.iterateNext(); node; node = nodes.iterateNext()) {
+	for (let node; node = nodes.iterateNext();) {
 		const name = node.nodeName.toLowerCase();
 		if (!DataSource.locales.includes(name))
 			DataSource.locales.push(name);
@@ -961,7 +1078,7 @@
 		 *     #export connector@io.example
 		 *
 		 * The macro #module is intended for debugging. It writes the following
-		 * text as debug output to the console. The browser displays this output
+		 * text as debug output to the console. The browser shows this output
 		 * with source, which can then be used as an entry point for debugging.
 		 *
 		 *
@@ -1555,19 +1672,52 @@
 
 	"use strict";
 
-	// Storage for variables with the page scope
+	/** Storage for variables with the page scope */
 	const _render_context_scope = [];
 
-	// Storage for dynamic/temporary variables with the page scope
+	/** Storage for dynamic/temporary variables with the page scope */
 	const _render_context_stack = [];
 
-	// Storage for the currently used dynamic/temporary variables with the page
-	// scope. The storages _render_context_scope and _render_context_stack are
-	// used to manage the variables. So that these remain clean and the elements
-	// can use their initial context when rendering without manipulating
-	// _render_context_stack. This applies in particular to the generated
-	// children with their own meta-objects when iterating.
+	/**
+	 * Storage for the currently used dynamic/temporary variables with the page
+	 * scope. The storages _render_context_scope and _render_context_stack are
+	 * used to manage the variables. So that these remain clean and the elements
+	 * can use their initial context when rendering without manipulating
+	 * _render_context_stack. This applies in particular to the generated
+	 * children with their own meta-objects when iterating.
+	 */
 	const _render_context_workspace = [];
+
+	/**
+	 * Pattern for a DataSource XML locator, based on the URL syntax but only
+	 * schema, path, file and query are used. A path segment begins with a word
+	 * character _ a-z 0-9, optionally more word characters and additionally -
+	 * can follow, but can not end with the - character. Paths are separated by
+	 * the / character.
+	 * - group 1: Locator without optional XPath
+	 * - group 2: Protocol
+	 * - group 3: Path complete incl. file and file extension
+	 * - group 4: file extension (optional)
+	 * - group 5: XPath without question mark (optional)
+	 */
+	const PATTERN_DATASOURCE_LOCATOR_XML = /^((xml):(?:\/)?((?:\/\w+(?:[\w-]*\w)?)+(?:\.(\2))?))(?:\?(\S*))?$/;
+
+	/**
+	 * Pattern for a DataSource XSLT locator, based on the URL syntax but only
+	 * the schema, path and fileare used. A path segment begins with a word
+	 * character _ a-z 0-9, optionally more word characters and additionally -
+	 * can follow, but can not end with the - character. Paths are separated by
+	 * the / character.
+	 * - group 1: Locator without optional XPath
+	 * - group 2: Protocol
+	 * - group 3: Path complete incl. file and file extension
+	 * - group 4: file extension (optional)
+	 */
+	const PATTERN_DATASOURCE_LOCATOR_XSLT = /^((xslt):(?:\/)?((?:\/\w+(?:[\w-]*\w)?)+(?:\.(\2))?))$/;
+
+	/** Pattern for DataSource locator XML with transformation */
+	const PATTERN_DATASOURCE_LOCATOR_XML_XSLT = new RegExp(PATTERN_DATASOURCE_LOCATOR_XML.source.slice(0, -1)
+		+ "\\s+\\+\\s+" + "(xslt|" + PATTERN_DATASOURCE_LOCATOR_XSLT.source.substring(1).slice(0, -1).replace("\\2", "\\8") + ")$");
 
 	compliant("Composite", {
 
@@ -1697,9 +1847,6 @@
 
 		/** Pattern for a scope (custom tag, based on a word) */
 		get PATTERN_CUSTOMIZE_SCOPE() {return /[_a-z]([\w-]*\w)?$/i;},
-
-		/** Pattern for a datasource url */
-		get PATTERN_DATASOURCE_URL() {return /^\s*xml:\s*(\/\S+)\s*(?:\s*(?:xslt|xsl):\s*(\/\S+))*$/i;},
 
 		/** Pattern for all accepted events */
 		get PATTERN_EVENT() {return /^([A-Z][a-z]+)+$/;},
@@ -1983,14 +2130,14 @@
 		 *
 		 *         true
 		 *         ----
-		 * The validation was successful. No error is displayed and the default
+		 * The validation was successful. No error is shown and the default
 		 * action of the browser is used. If possible the value is synchronized
 		 * with the model.
 		 *
 		 *         not true and not undefined/void
 		 *         ----
-		 * The validation failed; an error is displayed. An existing return
-		 * value indicates that the default action of the browser should not be
+		 * The validation failed; an error is shown. An existing return value
+		 * indicates that the default action of the browser should not be
 		 * executed and so it is blocked. In this case, a possible value is not
 		 * synchronized with the model.
 		 *
@@ -2001,11 +2148,11 @@
 		 *
 		 *         undefined/void
 		 *         ----
-		 * The validation failed; an error is displayed. No return value
-		 * indicates that the default action of the browser should nevertheless
-		 * be executed. This behavior is important e.g. for the validation of
-		 * input fields, so that the input reaches the user interface. In this
-		 * case, a possible value is not synchronized with the model.
+		 * The validation failed; an error is shown. No return value indicates
+		 * that the default action of the browser should nevertheless be
+		 * executed. This behavior is important e.g. for the validation of input
+		 * fields, so that the input reaches the user interface. In this case, a
+		 * possible value is not synchronized with the model.
 		 *
 		 * @param {Element|string} selector DOM element or a string
 		 * @param {boolean} [lock=true] Unlocking of the model validation
@@ -2722,7 +2869,7 @@
 		 * https://github.com/seanox/aspect-js/blob/master/manual/en/markup.md#contents-overview
 		 *
 		 * @param {Element|string} selector DOM element or a string
-		 * @param {boolean} lock Unlocking of the model validation
+		 * @param {boolean} [lock] Unlocking of the model validation
 		 * @throws {Error} In case of errors occurring
 		 */
 		render(selector, lock) {
@@ -3176,8 +3323,8 @@
 						    // Step 5:
 						    // The newly created text nodes are inserted before
 						    // the current text node. The current text node can
-						    // then be deleted, since its content is displayed
-						    // using the newly created text nodes.
+						    // then be deleted, since its content is shown using
+						    // the newly created text nodes.
 
 						    // For internal and temporary calls, no parent can
 						    // exist.
@@ -3253,31 +3400,38 @@
 					let value = object.attributes[Composite.ATTRIBUTE_IMPORT];
 					if ((value || "").match(Composite.PATTERN_EXPRESSION_CONTAINS))
 						value = Expression.eval(serial + ":" + Composite.ATTRIBUTE_IMPORT, String(value));
-
 					if (!value) {
 						delete object.attributes[Composite.ATTRIBUTE_IMPORT];
-
 					} else if (value instanceof Element
 						    || value instanceof NodeList) {
 						selector.appendChild(value, true);
 						delete object.attributes[Composite.ATTRIBUTE_IMPORT];
-
-					} else if (String(value).match(Composite.PATTERN_DATASOURCE_URL)) {
-						let data = String(value).match(Composite.PATTERN_DATASOURCE_URL);
-						data[2] = DataSource.fetch("xslt://" + (data[2] || data[1]));
-						data[1] = DataSource.fetch("xml://" + data[1]);
-						data = DataSource.transform(data[1], data[2]);
-						selector.appendChild(data, true);
+					} else if (String(value).match(PATTERN_DATASOURCE_LOCATOR_XML)
+						    || String(value).match(PATTERN_DATASOURCE_LOCATOR_XML_XSLT)) {
+						if (String(value).match(PATTERN_DATASOURCE_LOCATOR_XML_XSLT)) {
+						    const parts = String(value).split(/\s+\+\s+/);
+						    if (parts[1] === "xslt")
+						        parts[1] = parts[0].replaceAll(/(^xml(:))|((\.)xml$)/g, "$4xslt$2");
+						    const data = DataSource.transform(...parts);
+						    selector.appendChild(data, true);
+						} else {
+						    let data = DataSource.fetch(String(value));
+						    if (data instanceof XMLDocument)
+						        data = data.documentElement.childNodes;
+						    else if (data instanceof DocumentFragment)
+						        data = data.childNodes
+						    else if (!(data instanceof NodeList))
+						        data = window.document.createTextNode(String(data));
+						    selector.appendChild(data, true);
+						}
 						const serial = selector.ordinal();
 						const object = _render_meta[serial];
 						delete object.attributes[Composite.ATTRIBUTE_IMPORT];
-
 					} else if (_render_cache[value] !== undefined) {
 						selector.innerHTML = _render_cache[value];
 						const serial = selector.ordinal();
 						const object = _render_meta[serial];
 						delete object.attributes[Composite.ATTRIBUTE_IMPORT];
-
 					} else {
 						Composite.asynchron((selector, lock, url) => {
 						    try {
@@ -3317,13 +3471,29 @@
 					let value = object.attributes[Composite.ATTRIBUTE_OUTPUT];
 					if ((value || "").match(Composite.PATTERN_EXPRESSION_CONTAINS))
 						value = Expression.eval(serial + ":" + Composite.ATTRIBUTE_OUTPUT, String(value));
-					if (String(value).match(Composite.PATTERN_DATASOURCE_URL)) {
-						let data = String(value).match(Composite.PATTERN_DATASOURCE_URL);
-						data[2] = DataSource.fetch("xslt://" + (data[2] || data[1]));
-						data[1] = DataSource.fetch("xml://" + data[1]);
-						data = DataSource.transform(data[1], data[2]);
-						selector.appendChild(data, true);
-					} else if (value instanceof Node)
+					if (String(value).match(PATTERN_DATASOURCE_LOCATOR_XML)
+						    || String(value).match(PATTERN_DATASOURCE_LOCATOR_XML_XSLT)) {
+						if (String(value).match(PATTERN_DATASOURCE_LOCATOR_XML_XSLT)) {
+						    const parts = String(value).split(/\s+\+\s+/);
+						    if (parts[1] === "xslt")
+						        parts[1] = parts[0].replaceAll(/(^xml(:))|((\.)xml$)/g, "$4xslt$2");
+						    const data = DataSource.transform(...parts);
+						    selector.appendChild(data, true);
+						} else {
+						    let data = DataSource.fetch(String(value));
+						    if (data instanceof XMLDocument)
+						        data = data.documentElement.childNodes;
+						    else if (data instanceof DocumentFragment)
+						        data = data.childNodes
+						    else if (!(data instanceof NodeList))
+						        data = window.document.createTextNode(String(data));
+						    selector.appendChild(data, true);
+						}
+					} else if (value instanceof XMLDocument
+						    || value instanceof DocumentFragment)
+						Array.from(value.childNodes).forEach((node, index) =>
+						    selector.appendChild(node.cloneNode(true), index === 0));
+					else if (value instanceof Node)
 						selector.appendChild(value.cloneNode(true), true);
 					else if (value instanceof NodeList)
 						Array.from(value).forEach((node, index) =>
@@ -3395,6 +3565,18 @@
 						    while (meta.entry = meta.iterate.iterateNext())
 						        meta.array.push(meta.entry);
 						    iterate = meta.array;
+						} else if (typeof iterate === "number"
+						        && iterate < 0) {
+						    iterate = [Math.abs(iterate)];
+						    for (let index = iterate[0] -1; index >= 0; index--)
+						        iterate.push(index);
+						    iterate.shift();
+						} else if (typeof iterate === "number"
+						        && iterate >= 0) {
+						    iterate = [iterate];
+						    for (let index = 0; index < iterate[0]; index++)
+						        iterate.push(index);
+						    iterate.shift();
 						} else iterate = Array.from(iterate);
 
 						selector.innerHTML = "";
@@ -3513,7 +3695,7 @@
 					if (type.match(Composite.PATTERN_COMPOSITE_SCRIPT)) {
 						try {Scripting.eval(selector.textContent);
 						} catch (error) {
-						    throw new Error("Composite JavaScript", error);
+						    throw new Error("Composite JavaScript: " + error.message);
 						}
 					}
 				}
@@ -3568,7 +3750,7 @@
 		/**
 		 * Loads a resource (JS, CSS, HTML are supported).
 		 * @param {string} resource Path to the resource
-		 * @param {boolean} strict Flag to enforce strict loading
+		 * @param {boolean} [strict] Flag to enforce strict loading
 		 * @returns {string|undefined} The content when loading an HTML resource
 		 * @throws {Error} In the following cases
 		 *     - Unsupported resource type
@@ -4404,7 +4586,7 @@
 		const map = new Map();
 		const xpath = "/locales/" + DataSource.locale + "/label";
 		const result = data.evaluate(xpath, data, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-		for (let node = result.iterateNext(); node; node = result.iterateNext()) {
+		for (let node; node = result.iterateNext();) {
 			const key = (node.getAttribute("key") || "").trim();
 			if (!map.has(key)) {
 				const value = ((node.getAttribute("value") || "").trim()
