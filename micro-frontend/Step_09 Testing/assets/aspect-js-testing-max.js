@@ -739,6 +739,8 @@
 						processor.setParameter(null, key, value);
 			}
 
+			let result = processor.transformToDocument(xml.clone());
+
 			// Attribute escape converts text to HTML. Without, HTML tag symbols
 			// < and > are masked and output as text.
 			let escape = xml.evaluate("string(/*/@escape)", xml, null, XPathResult.ANY_TYPE, null).stringValue;
@@ -747,7 +749,6 @@
 			// Workaround for some browsers, e.g. MS Edge, if they have problems
 			// with !DOCTYPE + !ENTITY. Therefore the document is copied so that
 			// the DOCTYPE declaration is omitted.
-			let result = processor.transformToDocument(xml.clone());
 			let nodes = result.querySelectorAll(escape ? "*" : "*[escape]");
 			nodes.forEach((node) => {
 				if (escape || (node.getAttribute("escape") || "on").match(/^yes|on|true|1$/i)) {
@@ -774,12 +775,13 @@
 			if (result.body)
 				nodes = result.body.childNodes;
 			else if (result.firstChild
-					&& result.firstChild.nodeName.match(/^transformiix\b/i))
+					&& result.firstChild.nodeName.match(/^TransforMiix\b/i))
 				nodes = result.firstChild.childNodes;
+
 			const fragment = document.createDocumentFragment();
-			nodes = Array.from(nodes);
-			for (let loop = 0; loop < nodes.length; loop++)
-				fragment.appendChild(nodes[loop]);
+			nodes.forEach(node => {
+				fragment.appendChild(node);
+			});
 			return fragment;
 		},
 
@@ -2079,9 +2081,10 @@
 		 * @param {function} task Function to be executed
 		 * @param {...*} variants Up to five additional optional arguments
 		 *     passed to the callback function
+		 * @return {number} ID of the established timer
 		 */
 		asynchron(task, ...variants) {
-			window.setTimeout((invoke, ...variants) => {
+			return window.setTimeout((invoke, ...variants) => {
 				invoke(...variants);
 			}, 0, task, ...variants);
 		},
@@ -3408,22 +3411,22 @@
 						delete object.attributes[Composite.ATTRIBUTE_IMPORT];
 					} else if (String(value).match(PATTERN_DATASOURCE_LOCATOR_XML)
 						    || String(value).match(PATTERN_DATASOURCE_LOCATOR_XML_XSLT)) {
+						let data = "";
 						if (String(value).match(PATTERN_DATASOURCE_LOCATOR_XML_XSLT)) {
 						    const parts = String(value).split(/\s+\+\s+/);
 						    if (parts[1] === "xslt")
 						        parts[1] = parts[0].replaceAll(/(^xml(:))|((\.)xml$)/g, "$4xslt$2");
-						    const data = DataSource.transform(...parts);
-						    selector.appendChild(data, true);
-						} else {
-						    let data = DataSource.fetch(String(value));
-						    if (data instanceof XMLDocument)
-						        data = data.documentElement.childNodes;
-						    else if (data instanceof DocumentFragment)
-						        data = data.childNodes
-						    else if (!(data instanceof NodeList))
-						        data = window.document.createTextNode(String(data));
-						    selector.appendChild(data, true);
-						}
+						    data = DataSource.transform(...parts);
+						} else data = DataSource.fetch(String(value));
+
+						if (data instanceof XMLDocument)
+						    data = data.documentElement.childNodes;
+						else if (data instanceof DocumentFragment)
+						    data = data.childNodes
+						else if (!(data instanceof NodeList))
+						    data = window.document.createTextNode(String(data));
+						selector.appendChild(data, true);
+
 						const serial = selector.ordinal();
 						const object = _render_meta[serial];
 						delete object.attributes[Composite.ATTRIBUTE_IMPORT];
@@ -3473,22 +3476,22 @@
 						value = Expression.eval(serial + ":" + Composite.ATTRIBUTE_OUTPUT, String(value));
 					if (String(value).match(PATTERN_DATASOURCE_LOCATOR_XML)
 						    || String(value).match(PATTERN_DATASOURCE_LOCATOR_XML_XSLT)) {
+						let data = "";
 						if (String(value).match(PATTERN_DATASOURCE_LOCATOR_XML_XSLT)) {
 						    const parts = String(value).split(/\s+\+\s+/);
 						    if (parts[1] === "xslt")
 						        parts[1] = parts[0].replaceAll(/(^xml(:))|((\.)xml$)/g, "$4xslt$2");
-						    const data = DataSource.transform(...parts);
-						    selector.appendChild(data, true);
-						} else {
-						    let data = DataSource.fetch(String(value));
-						    if (data instanceof XMLDocument)
-						        data = data.documentElement.childNodes;
-						    else if (data instanceof DocumentFragment)
-						        data = data.childNodes
-						    else if (!(data instanceof NodeList))
-						        data = window.document.createTextNode(String(data));
-						    selector.appendChild(data, true);
-						}
+						    data = DataSource.transform(...parts);
+						} else data = DataSource.fetch(String(value));
+
+						if (data instanceof XMLDocument)
+						    data = data.documentElement.childNodes;
+						else if (data instanceof DocumentFragment)
+						    data = data.childNodes
+						else if (!(data instanceof NodeList))
+						    data = window.document.createTextNode(String(data));
+						selector.appendChild(data, true);
+
 					} else if (value instanceof XMLDocument
 						    || value instanceof DocumentFragment)
 						Array.from(value.childNodes).forEach((node, index) =>
@@ -4976,7 +4979,13 @@
 	// Status of the activation of routing
 	// The status cannot be changed again after (de)activation and is only set
 	// initially when the page is loaded.
-	let _routing_active = undefined;
+	let _routing_active;
+
+	// Software interrupt that triggers the hashchange event via a timer if the
+	// hashchange event from the browser does not occur. If the browser event
+	// occurs as planned, the interrupt is discarded. It concerns Mozilla/Gecko,
+	// where the change from / to /# does not trigger a hashchange event.
+	let _routing_interrupt;
 
 	// Map with all supported interceptors
 	const _interceptors = new Array();
@@ -4999,6 +5008,8 @@
 	}
 
 	const _locate = (location) => {
+		if (location === null)
+			return null;
 		const match = location.match(/#.*$/);
 		return match ? match[0] : null;
 	}
@@ -5051,8 +5062,14 @@
 			if (path === null
 					|| path === Browser.location)
 				return;
-			Composite.asynchron((path) => {
+			Composite.asynchron(path => {
+				const event = new Event("hashchange",{bubbles:false, cancelable:true});
+				event.oldURL = Browser.location;
+				event.newURL = path;
 				window.location.href = path;
+				_routing_interrupt = Composite.asynchron(event => {
+					window.dispatchEvent(event);
+				}, event);
 			}, path);
 		},
 
@@ -5242,6 +5259,8 @@
 	 * path and organizes partial rendering.
 	 */
 	window.addEventListener("hashchange", (event) => {
+
+		window.clearTimeout(_routing_interrupt);
 
 		if (!_routing_active)
 			return;
