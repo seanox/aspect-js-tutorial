@@ -1,3 +1,6 @@
+#menu .w3-bar {
+  height: 3.65em;
+}
 #menu .w3-dropdown-hover span,
 #menu .w3-dropdown-hover span:hover {
   background: #FFF!important;
