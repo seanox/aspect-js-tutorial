@@ -39,7 +39,9 @@ window.addEventListener("popstate", (event) => {
     location = window.location.hash;
 });
 Composite.listen(Composite.EVENT_RENDER_END, (event) => {
-    spinner.disable();
+    Composite.asynchron(() => {
+        spinner.disable();
+    });
 });
 
 #export spinner@ui;
