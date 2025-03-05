@@ -37,7 +37,7 @@
           see: /modules/*.css
     -->
   </head>
-  <body>
+  <body class="home">
     <!--
     
       aspect-js supports a module concept where the modules are called composites.
@@ -71,15 +71,15 @@
     -->
 
     <!-- Navbar (sit on top) -->
-    <div id="menu" class="w3-top" composite release>
-    </div>
-
-    <!-- Header -->
-    <header id="home" class="w3-display-container w3-content w3-wide" composite release>
+    <header id="menu" class="w3-top" composite release>
     </header>
-  
+
     <!-- Page content -->
     <main class="w3-content w3-padding">
+
+      <!-- Home Section -->
+      <section id="home" class="w3-display-container w3-content w3-wide" composite route release>
+      </section>
 
       <!-- Project Section -->
       <section id="projects" composite release>

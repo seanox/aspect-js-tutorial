@@ -37,7 +37,7 @@
           see: /modules/*.css
     -->
   </head>
-  <body>
+  <body class="{{Routing.location.substring(1)}}">
     <!--
     
       aspect-js supports a module concept where the modules are called composites.
@@ -77,17 +77,17 @@
     -->
 
     <!-- Navbar (sit on top) -->
-    <div id="menu" class="w3-top" composite release>
-    </div>
-
-    <!-- Header -->
-    <header id="home" class="w3-display-container w3-content w3-wide" composite release>
+    <header id="menu" class="w3-top" composite release>
     </header>
-  
+
     <!-- Page content -->
     <main class="w3-content w3-padding">
 
-      <!-- 
+      <!-- Home Section -->
+      <section id="home" class="w3-display-container w3-content w3-wide" composite route release>
+      </section>
+
+      <!--
       
         Example for the projection of data by XSL Transformation.
         The transformation takes over the file portfolio.xslt, the data source is portfolio.

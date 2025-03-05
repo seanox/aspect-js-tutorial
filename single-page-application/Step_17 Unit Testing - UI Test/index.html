@@ -46,7 +46,7 @@
     The attribute route on the body tag activates routing.
     By default, routing is not active.
   -->
-  <body route>
+  <body route class="{{Routing.location.substring(1)}}">
     <!--
     
       aspect-js supports a module concept where the modules are called composites.
@@ -86,8 +86,8 @@
     -->
 
     <!-- Navbar (sit on top) -->
-    <div id="menu" class="w3-top" composite release>
-    </div>
+    <header id="menu" class="w3-top" composite release>
+    </header>
 
     <!--
       By combining the attributes 'composite' and 'route', the composites become
@@ -113,14 +113,14 @@
           see also: https://github.com/seanox/aspect-js/blob/master/manual/routing.md
     -->
 
-    <!-- Header -->
-    <header id="home" class="w3-display-container w3-content w3-wide" composite route release>
-    </header>
-  
     <!-- Page content -->
     <main class="w3-content w3-padding">
 
-      <!-- 
+      <!-- Home Section -->
+      <section id="home" class="w3-display-container w3-content w3-wide" composite route release>
+      </section>
+
+      <!--
       
         Example for the projection of data by XSL Transformation.
         The transformation takes over the file portfolio.xslt, the data source is portfolio.
